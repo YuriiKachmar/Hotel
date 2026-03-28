@@ -1202,12 +1202,12 @@ db   = firebase.database();
 const ADMIN_EMAIL = 'lvivbau2@gmail.com';
 
 document.getElementById('btnGoogleLogin').addEventListener('click', () => {
-  document.getElementById('loginStatus').textContent = 'Підключення...';
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithRedirect(provider).catch(err => {
-    document.getElementById('loginStatus').textContent = 'Помилка: ' + err.message;
-  });
-}); 
+  provider.addScope('email');
+  provider.addScope('profile');
+  auth.signInWithRedirect(provider);
+});
+
   auth.getRedirectResult().then(result => {
   if(result && result.user) console.log('ok');
 }).catch(e => console.log(e));
