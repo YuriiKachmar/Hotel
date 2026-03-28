@@ -1172,7 +1172,7 @@ if(box&&inp&&!box.contains(e.target)&&e.target!==inp) box.style.display=‘none�
 
 <!-- LOGIN SCREEN -->
 
-<div id="loginScreen" style="position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px">
+<div id="loginScreen" style="position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px">
   <div style="font-family:'Oswald',sans-serif;font-size:28px;letter-spacing:3px;color:var(--acc)">ГОТЕЛЬ</div>
   <div style="font-size:13px;color:var(--mut);margin-bottom:8px">Контроль ремонту</div>
   <button id="btnGoogleLogin" style="display:flex;align-items:center;gap:10px;padding:12px 24px;border-radius:8px;border:1px solid var(--brd);background:var(--surf);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:.15s">
@@ -1213,7 +1213,7 @@ document.getElementById('btnGoogleLogin').addEventListener('click', () => {
 }).catch(e => console.log(e));
 
 auth.onAuthStateChanged(user => {
-  if(!user) {
+  if(!user) { renderAll(); return; }
     document.getElementById('loginScreen').style.display='flex';
     return;
   }
