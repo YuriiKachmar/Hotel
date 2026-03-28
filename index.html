@@ -1211,11 +1211,9 @@ document.getElementById('btnGoogleLogin').addEventListener('click', () => {
   auth.getRedirectResult().then(result => {
   if(result && result.user) console.log('ok');
 }).catch(e => console.log(e));
-
+renderAll();
 auth.onAuthStateChanged(user => {
-  if(!user) { renderAll(); return; }
-    document.getElementById('loginScreen').style.display='flex';
-    return;
+  if(!user) { renderAll(); 
   }
   currentUser = user;
   isAdmin = (user.email === ADMIN_EMAIL);
