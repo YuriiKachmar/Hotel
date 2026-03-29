@@ -1,3 +1,4 @@
+Content is user-generated and unverified.
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -8,9 +9,9 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
---bg:#111214;--surf:#18191d;--surf2:#1f2025;--brd:#2c2d33;
---txt:#e2e4ea;--mut:#5a5c6a;--acc:#e8b84b;
---blue:#2563eb;--green:#16a34a;--red:#dc2626;
+  --bg:#111214;--surf:#18191d;--surf2:#1f2025;--brd:#2c2d33;
+  --txt:#e2e4ea;--mut:#5a5c6a;--acc:#e8b84b;
+  --blue:#2563eb;--green:#16a34a;--red:#dc2626;
 }
 body{background:var(--bg);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
 h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spacing:.5px}
@@ -80,10 +81,10 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 
 /* ROOM CELL */
 .room-cell{
-width:76px;height:68px;border-radius:8px;cursor:pointer;
-display:flex;flex-direction:column;justify-content:space-between;
-padding:7px 7px 5px;border:2px solid var(--brd);
-transition:transform .12s,box-shadow .12s;position:relative;overflow:hidden
+  width:76px;height:68px;border-radius:8px;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:7px 7px 5px;border:2px solid var(--brd);
+  transition:transform .12s,box-shadow .12s;position:relative;overflow:hidden
 }
 .room-cell:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.5)}
 .room-num{font-family:'Oswald',sans-serif;font-size:15px;font-weight:500;letter-spacing:.5px;line-height:1;color:#fff}
@@ -206,10 +207,10 @@ transition:transform .12s,box-shadow .12s;position:relative;overflow:hidden
 .toast.err{border-color:var(--red);color:var(--red)}
 
 @media(max-width:700px){
-#sidebar{display:none}
-.room-cell{width:62px;height:58px}
-.room-num{font-size:13px}
-.cons-add-panel{width:100%}
+  #sidebar{display:none}
+  .room-cell{width:62px;height:58px}
+  .room-num{font-size:13px}
+  .cons-add-panel{width:100%}
 }
 </style>
 </head>
@@ -217,153 +218,152 @@ transition:transform .12s,box-shadow .12s;position:relative;overflow:hidden
 
 <!-- AUTH -->
 <div id="authScreen">
-<div class="auth-box">
-<h1>ГОТЕЛЬ</h1>
-<div class="sub">Замарстинівська 25, Львів</div>
-<input type="email" id="authEmail" placeholder="Email" autocomplete="username">
-<input type="password" id="authPass" placeholder="Пароль" autocomplete="current-password">
-<div class="auth-err" id="authErr"></div>
-<button class="btn btn-acc" style="width:100%;padding:11px" onclick="doLogin()">Увійти</button>
-</div>
+  <div class="auth-box">
+    <h1>ГОТЕЛЬ</h1>
+    <div class="sub">Замарстинівська 25, Львів</div>
+    <input type="email" id="authEmail" placeholder="Email" autocomplete="username">
+    <input type="password" id="authPass" placeholder="Пароль" autocomplete="current-password">
+    <div class="auth-err" id="authErr"></div>
+    <button class="btn btn-acc" style="width:100%;padding:11px" onclick="doLogin()">Увійти</button>
+  </div>
 </div>
 
 <!-- APP -->
 <div id="appScreen" style="display:none">
 <div id="topbar">
-<div>
-<div class="logo-text"onclic="goHome()"
-  style="cursor:pointer" title="На головну">ГОТЕЛЬ</div>
-<div class="logo-sub">Контроль ремонту · Замарстинівська 25</div>
-</div>
-<input type="text" id="searchBox" placeholder="Пошук кімнати..." oninput="onSearch()">
-<div class="topbar-right">
-<button class="btn btn-sm" onclick="openByContractor()">По підряднику</button>
-<button class="btn btn-sm" onclick="openContractors()">Підрядники</button>
-<button class="btn btn-sm" onclick="openReport()">Звіт</button>
-<button class="btn btn-sm" onclick="exportCSV()">CSV</button>
-<span class="user-email" id="userEmailEl"></span>
-<button class="btn btn-sm btn-danger" onclick="doLogout()">Вийти</button>
-</div>
+  <div>
+    <div class="logo-text" onclick="goHome()" style="cursor:pointer" title="На головну">ГОТЕЛЬ</div>
+    <div class="logo-sub">Контроль ремонту · Замарстинівська 25</div>
+  </div>
+  <input type="text" id="searchBox" placeholder="Пошук кімнати..." oninput="onSearch()">
+  <div class="topbar-right">
+    <button class="btn btn-sm" onclick="openByContractor()">По підряднику</button>
+    <button class="btn btn-sm" onclick="openContractors()">Підрядники</button>
+    <button class="btn btn-sm" onclick="openReport()">Звіт</button>
+    <button class="btn btn-sm" onclick="exportCSV()">CSV</button>
+    <span class="user-email" id="userEmailEl"></span>
+    <button class="btn btn-sm btn-danger" onclick="doLogout()">Вийти</button>
+  </div>
 </div>
 
 <div id="appWrap">
 <div id="sidebar">
-<div class="sb-section">
-<h3>Поверхи</h3>
-<div id="sbFloors"></div>
-</div>
-<div class="sb-section">
-<h3>Статус</h3>
-<div class="sb-item" onclick="toggleFilter('status','notstarted',this)"><input type="checkbox" id="fs_ns"> <div class="sb-dot" style="background:#3a3b42;border:1px solid #666"></div> Не розпочато</div>
-<div class="sb-item" onclick="toggleFilter('status','inprogress',this)"><input type="checkbox" id="fs_ip"> <div class="sb-dot" style="background:#2563eb"></div> В роботі</div>
-<div class="sb-item" onclick="toggleFilter('status','done',this)"><input type="checkbox" id="fs_d"> <div class="sb-dot" style="background:#16a34a"></div> Готово</div>
-<div class="sb-item" onclick="toggleFilter('status','problem',this)"><input type="checkbox" id="fs_pr"> <div class="sb-dot" style="background:#dc2626"></div> Проблема</div>
-</div>
-<div class="sb-section">
-<h3>Тип</h3>
-<div class="sb-item" onclick="toggleFilter('type','mmg',this)"><input type="checkbox"> <div class="sb-box" style="background:#6b7280"></div> ММГ</div>
-<div class="sb-item" onclick="toggleFilter('type','standard',this)"><input type="checkbox"> <div class="sb-box" style="background:#1e293b;border-color:#334155"></div> Стандарт</div>
-<div class="sb-item" onclick="toggleFilter('type','business',this)"><input type="checkbox"> <div class="sb-box" style="background:#854d0e"></div> Бізнес</div>
-<div class="sb-item" onclick="toggleFilter('type','improved',this)"><input type="checkbox"> <div class="sb-box" style="background:#14532d"></div> Покращений</div>
-<div class="sb-item" onclick="toggleFilter('type','semilux',this)"><input type="checkbox"> <div class="sb-box" style="background:#581c87"></div> Півлюкс</div>
-<div class="sb-item" onclick="toggleFilter('type','lux',this)"><input type="checkbox"> <div class="sb-box" style="background:#7f1d1d"></div> Люкс</div>
-</div>
-<div class="sb-section">
-<h3>Підрядник</h3>
-<div id="sbContractors"><div style="font-size:11px;color:var(--mut);padding:4px 6px">Немає підрядників</div></div>
-</div>
+  <div class="sb-section">
+    <h3>Поверхи</h3>
+    <div id="sbFloors"></div>
+  </div>
+  <div class="sb-section">
+    <h3>Статус</h3>
+    <div class="sb-item" onclick="toggleFilter('status','notstarted',this)"><input type="checkbox" id="fs_ns"> <div class="sb-dot" style="background:#3a3b42;border:1px solid #666"></div> Не розпочато</div>
+    <div class="sb-item" onclick="toggleFilter('status','inprogress',this)"><input type="checkbox" id="fs_ip"> <div class="sb-dot" style="background:#2563eb"></div> В роботі</div>
+    <div class="sb-item" onclick="toggleFilter('status','done',this)"><input type="checkbox" id="fs_d"> <div class="sb-dot" style="background:#16a34a"></div> Готово</div>
+    <div class="sb-item" onclick="toggleFilter('status','problem',this)"><input type="checkbox" id="fs_pr"> <div class="sb-dot" style="background:#dc2626"></div> Проблема</div>
+  </div>
+  <div class="sb-section">
+    <h3>Тип</h3>
+    <div class="sb-item" onclick="toggleFilter('type','mmg',this)"><input type="checkbox"> <div class="sb-box" style="background:#6b7280"></div> ММГ</div>
+    <div class="sb-item" onclick="toggleFilter('type','standard',this)"><input type="checkbox"> <div class="sb-box" style="background:#1e293b;border-color:#334155"></div> Стандарт</div>
+    <div class="sb-item" onclick="toggleFilter('type','business',this)"><input type="checkbox"> <div class="sb-box" style="background:#854d0e"></div> Бізнес</div>
+    <div class="sb-item" onclick="toggleFilter('type','improved',this)"><input type="checkbox"> <div class="sb-box" style="background:#14532d"></div> Покращений</div>
+    <div class="sb-item" onclick="toggleFilter('type','semilux',this)"><input type="checkbox"> <div class="sb-box" style="background:#581c87"></div> Півлюкс</div>
+    <div class="sb-item" onclick="toggleFilter('type','lux',this)"><input type="checkbox"> <div class="sb-box" style="background:#7f1d1d"></div> Люкс</div>
+  </div>
+  <div class="sb-section">
+    <h3>Підрядник</h3>
+    <div id="sbContractors"><div style="font-size:11px;color:var(--mut);padding:4px 6px">Немає підрядників</div></div>
+  </div>
 </div>
 
 <div id="mainArea">
-<div class="stats-bar" id="statsBar"></div>
-<div id="floorsContainer"></div>
+  <div class="stats-bar" id="statsBar"></div>
+  <div id="floorsContainer"></div>
 
-<!-- CONTRACTORS VIEW -->
-<div id="consView" style="display:none">
-<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-<h2 style="font-size:20px;color:var(--acc)">Підрядники</h2>
-<button class="btn btn-sm" onclick="closeContractors()">← Назад</button>
-</div>
-<div class="cons-grid">
-<div class="cons-list-panel" id="consListPanel"></div>
-<div class="cons-add-panel" id="consAddPanel">
-<h3>Додати підрядника</h3>
-<label class="form-label">Назва</label>
-<input class="form-input" id="conNameInput" placeholder="Назва або ПІБ">
-<label class="form-label">Email</label>
-<input class="form-input" id="conEmailInput" type="email" placeholder="email@example.com">
-<button class="btn btn-acc" style="width:100%;margin-bottom:18px" onclick="addContractor()">+ Додати підрядника</button>
-<div style="border-top:1px solid var(--brd);padding-top:14px">
-<h3 style="margin-bottom:12px">Створити Firebase-користувача</h3>
-<label class="form-label">Email нового користувача</label>
-<input class="form-input" id="fbUserEmail" type="email" placeholder="email@example.com">
-<label class="form-label">Пароль</label>
-<input class="form-input" id="fbUserPass" type="password" placeholder="Мінімум 6 символів">
-<button class="btn btn-acc" style="width:100%" onclick="createFirebaseUser()">Створити користувача</button>
-<div style="color:var(--red);font-size:12px;margin-top:8px;min-height:18px" id="fbUserErr"></div>
-</div>
-</div>
-</div>
-</div>
+  <!-- CONTRACTORS VIEW -->
+  <div id="consView" style="display:none">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <h2 style="font-size:20px;color:var(--acc)">Підрядники</h2>
+      <button class="btn btn-sm" onclick="closeContractors()">← Назад</button>
+    </div>
+    <div class="cons-grid">
+      <div class="cons-list-panel" id="consListPanel"></div>
+      <div class="cons-add-panel" id="consAddPanel">
+        <h3>Додати підрядника</h3>
+        <label class="form-label">Назва</label>
+        <input class="form-input" id="conNameInput" placeholder="Назва або ПІБ">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="conEmailInput" type="email" placeholder="email@example.com">
+        <button class="btn btn-acc" style="width:100%;margin-bottom:18px" onclick="addContractor()">+ Додати підрядника</button>
+        <div style="border-top:1px solid var(--brd);padding-top:14px">
+          <h3 style="margin-bottom:12px">Створити Firebase-користувача</h3>
+          <label class="form-label">Email нового користувача</label>
+          <input class="form-input" id="fbUserEmail" type="email" placeholder="email@example.com">
+          <label class="form-label">Пароль</label>
+          <input class="form-input" id="fbUserPass" type="password" placeholder="Мінімум 6 символів">
+          <button class="btn btn-acc" style="width:100%" onclick="createFirebaseUser()">Створити користувача</button>
+          <div style="color:var(--red);font-size:12px;margin-top:8px;min-height:18px" id="fbUserErr"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 </div>
 </div>
 
 <!-- BY CONTRACTOR FULLSCREEN -->
 <div id="byConView">
-<div class="bycon-header">
-<button class="btn btn-sm" onclick="closeByContractor()">← Назад</button>
-<h2 style="font-size:17px;color:var(--acc)">Кімнати по підряднику</h2>
-</div>
-<div class="bycon-body">
-<div class="bycon-left" id="byConList"></div>
-<div class="bycon-right" id="byConRooms"></div>
-</div>
+  <div class="bycon-header">
+    <button class="btn btn-sm" onclick="closeByContractor()">← Назад</button>
+    <h2 style="font-size:17px;color:var(--acc)">Кімнати по підряднику</h2>
+  </div>
+  <div class="bycon-body">
+    <div class="bycon-left" id="byConList"></div>
+    <div class="bycon-right" id="byConRooms"></div>
+  </div>
 </div>
 
 <!-- FLOOR PLAN -->
 <div id="floorPlanPanel">
-<div class="floor-plan-box">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-<h2 id="floorPlanTitle"></h2>
-<button class="btn btn-sm" onclick="closeFloorPlan()">✕ Закрити</button>
-</div>
-<div id="floorPlanGrid" class="floor-grid"></div>
-</div>
+  <div class="floor-plan-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <h2 id="floorPlanTitle"></h2>
+      <button class="btn btn-sm" onclick="closeFloorPlan()">✕ Закрити</button>
+    </div>
+    <div id="floorPlanGrid" class="floor-grid"></div>
+  </div>
 </div>
 
 <!-- REPORT PANEL -->
 <div id="reportPanel">
-<div class="report-header">
-<h2>Звіт</h2>
-<div class="report-tabs">
-<button class="rtab active" onclick="switchReportTab('general',this)">Загальний</button>
-<button class="rtab" onclick="switchReportTab('bycon',this)">По підряднику</button>
-<button class="rtab" onclick="switchReportTab('bywork',this)">По роботах</button>
-<button class="rtab" onclick="switchReportTab('problems',this)">Проблеми</button>
-</div>
-<button class="btn btn-sm" style="margin-left:auto" onclick="printReport()">Друк</button>
-<button class="btn btn-sm" onclick="closeReport()">✕</button>
-</div>
-<div class="report-body" id="reportBody"></div>
+  <div class="report-header">
+    <h2>Звіт</h2>
+    <div class="report-tabs">
+      <button class="rtab active" onclick="switchReportTab('general',this)">Загальний</button>
+      <button class="rtab" onclick="switchReportTab('bycon',this)">По підряднику</button>
+      <button class="rtab" onclick="switchReportTab('bywork',this)">По роботах</button>
+      <button class="rtab" onclick="switchReportTab('problems',this)">Проблеми</button>
+    </div>
+    <button class="btn btn-sm" style="margin-left:auto" onclick="printReport()">Друк</button>
+    <button class="btn btn-sm" onclick="closeReport()">✕</button>
+  </div>
+  <div class="report-body" id="reportBody"></div>
 </div>
 
 <!-- ROOM MODAL -->
 <div class="overlay" id="roomOverlay" onclick="overlayClickHandler(event)">
-<div class="modal" id="roomModal">
-<div class="modal-header">
-<div>
-<div class="room-modal-title" id="modalTitle"></div>
-<div class="room-modal-meta" id="modalMeta"></div>
-</div>
-<button class="btn btn-sm" onclick="closeRoomModal()">✕</button>
-</div>
-<div class="modal-body" id="modalBody"></div>
-<div class="modal-footer">
-<button class="btn" onclick="closeRoomModal()">Скасувати</button>
-<button class="btn btn-acc" onclick="saveRoom()">Зберегти</button>
-</div>
-</div>
+  <div class="modal" id="roomModal">
+    <div class="modal-header">
+      <div>
+        <div class="room-modal-title" id="modalTitle"></div>
+        <div class="room-modal-meta" id="modalMeta"></div>
+      </div>
+      <button class="btn btn-sm" onclick="closeRoomModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeRoomModal()">Скасувати</button>
+      <button class="btn btn-acc" onclick="saveRoom()">Зберегти</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -377,13 +377,13 @@ transition:transform .12s,box-shadow .12s;position:relative;overflow:hidden
 // CONFIG & INIT
 // =============================================
 var FB_CONFIG = {
-apiKey: "AIzaSyC9yXNFHumEj54WijGfEDnuc1-1cvPYCfE",
-authDomain: "zamarstynivska-25.firebaseapp.com",
-databaseURL: "https://zamarstynivska-25-default-rtdb.europe-west1.firebasedatabase.app",
-projectId: "zamarstynivska-25",
-storageBucket: "zamarstynivska-25.appspot.com",
-messagingSenderId: "1066701061895",
-appId: "1:1066701061895:web:b0a87dd095308e1c244fa2"
+  apiKey: "AIzaSyC9yXNFHumEj54WijGfEDnuc1-1cvPYCfE",
+  authDomain: "zamarstynivska-25.firebaseapp.com",
+  databaseURL: "https://zamarstynivska-25-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "zamarstynivska-25",
+  storageBucket: "zamarstynivska-25.appspot.com",
+  messagingSenderId: "1066701061895",
+  appId: "1:1066701061895:web:b0a87dd095308e1c244fa2"
 };
 var fbApp = firebase.initializeApp(FB_CONFIG);
 var fbAuth = firebase.auth();
@@ -406,97 +406,97 @@ var HOTEL = [];
 
 // -1 floor
 HOTEL.push({floor:-1,label:"-1 поверх",rooms:[
-{id:"m_parking",name:"Паркінг",type:"standard"},
-{id:"m_kitchen",name:"Кухня -1",type:"standard"},
-{id:"m_guard",name:"Кімн.охорони",type:"standard"},
-{id:"m_water",name:"Водомірний вузол",type:"standard"},
-{id:"m_laundry",name:"Пральня",type:"standard"},
-{id:"m_fire",name:"Протипожежна",type:"standard"},
-{id:"m_kns",name:"КНС",type:"standard"}
+  {id:"m_parking",name:"Паркінг",type:"standard"},
+  {id:"m_kitchen",name:"Кухня -1",type:"standard"},
+  {id:"m_guard",name:"Кімн.охорони",type:"standard"},
+  {id:"m_water",name:"Водомірний вузол",type:"standard"},
+  {id:"m_laundry",name:"Пральня",type:"standard"},
+  {id:"m_fire",name:"Протипожежна",type:"standard"},
+  {id:"m_kns",name:"КНС",type:"standard"}
 ]});
 
 // 1 floor
 HOTEL.push({floor:1,label:"1 поверх",rooms:[
-{id:"f1_hall",name:"Хол",type:"standard"},
-{id:"f1_rec",name:"Рецепція",type:"standard"},
-{id:"f1_wc",name:"Туалети",type:"standard"},
-{id:"f1_conf",name:"Конференц-зал",type:"standard"},
-{id:"f1_rest",name:"Ресторан/Бар",type:"standard"},
-{id:"f1_kitch",name:"Кухня 1",type:"standard"}
+  {id:"f1_hall",name:"Хол",type:"standard"},
+  {id:"f1_rec",name:"Рецепція",type:"standard"},
+  {id:"f1_wc",name:"Туалети",type:"standard"},
+  {id:"f1_conf",name:"Конференц-зал",type:"standard"},
+  {id:"f1_rest",name:"Ресторан/Бар",type:"standard"},
+  {id:"f1_kitch",name:"Кухня 1",type:"standard"}
 ]});
 
 // 2 floor: 206-227
 (function(){
-var rooms = [];
-var i;
-for(i = 206; i <= 227; i++){
-var t = "standard";
-if(i === 214 || i === 215) t = "improved";
-else if(i === 226) t = "semilux";
-rooms.push({id:"r"+i, name:""+i, type:t});
-}
-HOTEL.push({floor:2,label:"2 поверх",rooms:rooms});
+  var rooms = [];
+  var i;
+  for(i = 206; i <= 227; i++){
+    var t = "standard";
+    if(i === 214 || i === 215) t = "improved";
+    else if(i === 226) t = "semilux";
+    rooms.push({id:"r"+i, name:""+i, type:t});
+  }
+  HOTEL.push({floor:2,label:"2 поверх",rooms:rooms});
 })();
 
 // 3 floor: 301-327
 (function(){
-var rooms = [];
-var i;
-var biz3 = {302:1,303:1,304:1,305:1,308:1,310:1,312:1};
-for(i = 301; i <= 327; i++){
-var t = "standard";
-if(i === 301) t = "mmg";
-else if(biz3[i]) t = "business";
-else if(i === 314 || i === 315) t = "improved";
-else if(i === 326) t = "semilux";
-rooms.push({id:"r"+i, name:""+i, type:t});
-}
-HOTEL.push({floor:3,label:"3 поверх",rooms:rooms});
+  var rooms = [];
+  var i;
+  var biz3 = {302:1,303:1,304:1,305:1,308:1,310:1,312:1};
+  for(i = 301; i <= 327; i++){
+    var t = "standard";
+    if(i === 301) t = "mmg";
+    else if(biz3[i]) t = "business";
+    else if(i === 314 || i === 315) t = "improved";
+    else if(i === 326) t = "semilux";
+    rooms.push({id:"r"+i, name:""+i, type:t});
+  }
+  HOTEL.push({floor:3,label:"3 поверх",rooms:rooms});
 })();
 
 // 4 floor: 401-427
 (function(){
-var rooms = [];
-var i;
-var biz4 = {402:1,403:1,404:1,405:1,408:1,410:1,412:1};
-for(i = 401; i <= 427; i++){
-var t = "standard";
-if(i === 401) t = "mmg";
-else if(biz4[i]) t = "business";
-else if(i === 414 || i === 415) t = "improved";
-else if(i === 426) t = "semilux";
-rooms.push({id:"r"+i, name:""+i, type:t});
-}
-HOTEL.push({floor:4,label:"4 поверх",rooms:rooms});
+  var rooms = [];
+  var i;
+  var biz4 = {402:1,403:1,404:1,405:1,408:1,410:1,412:1};
+  for(i = 401; i <= 427; i++){
+    var t = "standard";
+    if(i === 401) t = "mmg";
+    else if(biz4[i]) t = "business";
+    else if(i === 414 || i === 415) t = "improved";
+    else if(i === 426) t = "semilux";
+    rooms.push({id:"r"+i, name:""+i, type:t});
+  }
+  HOTEL.push({floor:4,label:"4 поверх",rooms:rooms});
 })();
 
 // 5 floor: 501-521
 (function(){
-var rooms = [];
-var i;
-for(i = 501; i <= 521; i++){
-var t = "standard";
-if(i === 508 || i === 509) t = "improved";
-else if(i === 520) t = "semilux";
-rooms.push({id:"r"+i, name:""+i, type:t});
-}
-HOTEL.push({floor:5,label:"5 поверх",rooms:rooms});
+  var rooms = [];
+  var i;
+  for(i = 501; i <= 521; i++){
+    var t = "standard";
+    if(i === 508 || i === 509) t = "improved";
+    else if(i === 520) t = "semilux";
+    rooms.push({id:"r"+i, name:""+i, type:t});
+  }
+  HOTEL.push({floor:5,label:"5 поверх",rooms:rooms});
 })();
 
 // 6 floor: 601-620 no 602
 (function(){
-var rooms = [];
-var i;
-var biz6 = {611:1,613:1,615:1,617:1,619:1};
-for(i = 601; i <= 620; i++){
-if(i === 602) continue;
-var t = "standard";
-if(i === 608 || i === 609) t = "improved";
-else if(biz6[i]) t = "business";
-else if(i === 620) t = "lux";
-rooms.push({id:"r"+i, name:""+i, type:t});
-}
-HOTEL.push({floor:6,label:"6 поверх",rooms:rooms});
+  var rooms = [];
+  var i;
+  var biz6 = {611:1,613:1,615:1,617:1,619:1};
+  for(i = 601; i <= 620; i++){
+    if(i === 602) continue;
+    var t = "standard";
+    if(i === 608 || i === 609) t = "improved";
+    else if(biz6[i]) t = "business";
+    else if(i === 620) t = "lux";
+    rooms.push({id:"r"+i, name:""+i, type:t});
+  }
+  HOTEL.push({floor:6,label:"6 поверх",rooms:rooms});
 })();
 
 // =============================================
@@ -518,31 +518,31 @@ var probFilter = "open";
 // AUTH
 // =============================================
 fbAuth.onAuthStateChanged(function(user){
-if(user){
-currentUser = user;
-isAdmin = (user.email === ADMIN_EMAIL);
-document.getElementById("authScreen").style.display = "none";
-document.getElementById("appScreen").style.display = "block";
-document.getElementById("userEmailEl").textContent = user.email;
-initListeners();
-} else {
-currentUser = null; isAdmin = false;
-document.getElementById("authScreen").style.display = "flex";
-document.getElementById("appScreen").style.display = "none";
-}
+  if(user){
+    currentUser = user;
+    isAdmin = (user.email === ADMIN_EMAIL);
+    document.getElementById("authScreen").style.display = "none";
+    document.getElementById("appScreen").style.display = "block";
+    document.getElementById("userEmailEl").textContent = user.email;
+    initListeners();
+  } else {
+    currentUser = null; isAdmin = false;
+    document.getElementById("authScreen").style.display = "flex";
+    document.getElementById("appScreen").style.display = "none";
+  }
 });
 
 function doLogin(){
-var email = document.getElementById("authEmail").value.trim();
-var pass = document.getElementById("authPass").value;
-document.getElementById("authErr").textContent = "";
-fbAuth.signInWithEmailAndPassword(email, pass).catch(function(e){
-var m = "Помилка входу";
-if(e.code === "auth/user-not-found" || e.code === "auth/wrong-password") m = "Невірний email або пароль";
-if(e.code === "auth/invalid-email") m = "Невірний формат email";
-if(e.code === "auth/too-many-requests") m = "Забагато спроб. Спробуйте пізніше";
-document.getElementById("authErr").textContent = m;
-});
+  var email = document.getElementById("authEmail").value.trim();
+  var pass = document.getElementById("authPass").value;
+  document.getElementById("authErr").textContent = "";
+  fbAuth.signInWithEmailAndPassword(email, pass).catch(function(e){
+    var m = "Помилка входу";
+    if(e.code === "auth/user-not-found" || e.code === "auth/wrong-password") m = "Невірний email або пароль";
+    if(e.code === "auth/invalid-email") m = "Невірний формат email";
+    if(e.code === "auth/too-many-requests") m = "Забагато спроб. Спробуйте пізніше";
+    document.getElementById("authErr").textContent = m;
+  });
 }
 function doLogout(){ fbAuth.signOut(); }
 
@@ -553,28 +553,31 @@ document.getElementById("authPass").addEventListener("keydown", function(e){ if(
 // FIREBASE LISTENERS
 // =============================================
 function initListeners(){
-fbDb.ref("/rooms").on("value", function(snap){
-roomsData = snap.val() || {};
-renderAll();
-});
-fbDb.ref("/cons").on("value", function(snap){
-consData = snap.val() || {};
-renderSidebarContractors();
-if(document.getElementById("consView").style.display !== "none") renderConsList();
-if(document.getElementById("byConView").classList.contains("open")) renderByConList();
-});
+  fbDb.ref("/rooms").on("value", function(snap){
+    roomsData = snap.val() || {};
+    renderAll();
+    if(modalRoomId && modalDraft){
+      // refresh modal if open but don't overwrite draft
+    }
+  });
+  fbDb.ref("/cons").on("value", function(snap){
+    consData = snap.val() || {};
+    renderSidebarContractors();
+    if(document.getElementById("consView").style.display !== "none") renderConsList();
+    if(document.getElementById("byConView").classList.contains("open")) renderByConList();
+  });
 }
 
 function getRoom(id){ return roomsData[id] || null; }
 
 function getOrCreateRoom(id){
-if(roomsData[id]) return JSON.parse(JSON.stringify(roomsData[id]));
-var r = {works:[],notes:"",changelog:[],problems:[]};
-var i;
-for(i = 0; i < DEFAULT_WORKS.length; i++){
-r.works.push({name:DEFAULT_WORKS[i],status:"notstarted",contractor:""});
-}
-return r;
+  if(roomsData[id]) return JSON.parse(JSON.stringify(roomsData[id]));
+  var r = {works:[],notes:"",changelog:[],problems:[]};
+  var i;
+  for(i = 0; i < DEFAULT_WORKS.length; i++){
+    r.works.push({name:DEFAULT_WORKS[i],status:"notstarted",contractor:""});
+  }
+  return r;
 }
 
 function saveRoomFb(id, data){ fbDb.ref("/rooms/"+id).set(data); }
@@ -583,401 +586,423 @@ function saveRoomFb(id, data){ fbDb.ref("/rooms/"+id).set(data); }
 // STATUS / PROGRESS
 // =============================================
 function calcStatus(rd){
-if(!rd || !rd.works || rd.works.length === 0) return "notstarted";
-var hasProb = false, hasProg = false, allDone = true;
-var i;
-for(i = 0; i < rd.works.length; i++){
-var s = rd.works[i].status || "notstarted";
-if(s === "problem") hasProb = true;
-if(s === "inprogress") hasProg = true;
-if(s !== "done") allDone = false;
-}
-if(hasProb) return "problem";
-if(allDone) return "done";
-if(hasProg) return "inprogress";
-return "notstarted";
+  if(!rd || !rd.works || rd.works.length === 0) return "notstarted";
+  var hasProb = false, hasProg = false, allDone = true;
+  var i;
+  for(i = 0; i < rd.works.length; i++){
+    var s = rd.works[i].status || "notstarted";
+    if(s === "problem") hasProb = true;
+    if(s === "inprogress") hasProg = true;
+    if(s !== "done") allDone = false;
+  }
+  if(hasProb) return "problem";
+  if(allDone) return "done";
+  if(hasProg) return "inprogress";
+  return "notstarted";
 }
 
 function calcProgress(rd){
-if(!rd || !rd.works || rd.works.length === 0) return 0;
-var done = 0;
-var i;
-for(i = 0; i < rd.works.length; i++){
-if((rd.works[i].status||"notstarted") === "done") done++;
-}
-return Math.round(done / rd.works.length * 100);
+  if(!rd || !rd.works || rd.works.length === 0) return 0;
+  var done = 0;
+  var i;
+  for(i = 0; i < rd.works.length; i++){
+    if((rd.works[i].status||"notstarted") === "done") done++;
+  }
+  return Math.round(done / rd.works.length * 100);
 }
 
 function stLabel(st){
-if(st==="notstarted") return "Не розпочато";
-if(st==="inprogress") return "В роботі";
-if(st==="done") return "Виконано";
-if(st==="problem") return "Проблема";
-return st;
+  if(st==="notstarted") return "Не розпочато";
+  if(st==="inprogress") return "В роботі";
+  if(st==="done") return "Виконано";
+  if(st==="problem") return "Проблема";
+  return st;
 }
 
 // =============================================
 // RENDER ALL
 // =============================================
 function renderAll(){
-renderStats();
-renderFloors();
-renderSidebarFloors();
-renderSidebarContractors();
+  renderStats();
+  renderFloors();
+  renderSidebarFloors();
+  renderSidebarContractors();
 }
 
 function renderStats(){
-var total=0,done=0,ip=0,prob=0;
-var fi, ri;
-for(fi=0;fi<HOTEL.length;fi++){
-for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-var st = calcStatus(getRoom(HOTEL[fi].rooms[ri].id));
-total++;
-if(st==="done") done++;
-else if(st==="inprogress") ip++;
-else if(st==="problem") prob++;
-}
-}
-var pct = total ? Math.round(done/total*100) : 0;
-var h = "";
-h += "<div class='stat-card'><div class='num'>"+total+"</div><div class='lbl'>Всього</div></div>";
-h += "<div class='stat-card'><div class='num green'>"+done+"</div><div class='lbl'>Готово</div></div>";
-h += "<div class='stat-card'><div class='num blue'>"+ip+"</div><div class='lbl'>В роботі</div></div>";
-h += "<div class='stat-card'><div class='num red'>"+prob+"</div><div class='lbl'>Проблеми</div></div>";
-h += "<div class='stat-card'><div class='num acc'>"+pct+"%</div><div class='lbl'>Прогрес</div><div class='prog-bar'><div class='prog-fill' style='width:"+pct+"%'></div></div></div>";
-document.getElementById("statsBar").innerHTML = h;
+  var total=0,done=0,ip=0,prob=0;
+  var fi, ri;
+  for(fi=0;fi<HOTEL.length;fi++){
+    for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+      var st = calcStatus(getRoom(HOTEL[fi].rooms[ri].id));
+      total++;
+      if(st==="done") done++;
+      else if(st==="inprogress") ip++;
+      else if(st==="problem") prob++;
+    }
+  }
+  var pct = total ? Math.round(done/total*100) : 0;
+  var h = "";
+  h += "<div class='stat-card'><div class='num'>"+total+"</div><div class='lbl'>Всього</div></div>";
+  h += "<div class='stat-card'><div class='num green'>"+done+"</div><div class='lbl'>Готово</div></div>";
+  h += "<div class='stat-card'><div class='num blue'>"+ip+"</div><div class='lbl'>В роботі</div></div>";
+  h += "<div class='stat-card'><div class='num red'>"+prob+"</div><div class='lbl'>Проблеми</div></div>";
+  h += "<div class='stat-card'><div class='num acc'>"+pct+"%</div><div class='lbl'>Прогрес</div><div class='prog-bar'><div class='prog-fill' style='width:"+pct+"%'></div></div></div>";
+  document.getElementById("statsBar").innerHTML = h;
 }
 
 function renderSidebarFloors(){
-var h = "";
-var i;
-for(i=0;i<HOTEL.length;i++){
-var f = HOTEL[i];
-var chk = filters.floor[f.floor] ? "checked" : "";
-h += "<div class='sb-item' onclick='toggleFilter(\"floor\",\""+f.floor+"\",this)'><input type='checkbox' "+chk+"> "+f.label+"</div>";
-}
-document.getElementById("sbFloors").innerHTML = h;
+  var h = "";
+  var i;
+  for(i=0;i<HOTEL.length;i++){
+    var f = HOTEL[i];
+    var chk = filters.floor[f.floor] ? "checked" : "";
+    h += "<div class='sb-item' onclick='toggleFilter(\"floor\",\""+f.floor+"\",this)'><input type='checkbox' "+chk+"> "+f.label+"</div>";
+  }
+  document.getElementById("sbFloors").innerHTML = h;
 }
 
 function renderSidebarContractors(){
-var keys = Object.keys(consData);
-var h = "";
-var i;
-for(i=0;i<keys.length;i++){
-var cid = keys[i];
-var con = consData[cid];
-var chk = filters.contractor[cid] ? "checked" : "";
-h += "<div class='sb-item' onclick='toggleFilter(\"contractor\",\""+cid+"\",this)'><input type='checkbox' "+chk+"> "+(con.name||con.email)+"</div>";
-}
-if(!h) h = "<div style='font-size:11px;color:var(--mut);padding:4px 6px'>Немає підрядників</div>";
-document.getElementById("sbContractors").innerHTML = h;
+  var keys = Object.keys(consData);
+  var h = "";
+  var i;
+  for(i=0;i<keys.length;i++){
+    var cid = keys[i];
+    var con = consData[cid];
+    var chk = filters.contractor[cid] ? "checked" : "";
+    h += "<div class='sb-item' onclick='toggleFilter(\"contractor\",\""+cid+"\",this)'><input type='checkbox' "+chk+"> "+(con.name||con.email)+"</div>";
+  }
+  if(!h) h = "<div style='font-size:11px;color:var(--mut);padding:4px 6px'>Немає підрядників</div>";
+  document.getElementById("sbContractors").innerHTML = h;
 }
 
 function passesFilter(roomDef){
-var rd = getRoom(roomDef.id);
-var st = calcStatus(rd);
-var fkeys = Object.keys(filters.floor);
-if(fkeys.length > 0){
-var ok = false;
-var fi, ri;
-for(fi=0;fi<HOTEL.length;fi++){
-if(!filters.floor[HOTEL[fi].floor]) continue;
-for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-if(HOTEL[fi].rooms[ri].id===roomDef.id){ok=true;break;}
-}
-if(ok) break;
-}
-if(!ok) return false;
-}
-if(Object.keys(filters.status).length>0 && !filters.status[st]) return false;
-if(Object.keys(filters.type).length>0 && !filters.type[roomDef.type]) return false;
-var ckeys = Object.keys(filters.contractor);
-if(ckeys.length>0){
-var hasCon = false;
-if(rd && rd.works){
-var w;
-for(w=0;w<rd.works.length;w++){
-if(rd.works[w].contractor && filters.contractor[rd.works[w].contractor]){hasCon=true;break;}
-}
-}
-if(!hasCon) return false;
-}
-if(searchQ){
-var q = searchQ.toLowerCase();
-if(roomDef.name.toLowerCase().indexOf(q)===-1) return false;
-}
-return true;
+  var rd = getRoom(roomDef.id);
+  var st = calcStatus(rd);
+  // floor
+  var fkeys = Object.keys(filters.floor);
+  if(fkeys.length > 0){
+    var ok = false;
+    var fi, ri;
+    for(fi=0;fi<HOTEL.length;fi++){
+      if(!filters.floor[HOTEL[fi].floor]) continue;
+      for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+        if(HOTEL[fi].rooms[ri].id===roomDef.id){ok=true;break;}
+      }
+      if(ok) break;
+    }
+    if(!ok) return false;
+  }
+  // status
+  if(Object.keys(filters.status).length>0 && !filters.status[st]) return false;
+  // type
+  if(Object.keys(filters.type).length>0 && !filters.type[roomDef.type]) return false;
+  // contractor
+  var ckeys = Object.keys(filters.contractor);
+  if(ckeys.length>0){
+    var hasCon = false;
+    if(rd && rd.works){
+      var w;
+      for(w=0;w<rd.works.length;w++){
+        if(rd.works[w].contractor && filters.contractor[rd.works[w].contractor]){hasCon=true;break;}
+      }
+    }
+    if(!hasCon) return false;
+  }
+  // search
+  if(searchQ){
+    var q = searchQ.toLowerCase();
+    if(roomDef.name.toLowerCase().indexOf(q)===-1) return false;
+  }
+  return true;
 }
 
 function makeRoomCell(roomDef, clickExtra){
-var rd = getRoom(roomDef.id);
-var st = calcStatus(rd);
-var prog = calcProgress(rd);
-var bg = TYPE_COLORS[roomDef.type] || "#1e293b";
-var stCls = "status-"+st;
-var progCol = st==="problem"?"#dc2626":(st==="done"?"#16a34a":"#e8b84b");
-var conNames = "";
-if(rd && rd.works){
-var seen = {};
-var w;
-for(w=0;w<rd.works.length;w++){
-var cid = rd.works[w].contractor;
-if(cid && !seen[cid] && consData[cid]){
-seen[cid]=true;
-if(conNames) conNames+=",";
-conNames += (consData[cid].name||consData[cid].email||"").split(" ")[0];
-}
-}
-}
-var extra = clickExtra || "";
-var h = "<div class='room-cell "+stCls+"' style='background:"+bg+"' onclick='openRoom(\""+roomDef.id+"\")"+(extra?";"+extra:"")+"'>";
-h += "<div><div class='room-num'>"+roomDef.name+"</div>";
-h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
-h += "<div class='room-bottom'>";
-if(conNames) h += "<div class='room-contractor'>"+conNames+"</div>";
-h += "<div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div>";
-h += "</div></div>";
-return h;
+  var rd = getRoom(roomDef.id);
+  var st = calcStatus(rd);
+  var prog = calcProgress(rd);
+  var bg = TYPE_COLORS[roomDef.type] || "#1e293b";
+  var stCls = "status-"+st;
+  var progCol = st==="problem"?"#dc2626":(st==="done"?"#16a34a":"#e8b84b");
+  var conNames = "";
+  if(rd && rd.works){
+    var seen = {};
+    var w;
+    for(w=0;w<rd.works.length;w++){
+      var cid = rd.works[w].contractor;
+      if(cid && !seen[cid] && consData[cid]){
+        seen[cid]=true;
+        if(conNames) conNames+=",";
+        conNames += (consData[cid].name||consData[cid].email||"").split(" ")[0];
+      }
+    }
+  }
+  var extra = clickExtra || "";
+  var h = "<div class='room-cell "+stCls+"' style='background:"+bg+"' onclick='openRoom(\""+roomDef.id+"\")" + (extra?";"+extra:"") + "'>";
+  h += "<div><div class='room-num'>"+roomDef.name+"</div>";
+  h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
+  h += "<div class='room-bottom'>";
+  if(conNames) h += "<div class='room-contractor'>"+conNames+"</div>";
+  h += "<div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div>";
+  h += "</div></div>";
+  return h;
 }
 
 function renderFloors(){
-var h = "";
-var fi, ri;
-for(fi=0;fi<HOTEL.length;fi++){
-var flr = HOTEL[fi];
-var total=0,done=0;
-var cellsH = "";
-for(ri=0;ri<flr.rooms.length;ri++){
-var roomDef = flr.rooms[ri];
-total++;
-var st = calcStatus(getRoom(roomDef.id));
-if(st==="done") done++;
-if(passesFilter(roomDef)) cellsH += makeRoomCell(roomDef,"");
-}
-var pct = total ? Math.round(done/total*100) : 0;
-h += "<div class='floor-section'>";
-h += "<div class='floor-header'>";
-h += "<h2>"+flr.label+"</h2>";
-h += "<span class='floor-stat'>"+done+"/"+total+" ("+pct+"%)</span>";
-h += "<button class='btn btn-sm' style='margin-left:auto' onclick='openFloorPlan("+fi+")'>Плян</button>";
-h += "</div>";
-h += cellsH ? "<div class='floor-grid'>"+cellsH+"</div>" : "<div style='color:var(--mut);font-size:12px;padding:6px 0'>Нічого за фільтром</div>";
-h += "</div>";
-}
-document.getElementById("floorsContainer").innerHTML = h;
+  var h = "";
+  var fi, ri;
+  for(fi=0;fi<HOTEL.length;fi++){
+    var flr = HOTEL[fi];
+    var total=0,done=0;
+    var cellsH = "";
+    for(ri=0;ri<flr.rooms.length;ri++){
+      var roomDef = flr.rooms[ri];
+      total++;
+      var st = calcStatus(getRoom(roomDef.id));
+      if(st==="done") done++;
+      if(passesFilter(roomDef)) cellsH += makeRoomCell(roomDef,"");
+    }
+    var pct = total ? Math.round(done/total*100) : 0;
+    h += "<div class='floor-section'>";
+    h += "<div class='floor-header'>";
+    h += "<h2>"+flr.label+"</h2>";
+    h += "<span class='floor-stat'>"+done+"/"+total+" ("+pct+"%)</span>";
+    h += "<button class='btn btn-sm' style='margin-left:auto' onclick='openFloorPlan("+fi+")'>Плян</button>";
+    h += "</div>";
+    h += cellsH ? "<div class='floor-grid'>"+cellsH+"</div>" : "<div style='color:var(--mut);font-size:12px;padding:6px 0'>Нічого за фільтром</div>";
+    h += "</div>";
+  }
+  document.getElementById("floorsContainer").innerHTML = h;
 }
 
 // =============================================
 // FILTERS
 // =============================================
 function toggleFilter(cat, key, el){
-var cb = el.querySelector("input[type=checkbox]");
-if(filters[cat][key]){ delete filters[cat][key]; if(cb) cb.checked=false; }
-else { filters[cat][key]=true; if(cb) cb.checked=true; }
-renderFloors();
+  var cb = el.querySelector("input[type=checkbox]");
+  if(filters[cat][key]){ delete filters[cat][key]; if(cb) cb.checked=false; }
+  else { filters[cat][key]=true; if(cb) cb.checked=true; }
+  renderFloors();
 }
 function onSearch(){ searchQ = document.getElementById("searchBox").value.trim(); renderFloors(); }
+
+function goHome(){
+  document.getElementById("consView").style.display="none";
+  document.getElementById("floorsContainer").style.display="block";
+  document.getElementById("statsBar").style.display="flex";
+  document.getElementById("byConView").classList.remove("open");
+  document.getElementById("reportPanel").classList.remove("open");
+  document.getElementById("floorPlanPanel").classList.remove("open");
+}
 
 // =============================================
 // ROOM MODAL
 // =============================================
 function openRoom(id){
-modalRoomId = id;
-modalDraft = getOrCreateRoom(id);
-renderModal();
-document.getElementById("roomOverlay").classList.add("open");
+  modalRoomId = id;
+  modalDraft = getOrCreateRoom(id);
+  renderModal();
+  document.getElementById("roomOverlay").classList.add("open");
 }
 function closeRoomModal(){
-document.getElementById("roomOverlay").classList.remove("open");
-modalRoomId = null; modalDraft = null;
+  document.getElementById("roomOverlay").classList.remove("open");
+  modalRoomId = null; modalDraft = null;
 }
 function overlayClickHandler(e){
-if(e.target===document.getElementById("roomOverlay")) closeRoomModal();
+  if(e.target===document.getElementById("roomOverlay")) closeRoomModal();
 }
 
 function findRoomDef(id){
-var fi, ri;
-for(fi=0;fi<HOTEL.length;fi++){
-for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-if(HOTEL[fi].rooms[ri].id===id) return {floor:HOTEL[fi],room:HOTEL[fi].rooms[ri]};
-}
-}
-return null;
+  var fi, ri;
+  for(fi=0;fi<HOTEL.length;fi++){
+    for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+      if(HOTEL[fi].rooms[ri].id===id) return {floor:HOTEL[fi],room:HOTEL[fi].rooms[ri]};
+    }
+  }
+  return null;
 }
 
 function renderModal(){
-var id = modalRoomId;
-var def = findRoomDef(id);
-if(!def) return;
-var rd = modalDraft;
-var prog = calcProgress(rd);
-var bg = TYPE_COLORS[def.room.type]||"#1e293b";
+  var id = modalRoomId;
+  var def = findRoomDef(id);
+  if(!def) return;
+  var rd = modalDraft;
+  var prog = calcProgress(rd);
+  var st = calcStatus(rd);
+  var bg = TYPE_COLORS[def.room.type]||"#1e293b";
 
-document.getElementById("modalTitle").textContent = "Кімната " + def.room.name;
+  document.getElementById("modalTitle").textContent = "Кімната " + def.room.name;
 
-var metaH = "<span class='meta-chip'>"+def.floor.label+"</span>";
-metaH += "<span class='meta-chip' style='background:"+bg+";border-color:"+bg+";color:#fff'>"+TYPE_LABELS[def.room.type]+"</span>";
-metaH += "<span class='meta-chip'>"+prog+"%</span>";
-document.getElementById("modalMeta").innerHTML = metaH;
+  var metaH = "<span class='meta-chip'>"+def.floor.label+"</span>";
+  metaH += "<span class='meta-chip' style='background:"+bg+";border-color:"+bg+";color:#fff'>"+TYPE_LABELS[def.room.type]+"</span>";
+  metaH += "<span class='meta-chip'>"+prog+"%</span>";
+  document.getElementById("modalMeta").innerHTML = metaH;
 
-var h = "";
+  var h = "";
 
-h += "<div class='section-label'>Роботи</div>";
-if(!rd.works || rd.works.length===0){
-h += "<div style='color:var(--mut);font-size:13px;margin-bottom:10px'>Немає робіт</div>";
-} else {
-h += "<div class='works-list'>";
-var wi;
-for(wi=0;wi<rd.works.length;wi++){
-var wk = rd.works[wi];
-var wst = wk.status||"notstarted";
-var rowCls = "work-row";
-if(wst==="done") rowCls+=" work-done";
-if(wst==="problem") rowCls+=" work-problem";
-h += "<div class='"+rowCls+"'>";
-h += "<div class='work-name'>"+wk.name+"</div>";
-h += "<div class='work-status-btns'>";
-h += "<button class='wsb"+(wst==="inprogress"?" active-inprogress":"")+"' onclick='setWkSt("+wi+",\"inprogress\")'>В роботі</button>";
-h += "<button class='wsb"+(wst==="done"?" active-done":"")+"' onclick='setWkSt("+wi+",\"done\")'>Виконано</button>";
-h += "<button class='wsb"+(wst==="problem"?" active-problem":"")+"' onclick='setWkSt("+wi+",\"problem\")'>Проблема</button>";
-h += "</div>";
-h += "<select class='work-contractor-sel' onchange='setWkCon("+wi+",this.value)'>";
-h += "<option value=''>— Підрядник —</option>";
-var ckeys = Object.keys(consData);
-var ci;
-for(ci=0;ci<ckeys.length;ci++){
-var cid = ckeys[ci];
-var con = consData[cid];
-var sel = (wk.contractor===cid) ? " selected" : "";
-h += "<option value='"+cid+"'"+sel+">"+(con.name||con.email)+"</option>";
-}
-h += "</select>";
-h += "<button class='work-del-btn' onclick='delWork("+wi+")'>x</button>";
-h += "</div>";
-}
-h += "</div>";
-}
+  // WORKS
+  h += "<div class='section-label'>Роботи</div>";
+  if(!rd.works || rd.works.length===0){
+    h += "<div style='color:var(--mut);font-size:13px;margin-bottom:10px'>Немає робіт</div>";
+  } else {
+    h += "<div class='works-list'>";
+    var wi;
+    for(wi=0;wi<rd.works.length;wi++){
+      var wk = rd.works[wi];
+      var wst = wk.status||"notstarted";
+      var rowCls = "work-row";
+      if(wst==="done") rowCls+=" work-done";
+      if(wst==="problem") rowCls+=" work-problem";
+      h += "<div class='"+rowCls+"'>";
+      h += "<div class='work-name'>"+wk.name+"</div>";
+      h += "<div class='work-status-btns'>";
+      h += "<button class='wsb"+(wst==="inprogress"?" active-inprogress":"")+"' onclick='setWkSt("+wi+",\"inprogress\")'>В роботі</button>";
+      h += "<button class='wsb"+(wst==="done"?" active-done":"")+"' onclick='setWkSt("+wi+",\"done\")'>Виконано</button>";
+      h += "<button class='wsb"+(wst==="problem"?" active-problem":"")+"' onclick='setWkSt("+wi+",\"problem\")'>Проблема</button>";
+      h += "</div>";
+      // contractor
+      h += "<select class='work-contractor-sel' onchange='setWkCon("+wi+",this.value)'>";
+      h += "<option value=''>— Підрядник —</option>";
+      var ckeys = Object.keys(consData);
+      var ci;
+      for(ci=0;ci<ckeys.length;ci++){
+        var cid = ckeys[ci];
+        var con = consData[cid];
+        var sel = (wk.contractor===cid) ? " selected" : "";
+        h += "<option value='"+cid+"'"+sel+">"+(con.name||con.email)+"</option>";
+      }
+      h += "</select>";
+      h += "<button class='work-del-btn' onclick='delWork("+wi+")'>×</button>";
+      h += "</div>";
+    }
+    h += "</div>";
+  }
 
-h += "<div class='add-work-row'>";
-h += "<input class='add-work-input' id='awInput' placeholder='Нова робота...' oninput='showAC(this)' onkeydown='awKey(event)'>";
-h += "<button class='btn btn-sm btn-acc' onclick='doAddWork()'>+ Додати</button>";
-h += "<div class='autocomplete-list' id='acList' style='display:none'></div>";
-h += "</div>";
+  // ADD WORK
+  h += "<div class='add-work-row'>";
+  h += "<input class='add-work-input' id='awInput' placeholder='Нова робота...' oninput='showAC(this)' onkeydown='awKey(event)'>";
+  h += "<button class='btn btn-sm btn-acc' onclick='doAddWork()'>+ Додати</button>";
+  h += "<div class='autocomplete-list' id='acList' style='display:none'></div>";
+  h += "</div>";
 
-var hasProbs = rd.problems && rd.problems.length>0;
-h += "<div class='section-label'>Журнал проблем</div>";
-if(hasProbs){
-var pi;
-for(pi=0;pi<rd.problems.length;pi++){
-var prob = rd.problems[pi];
-var pst = prob.status||"open";
-h += "<div class='problem-row"+(pst==="open"?" open-p":"")+"'>";
-h += "<div class='problem-meta'><span class='problem-date'>"+(prob.date||"")+"</span>";
-h += "<span class='problem-status "+(pst==="open"?"ps-open":"ps-closed")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</span>";
-if(pst==="open") h += "<button class='btn btn-sm' onclick='closeProb("+pi+")'>Закрити</button>";
-h += "</div><div class='problem-text'>"+prob.text+"</div></div>";
-}
-}
-h += "<div class='add-problem-row'>";
-h += "<textarea class='add-problem-input' id='probText' placeholder='Опис проблеми...' rows='2'></textarea>";
-h += "<button class='btn btn-sm btn-danger' onclick='addProb()'>+ Проблема</button>";
-h += "</div>";
+  // PROBLEMS
+  var hasProbs = rd.problems && rd.problems.length>0;
+  h += "<div class='section-label'>Журнал проблем</div>";
+  if(hasProbs){
+    var pi;
+    for(pi=0;pi<rd.problems.length;pi++){
+      var prob = rd.problems[pi];
+      var pst = prob.status||"open";
+      h += "<div class='problem-row"+(pst==="open"?" open-p":"")+"'>";
+      h += "<div class='problem-meta'><span class='problem-date'>"+(prob.date||"")+"</span>";
+      h += "<span class='problem-status "+(pst==="open"?"ps-open":"ps-closed")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</span>";
+      if(pst==="open") h += "<button class='btn btn-sm' onclick='closeProb("+pi+")'>Закрити</button>";
+      h += "</div><div class='problem-text'>"+prob.text+"</div></div>";
+    }
+  }
+  h += "<div class='add-problem-row'>";
+  h += "<textarea class='add-problem-input' id='probText' placeholder='Опис проблеми...' rows='2'></textarea>";
+  h += "<button class='btn btn-sm btn-danger' onclick='addProb()'>+ Проблема</button>";
+  h += "</div>";
 
-h += "<div class='section-label'>Примітки</div>";
-h += "<textarea class='notes-textarea' id='roomNotes'>"+esc(rd.notes||"")+"</textarea>";
+  // NOTES
+  h += "<div class='section-label'>Примітки</div>";
+  h += "<textarea class='notes-textarea' id='roomNotes'>"+esc(rd.notes||"")+"</textarea>";
 
-if(rd.changelog && rd.changelog.length>0){
-h += "<div class='section-label'>Журнал змін</div><div class='changelog-list'>";
-var cl = rd.changelog.slice().reverse();
-var ci2;
-for(ci2=0;ci2<cl.length;ci2++){
-h += "<div class='changelog-item'><span class='cl-date'>"+(cl[ci2].date||"")+"</span><span>"+esc(cl[ci2].text||"")+"</span></div>";
-}
-h += "</div>";
-}
+  // CHANGELOG
+  if(rd.changelog && rd.changelog.length>0){
+    h += "<div class='section-label'>Журнал змін</div><div class='changelog-list'>";
+    var cl = rd.changelog.slice().reverse();
+    var ci;
+    for(ci=0;ci<cl.length;ci++){
+      h += "<div class='changelog-item'><span class='cl-date'>"+(cl[ci].date||"")+"</span><span>"+esc(cl[ci].text||"")+"</span></div>";
+    }
+    h += "</div>";
+  }
 
-document.getElementById("modalBody").innerHTML = h;
+  document.getElementById("modalBody").innerHTML = h;
 }
 
 function setWkSt(wi, newSt){
-if(!modalDraft||!modalDraft.works) return;
-var old = modalDraft.works[wi].status||"notstarted";
-modalDraft.works[wi].status = (old===newSt) ? "notstarted" : newSt;
-addCL("Робота \""+modalDraft.works[wi].name+"\": "+stLabel(old)+" > "+stLabel(modalDraft.works[wi].status));
-renderModal();
+  if(!modalDraft||!modalDraft.works) return;
+  var old = modalDraft.works[wi].status||"notstarted";
+  modalDraft.works[wi].status = (old===newSt) ? "notstarted" : newSt;
+  addCL("Робота \""+modalDraft.works[wi].name+"\": "+stLabel(old)+" > "+stLabel(modalDraft.works[wi].status));
+  renderModal();
 }
 function setWkCon(wi, cid){ if(modalDraft&&modalDraft.works) modalDraft.works[wi].contractor=cid; }
 function delWork(wi){
-if(!modalDraft||!modalDraft.works) return;
-var name = modalDraft.works[wi].name;
-modalDraft.works.splice(wi,1);
-addCL("Видалено роботу \""+name+"\"");
-renderModal();
+  if(!modalDraft||!modalDraft.works) return;
+  var name = modalDraft.works[wi].name;
+  modalDraft.works.splice(wi,1);
+  addCL("Видалено роботу \""+name+"\"");
+  renderModal();
 }
 function doAddWork(){
-var inp = document.getElementById("awInput");
-if(!inp) return;
-var name = inp.value.trim();
-if(!name) return;
-if(!modalDraft.works) modalDraft.works=[];
-modalDraft.works.push({name:name,status:"notstarted",contractor:""});
-addCL("Додано роботу \""+name+"\"");
-inp.value=""; hideAC(); renderModal();
+  var inp = document.getElementById("awInput");
+  if(!inp) return;
+  var name = inp.value.trim();
+  if(!name) return;
+  if(!modalDraft.works) modalDraft.works=[];
+  modalDraft.works.push({name:name,status:"notstarted",contractor:""});
+  addCL("Додано роботу \""+name+"\"");
+  inp.value=""; hideAC(); renderModal();
 }
 function awKey(e){ if(e.key==="Enter") doAddWork(); }
 function closeProb(pi){
-if(!modalDraft.problems) return;
-modalDraft.problems[pi].status="closed";
-addCL("Проблему закрито");
-renderModal();
+  if(!modalDraft.problems) return;
+  modalDraft.problems[pi].status="closed";
+  addCL("Проблему закрито");
+  renderModal();
 }
 function addProb(){
-var ta = document.getElementById("probText");
-if(!ta) return;
-var txt = ta.value.trim();
-if(!txt) return;
-if(!modalDraft.problems) modalDraft.problems=[];
-modalDraft.problems.push({text:txt,date:nowStr(),status:"open"});
-addCL("Додано проблему");
-ta.value=""; renderModal();
+  var ta = document.getElementById("probText");
+  if(!ta) return;
+  var txt = ta.value.trim();
+  if(!txt) return;
+  if(!modalDraft.problems) modalDraft.problems=[];
+  modalDraft.problems.push({text:txt,date:nowStr(),status:"open"});
+  addCL("Додано проблему");
+  ta.value=""; renderModal();
 }
 function addCL(txt){
-if(!modalDraft.changelog) modalDraft.changelog=[];
-modalDraft.changelog.push({date:nowStr(),text:txt,user:currentUser?currentUser.email:""});
+  if(!modalDraft.changelog) modalDraft.changelog=[];
+  modalDraft.changelog.push({date:nowStr(),text:txt,user:currentUser?currentUser.email:""});
 }
 function saveRoom(){
-if(!modalRoomId||!modalDraft) return;
-var nt = document.getElementById("roomNotes");
-if(nt) modalDraft.notes = nt.value;
-saveRoomFb(modalRoomId, modalDraft);
-showToast("Збережено", "success");
-closeRoomModal();
+  if(!modalRoomId||!modalDraft) return;
+  var nt = document.getElementById("roomNotes");
+  if(nt) modalDraft.notes = nt.value;
+  saveRoomFb(modalRoomId, modalDraft);
+  showToast("Збережено", "success");
+  closeRoomModal();
 }
 
+// AUTOCOMPLETE
 function getAllWorkNames(){
-var names = {};
-var k, i;
-for(k in roomsData){
-var rd = roomsData[k];
-if(rd&&rd.works) for(i=0;i<rd.works.length;i++) names[rd.works[i].name]=true;
-}
-return Object.keys(names).sort();
+  var names = {};
+  var k, i;
+  for(k in roomsData){
+    var rd = roomsData[k];
+    if(rd&&rd.works) for(i=0;i<rd.works.length;i++) names[rd.works[i].name]=true;
+  }
+  return Object.keys(names).sort();
 }
 function showAC(inp){
-var val = inp.value.trim().toLowerCase();
-var list = document.getElementById("acList");
-if(!list||!val){if(list)list.style.display="none";return;}
-var all = getAllWorkNames();
-var matches = [];
-var i;
-for(i=0;i<all.length;i++) if(all[i].toLowerCase().indexOf(val)!==-1) matches.push(all[i]);
-if(!matches.length){list.style.display="none";return;}
-var h="";
-for(i=0;i<Math.min(matches.length,8);i++){
-var m = matches[i];
-h += "<div class='autocomplete-item' onclick='selAC(\""+m.replace(/"/g,"&quot;")+"\")'>" + m + "</div>";
-}
-list.innerHTML=h; list.style.display="block";
+  var val = inp.value.trim().toLowerCase();
+  var list = document.getElementById("acList");
+  if(!list||!val){if(list)list.style.display="none";return;}
+  var all = getAllWorkNames();
+  var matches = [];
+  var i;
+  for(i=0;i<all.length;i++) if(all[i].toLowerCase().indexOf(val)!==-1) matches.push(all[i]);
+  if(!matches.length){list.style.display="none";return;}
+  var h="";
+  for(i=0;i<Math.min(matches.length,8);i++){
+    var m = matches[i];
+    h += "<div class='autocomplete-item' onclick='selAC(\""+m.replace(/"/g,"&quot;")+"\")'>" + m + "</div>";
+  }
+  list.innerHTML=h; list.style.display="block";
 }
 function selAC(n){ var i=document.getElementById("awInput"); if(i) i.value=n; hideAC(); }
 function hideAC(){ var l=document.getElementById("acList"); if(l) l.style.display="none"; }
@@ -986,132 +1011,132 @@ function hideAC(){ var l=document.getElementById("acList"); if(l) l.style.displa
 // CONTRACTORS VIEW
 // =============================================
 function openContractors(){
-document.getElementById("floorsContainer").style.display="none";
-document.getElementById("statsBar").style.display="none";
-document.getElementById("consView").style.display="block";
-renderConsList();
-if(!isAdmin) document.getElementById("consAddPanel").style.display="none";
-else document.getElementById("consAddPanel").style.display="block";
+  document.getElementById("floorsContainer").style.display="none";
+  document.getElementById("statsBar").style.display="none";
+  document.getElementById("consView").style.display="block";
+  renderConsList();
+  if(!isAdmin) document.getElementById("consAddPanel").style.display="none";
+  else document.getElementById("consAddPanel").style.display="block";
 }
 function closeContractors(){
-document.getElementById("consView").style.display="none";
-document.getElementById("floorsContainer").style.display="block";
-document.getElementById("statsBar").style.display="flex";
+  document.getElementById("consView").style.display="none";
+  document.getElementById("floorsContainer").style.display="block";
+  document.getElementById("statsBar").style.display="flex";
 }
 function renderConsList(){
-var keys = Object.keys(consData);
-var h = "";
-var i;
-for(i=0;i<keys.length;i++){
-var cid=keys[i]; var con=consData[cid];
-var cnt=0;
-var rid;
-for(rid in roomsData){
-var rd=roomsData[rid];
-if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){if(rd.works[w].contractor===cid){cnt++;break;}}}
-}
-h+="<div class='con-row'>";
-h+="<div><div class='con-name'>"+(con.name||"--")+"</div><div class='con-email'>"+(con.email||"")+"</div></div>";
-h+="<div class='mono' style='font-size:12px;color:var(--mut);margin-left:auto'>"+cnt+" кімн.</div>";
-if(isAdmin) h+="<button class='btn btn-sm btn-danger' onclick='delCon(\""+cid+"\")'>Видалити</button>";
-h+="</div>";
-}
-if(!h) h="<div style='color:var(--mut);font-size:13px'>Немає підрядників</div>";
-document.getElementById("consListPanel").innerHTML=h;
+  var keys = Object.keys(consData);
+  var h = "";
+  var i;
+  for(i=0;i<keys.length;i++){
+    var cid=keys[i]; var con=consData[cid];
+    var cnt=0;
+    var rid;
+    for(rid in roomsData){
+      var rd=roomsData[rid];
+      if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){if(rd.works[w].contractor===cid){cnt++;break;}}}
+    }
+    h+="<div class='con-row'>";
+    h+="<div><div class='con-name'>"+(con.name||"—")+"</div><div class='con-email'>"+(con.email||"")+"</div></div>";
+    h+="<div class='mono' style='font-size:12px;color:var(--mut);margin-left:auto'>"+cnt+" кімн.</div>";
+    if(isAdmin) h+="<button class='btn btn-sm btn-danger' onclick='delCon(\""+cid+"\")'>Видалити</button>";
+    h+="</div>";
+  }
+  if(!h) h="<div style='color:var(--mut);font-size:13px'>Немає підрядників</div>";
+  document.getElementById("consListPanel").innerHTML=h;
 }
 function addContractor(){
-if(!isAdmin) return;
-var name=document.getElementById("conNameInput").value.trim();
-var email=document.getElementById("conEmailInput").value.trim();
-if(!name){showToast("Введіть назву","err");return;}
-var ref=fbDb.ref("/cons").push();
-ref.set({name:name,email:email});
-document.getElementById("conNameInput").value="";
-document.getElementById("conEmailInput").value="";
-showToast("Підрядника додано","success");
+  if(!isAdmin) return;
+  var name=document.getElementById("conNameInput").value.trim();
+  var email=document.getElementById("conEmailInput").value.trim();
+  if(!name){showToast("Введіть назву","err");return;}
+  var ref=fbDb.ref("/cons").push();
+  ref.set({name:name,email:email});
+  document.getElementById("conNameInput").value="";
+  document.getElementById("conEmailInput").value="";
+  showToast("Підрядника додано","success");
 }
 function delCon(cid){
-if(!isAdmin||!confirm("Видалити підрядника?")) return;
-fbDb.ref("/cons/"+cid).remove();
-showToast("Видалено","success");
+  if(!isAdmin||!confirm("Видалити підрядника?")) return;
+  fbDb.ref("/cons/"+cid).remove();
+  showToast("Видалено","success");
 }
 function createFirebaseUser(){
-if(!isAdmin) return;
-var email=document.getElementById("fbUserEmail").value.trim();
-var pass=document.getElementById("fbUserPass").value;
-var errEl=document.getElementById("fbUserErr");
-errEl.textContent="";
-if(!email||!pass){errEl.textContent="Заповніть email і пароль";return;}
-var secApp;
-try{ secApp=firebase.app("secondary"); }
-catch(e){ secApp=firebase.initializeApp(FB_CONFIG,"secondary"); }
-secApp.auth().createUserWithEmailAndPassword(email,pass).then(function(){
-secApp.auth().signOut();
-document.getElementById("fbUserEmail").value="";
-document.getElementById("fbUserPass").value="";
-showToast("Користувача створено","success");
-}).catch(function(e){ errEl.textContent=e.message; });
+  if(!isAdmin) return;
+  var email=document.getElementById("fbUserEmail").value.trim();
+  var pass=document.getElementById("fbUserPass").value;
+  var errEl=document.getElementById("fbUserErr");
+  errEl.textContent="";
+  if(!email||!pass){errEl.textContent="Заповніть email і пароль";return;}
+  var secApp;
+  try{ secApp=firebase.app("secondary"); }
+  catch(e){ secApp=firebase.initializeApp(FB_CONFIG,"secondary"); }
+  secApp.auth().createUserWithEmailAndPassword(email,pass).then(function(){
+    secApp.auth().signOut();
+    document.getElementById("fbUserEmail").value="";
+    document.getElementById("fbUserPass").value="";
+    showToast("Користувача створено","success");
+  }).catch(function(e){ errEl.textContent=e.message; });
 }
 
 // =============================================
 // BY CONTRACTOR VIEW
 // =============================================
 function openByContractor(){
-document.getElementById("byConView").classList.add("open");
-activeByConId=null;
-renderByConList();
-document.getElementById("byConRooms").innerHTML="<div style='color:var(--mut)'>Оберіть підрядника</div>";
+  document.getElementById("byConView").classList.add("open");
+  activeByConId=null;
+  renderByConList();
+  document.getElementById("byConRooms").innerHTML="<div style='color:var(--mut)'>Оберіть підрядника</div>";
 }
 function closeByContractor(){ document.getElementById("byConView").classList.remove("open"); }
 function renderByConList(){
-var keys=Object.keys(consData);
-var h="";
-var i;
-for(i=0;i<keys.length;i++){
-var cid=keys[i]; var con=consData[cid];
-var ac=(activeByConId===cid)?" active":"";
-h+="<div class='bycon-item"+ac+"' onclick='selByCon(\""+cid+"\")'>";
-h+="<div style='font-weight:600'>"+(con.name||"--")+"</div>";
-h+="<div style='font-size:11px;color:var(--mut);font-family:IBM Plex Mono,monospace'>"+(con.email||"")+"</div></div>";
-}
-if(!h) h="<div style='color:var(--mut);font-size:13px'>Немає підрядників</div>";
-document.getElementById("byConList").innerHTML=h;
+  var keys=Object.keys(consData);
+  var h="";
+  var i;
+  for(i=0;i<keys.length;i++){
+    var cid=keys[i]; var con=consData[cid];
+    var ac=(activeByConId===cid)?" active":"";
+    h+="<div class='bycon-item"+ac+"' onclick='selByCon(\""+cid+"\")'>";
+    h+="<div style='font-weight:600'>"+(con.name||"—")+"</div>";
+    h+="<div style='font-size:11px;color:var(--mut);font-family:IBM Plex Mono,monospace'>"+(con.email||"")+"</div></div>";
+  }
+  if(!h) h="<div style='color:var(--mut);font-size:13px'>Немає підрядників</div>";
+  document.getElementById("byConList").innerHTML=h;
 }
 function selByCon(cid){
-activeByConId=cid;
-renderByConList();
-var con=consData[cid];
-var h="<h3 style='margin-bottom:12px;font-size:16px;color:var(--acc)'>"+(con?con.name||con.email:"")+"</h3>";
-var matched=[];
-var fi, ri;
-for(fi=0;fi<HOTEL.length;fi++){
-for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-var rd=getRoom(HOTEL[fi].rooms[ri].id);
-if(rd&&rd.works){
-var w;
-for(w=0;w<rd.works.length;w++){
-if(rd.works[w].contractor===cid){matched.push(HOTEL[fi].rooms[ri]);break;}
-}
-}
-}
-}
-if(!matched.length){h+="<div style='color:var(--mut)'>Немає кімнат</div>";}
-else{h+="<div class='floor-grid'>";var mi;for(mi=0;mi<matched.length;mi++) h+=makeRoomCell(matched[mi],"");h+="</div>";}
-document.getElementById("byConRooms").innerHTML=h;
+  activeByConId=cid;
+  renderByConList();
+  var con=consData[cid];
+  var h="<h3 style='margin-bottom:12px;font-size:16px;color:var(--acc)'>"+(con?con.name||con.email:"")+"</h3>";
+  var matched=[];
+  var fi, ri;
+  for(fi=0;fi<HOTEL.length;fi++){
+    for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+      var rd=getRoom(HOTEL[fi].rooms[ri].id);
+      if(rd&&rd.works){
+        var w;
+        for(w=0;w<rd.works.length;w++){
+          if(rd.works[w].contractor===cid){matched.push(HOTEL[fi].rooms[ri]);break;}
+        }
+      }
+    }
+  }
+  if(!matched.length){h+="<div style='color:var(--mut)'>Немає кімнат</div>";}
+  else{h+="<div class='floor-grid'>";var i;for(i=0;i<matched.length;i++) h+=makeRoomCell(matched[i],"");h+="</div>";}
+  document.getElementById("byConRooms").innerHTML=h;
 }
 
 // =============================================
 // FLOOR PLAN
 // =============================================
 function openFloorPlan(fi){
-var flr=HOTEL[fi];
-document.getElementById("floorPlanTitle").textContent=flr.label;
-var h="<div class='floor-grid'>";
-var ri;
-for(ri=0;ri<flr.rooms.length;ri++) h+=makeRoomCell(flr.rooms[ri],"closeFloorPlan()");
-h+="</div>";
-document.getElementById("floorPlanGrid").innerHTML=h;
-document.getElementById("floorPlanPanel").classList.add("open");
+  var flr=HOTEL[fi];
+  document.getElementById("floorPlanTitle").textContent=flr.label;
+  var h="<div class='floor-grid'>";
+  var ri;
+  for(ri=0;ri<flr.rooms.length;ri++) h+=makeRoomCell(flr.rooms[ri],"closeFloorPlan()");
+  h+="</div>";
+  document.getElementById("floorPlanGrid").innerHTML=h;
+  document.getElementById("floorPlanPanel").classList.add("open");
 }
 function closeFloorPlan(){ document.getElementById("floorPlanPanel").classList.remove("open"); }
 
@@ -1119,112 +1144,112 @@ function closeFloorPlan(){ document.getElementById("floorPlanPanel").classList.r
 // REPORT
 // =============================================
 function openReport(){
-document.getElementById("reportPanel").classList.add("open");
-renderReport();
+  document.getElementById("reportPanel").classList.add("open");
+  renderReport();
 }
 function closeReport(){ document.getElementById("reportPanel").classList.remove("open"); }
 function switchReportTab(tab,el){
-reportTab=tab;
-document.querySelectorAll(".rtab").forEach(function(t){t.classList.remove("active");});
-el.classList.add("active");
-renderReport();
+  reportTab=tab;
+  document.querySelectorAll(".rtab").forEach(function(t){t.classList.remove("active");});
+  el.classList.add("active");
+  renderReport();
 }
 function renderReport(){
-var body=document.getElementById("reportBody");
-if(reportTab==="general") renderRepGeneral(body);
-else if(reportTab==="bycon") renderRepByCon(body);
-else if(reportTab==="bywork") renderRepByWork(body);
-else if(reportTab==="problems") renderRepProblems(body);
+  var body=document.getElementById("reportBody");
+  if(reportTab==="general") renderRepGeneral(body);
+  else if(reportTab==="bycon") renderRepByCon(body);
+  else if(reportTab==="bywork") renderRepByWork(body);
+  else if(reportTab==="problems") renderRepProblems(body);
 }
 function renderRepGeneral(body){
-var h="<div style='flex:1'><table class='report-table'><thead><tr><th>Поверх</th><th>Всього</th><th>Готово</th><th>В роботі</th><th>Проблем</th><th>%</th></tr></thead><tbody>";
-var fi,ri;
-for(fi=0;fi<HOTEL.length;fi++){
-var flr=HOTEL[fi]; var t=0,d=0,ip=0,pr=0;
-for(ri=0;ri<flr.rooms.length;ri++){
-var st=calcStatus(getRoom(flr.rooms[ri].id));
-t++;if(st==="done")d++;else if(st==="inprogress")ip++;else if(st==="problem")pr++;
-}
-var pct=t?Math.round(d/t*100):0;
-h+="<tr><td>"+flr.label+"</td><td class='mono'>"+t+"</td><td class='mono' style='color:#16a34a'>"+d+"</td><td class='mono' style='color:#2563eb'>"+ip+"</td><td class='mono' style='color:#dc2626'>"+pr+"</td><td class='mono'>"+pct+"%</td></tr>";
-}
-h+="</tbody></table></div>";
-body.innerHTML=h;
+  var h="<div style='flex:1'><table class='report-table'><thead><tr><th>Поверх</th><th>Всього</th><th>Готово</th><th>В роботі</th><th>Проблем</th><th>%</th></tr></thead><tbody>";
+  var fi,ri;
+  for(fi=0;fi<HOTEL.length;fi++){
+    var flr=HOTEL[fi]; var t=0,d=0,ip=0,pr=0;
+    for(ri=0;ri<flr.rooms.length;ri++){
+      var st=calcStatus(getRoom(flr.rooms[ri].id));
+      t++;if(st==="done")d++;else if(st==="inprogress")ip++;else if(st==="problem")pr++;
+    }
+    var pct=t?Math.round(d/t*100):0;
+    h+="<tr><td>"+flr.label+"</td><td class='mono'>"+t+"</td><td class='mono' style='color:#16a34a'>"+d+"</td><td class='mono' style='color:#2563eb'>"+ip+"</td><td class='mono' style='color:#dc2626'>"+pr+"</td><td class='mono'>"+pct+"%</td></tr>";
+  }
+  h+="</tbody></table></div>";
+  body.innerHTML=h;
 }
 function renderRepByCon(body){
-var keys=Object.keys(consData);
-var lh=""; var i;
-for(i=0;i<keys.length;i++){
-var cid=keys[i];var con=consData[cid];
-var ac=(reportConId===cid)?" active":"";
-lh+="<div class='report-list-item"+ac+"' onclick='selRepCon(\""+cid+"\")'>"+(con.name||con.email)+"</div>";
-}
-var rh="";
-if(reportConId&&consData[reportConId]){
-rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th></tr></thead><tbody>";
-var fi,ri;
-for(fi=0;fi<HOTEL.length;fi++){
-for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-var rd=getRoom(HOTEL[fi].rooms[ri].id);
-if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
-if(rd.works[w].contractor===reportConId)
-rh+="<tr><td>"+HOTEL[fi].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(rd.works[w].status||"notstarted")+"</td></tr>";
-}}
-}
-}
-rh+="</tbody></table>";
-} else rh="<div style='color:var(--mut)'>Оберіть підрядника</div>";
-body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
+  var keys=Object.keys(consData);
+  var lh=""; var i;
+  for(i=0;i<keys.length;i++){
+    var cid=keys[i];var con=consData[cid];
+    var ac=(reportConId===cid)?" active":"";
+    lh+="<div class='report-list-item"+ac+"' onclick='selRepCon(\""+cid+"\")'>"+(con.name||con.email)+"</div>";
+  }
+  var rh="";
+  if(reportConId&&consData[reportConId]){
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th></tr></thead><tbody>";
+    var fi,ri;
+    for(fi=0;fi<HOTEL.length;fi++){
+      for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+        var rd=getRoom(HOTEL[fi].rooms[ri].id);
+        if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
+          if(rd.works[w].contractor===reportConId)
+            rh+="<tr><td>"+HOTEL[fi].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(rd.works[w].status||"notstarted")+"</td></tr>";
+        }}
+      }
+    }
+    rh+="</tbody></table>";
+  } else rh="<div style='color:var(--mut)'>Оберіть підрядника</div>";
+  body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
 }
 function selRepCon(cid){ reportConId=cid; renderReport(); }
 function renderRepByWork(body){
-var wmap={}; var fi,ri;
-for(fi=0;fi<HOTEL.length;fi++){
-for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-var rd=getRoom(HOTEL[fi].rooms[ri].id);
-if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
-var wn=rd.works[w].name;
-if(!wmap[wn]) wmap[wn]=[];
-wmap[wn].push({room:HOTEL[fi].rooms[ri].name,st:rd.works[w].status||"notstarted"});
-}}
-}
-}
-var wnames=Object.keys(wmap).sort();
-var lh=""; var i;
-for(i=0;i<wnames.length;i++){
-var wn=wnames[i];var ac=(reportWorkName===wn)?" active":"";
-lh+="<div class='report-list-item"+ac+"' onclick='selRepWork(\""+wn.replace(/"/g,"&quot;")+"\")'>" + wn+" <span style='color:var(--mut)'>("+wmap[wn].length+")</span></div>";
-}
-var rh="";
-if(reportWorkName&&wmap[reportWorkName]){
-rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th></tr></thead><tbody>";
-var items=wmap[reportWorkName];var j;
-for(j=0;j<items.length;j++) rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td></tr>";
-rh+="</tbody></table>";
-} else rh="<div style='color:var(--mut)'>Оберіть вид роботи</div>";
-body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
+  var wmap={}; var fi,ri;
+  for(fi=0;fi<HOTEL.length;fi++){
+    for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+      var rd=getRoom(HOTEL[fi].rooms[ri].id);
+      if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
+        var wn=rd.works[w].name;
+        if(!wmap[wn]) wmap[wn]=[];
+        wmap[wn].push({room:HOTEL[fi].rooms[ri].name,st:rd.works[w].status||"notstarted"});
+      }}
+    }
+  }
+  var wnames=Object.keys(wmap).sort();
+  var lh=""; var i;
+  for(i=0;i<wnames.length;i++){
+    var wn=wnames[i];var ac=(reportWorkName===wn)?" active":"";
+    lh+="<div class='report-list-item"+ac+"' onclick='selRepWork(\""+wn.replace(/"/g,"&quot;")+"\")'>" + wn+" <span style='color:var(--mut)'>("+wmap[wn].length+")</span></div>";
+  }
+  var rh="";
+  if(reportWorkName&&wmap[reportWorkName]){
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th></tr></thead><tbody>";
+    var items=wmap[reportWorkName];var j;
+    for(j=0;j<items.length;j++) rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td></tr>";
+    rh+="</tbody></table>";
+  } else rh="<div style='color:var(--mut)'>Оберіть вид роботи</div>";
+  body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
 }
 function selRepWork(n){ reportWorkName=n; renderReport(); }
 function renderRepProblems(body){
-var h="<div style='flex:1'>";
-h+="<div style='display:flex;gap:7px;margin-bottom:10px'>";
-h+="<button class='btn btn-sm"+(probFilter==="open"?" btn-acc":"")+"' onclick='setProbF(\"open\")'>Відкриті</button>";
-h+="<button class='btn btn-sm"+(probFilter==="all"?" btn-acc":"")+"' onclick='setProbF(\"all\")'>Всі</button>";
-h+="</div>";
-h+="<table class='report-table'><thead><tr><th>Кімната</th><th>Проблема</th><th>Дата</th><th>Статус</th></tr></thead><tbody>";
-var fi,ri;
-for(fi=0;fi<HOTEL.length;fi++){
-for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-var rd=getRoom(HOTEL[fi].rooms[ri].id);
-if(rd&&rd.problems){var pi;for(pi=0;pi<rd.problems.length;pi++){
-var prob=rd.problems[pi]; var pst=prob.status||"open";
-if(probFilter==="open"&&pst!=="open") continue;
-h+="<tr><td>"+HOTEL[fi].rooms[ri].name+"</td><td>"+esc(prob.text)+"</td><td class='mono'>"+(prob.date||"")+"</td><td class='mono' style='color:"+(pst==="open"?"#dc2626":"#16a34a")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</td></tr>";
-}}
-}
-}
-h+="</tbody></table></div>";
-body.innerHTML=h;
+  var h="<div style='flex:1'>";
+  h+="<div style='display:flex;gap:7px;margin-bottom:10px'>";
+  h+="<button class='btn btn-sm"+(probFilter==="open"?" btn-acc":"")+"' onclick='setProbF(\"open\")'>Відкриті</button>";
+  h+="<button class='btn btn-sm"+(probFilter==="all"?" btn-acc":"")+"' onclick='setProbF(\"all\")'>Всі</button>";
+  h+="</div>";
+  h+="<table class='report-table'><thead><tr><th>Кімната</th><th>Проблема</th><th>Дата</th><th>Статус</th></tr></thead><tbody>";
+  var fi,ri;
+  for(fi=0;fi<HOTEL.length;fi++){
+    for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+      var rd=getRoom(HOTEL[fi].rooms[ri].id);
+      if(rd&&rd.problems){var pi;for(pi=0;pi<rd.problems.length;pi++){
+        var prob=rd.problems[pi]; var pst=prob.status||"open";
+        if(probFilter==="open"&&pst!=="open") continue;
+        h+="<tr><td>"+HOTEL[fi].rooms[ri].name+"</td><td>"+esc(prob.text)+"</td><td class='mono'>"+(prob.date||"")+"</td><td class='mono' style='color:"+(pst==="open"?"#dc2626":"#16a34a")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</td></tr>";
+      }}
+    }
+  }
+  h+="</tbody></table></div>";
+  body.innerHTML=h;
 }
 function setProbF(m){ probFilter=m; renderReport(); }
 function printReport(){ window.print(); }
@@ -1233,66 +1258,67 @@ function printReport(){ window.print(); }
 // CSV EXPORT
 // =============================================
 function exportCSV(){
-var rows=[["Кімната","Тип","Поверх","Статус","Прогрес%","Робота","Статус роботи","Підрядник","Примітки"]];
-var fi,ri;
-for(fi=0;fi<HOTEL.length;fi++){
-for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-var rdef=HOTEL[fi].rooms[ri];
-var rd=getRoom(rdef.id);
-var st=calcStatus(rd); var prog=calcProgress(rd);
-if(rd&&rd.works&&rd.works.length){
-var w;
-for(w=0;w<rd.works.length;w++){
-var conName="";
-if(rd.works[w].contractor&&consData[rd.works[w].contractor]){
-conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"";
-}
-rows.push([rdef.name,TYPE_LABELS[rdef.type]||rdef.type,HOTEL[fi].label,stLabel(st),prog,rd.works[w].name,stLabel(rd.works[w].status||"notstarted"),conName,w===0?(rd?rd.notes||"":""):""]);
-}
-} else {
-rows.push([rdef.name,TYPE_LABELS[rdef.type]||rdef.type,HOTEL[fi].label,stLabel(st),prog,"","","",rd?rd.notes||"":""]);
-}
-}
-}
-var csv="\uFEFF";
-var ri2,ci;
-for(ri2=0;ri2<rows.length;ri2++){
-var cells=[];
-for(ci=0;ci<rows[ri2].length;ci++){
-cells.push("\""+String(rows[ri2][ci]).replace(/"/g,"\"\"")+"\"");
-}
-csv+=cells.join(";")+"\r\n";
-}
-var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-var url=URL.createObjectURL(blob);
-var a=document.createElement("a");
-a.href=url; a.download="hotel_"+nowDateStr()+".csv"; a.click();
-URL.revokeObjectURL(url);
-showToast("CSV завантажено","success");
+  var rows=[["Кімната","Тип","Поверх","Статус","Прогрес%","Робота","Статус роботи","Підрядник","Примітки"]];
+  var fi,ri;
+  for(fi=0;fi<HOTEL.length;fi++){
+    for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+      var rdef=HOTEL[fi].rooms[ri];
+      var rd=getRoom(rdef.id);
+      var st=calcStatus(rd); var prog=calcProgress(rd);
+      if(rd&&rd.works&&rd.works.length){
+        var w;
+        for(w=0;w<rd.works.length;w++){
+          var conName="";
+          if(rd.works[w].contractor&&consData[rd.works[w].contractor]){
+            conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"";
+          }
+          rows.push([rdef.name,TYPE_LABELS[rdef.type]||rdef.type,HOTEL[fi].label,stLabel(st),prog,rd.works[w].name,stLabel(rd.works[w].status||"notstarted"),conName,w===0?(rd?rd.notes||"":""):""]);
+        }
+      } else {
+        rows.push([rdef.name,TYPE_LABELS[rdef.type]||rdef.type,HOTEL[fi].label,stLabel(st),prog,"","","",rd?rd.notes||"":""]);
+      }
+    }
+  }
+  var csv="\uFEFF";
+  var ri2,ci;
+  for(ri2=0;ri2<rows.length;ri2++){
+    var cells=[];
+    for(ci=0;ci<rows[ri2].length;ci++){
+      cells.push("\""+String(rows[ri2][ci]).replace(/"/g,"\"\"")+"\"");
+    }
+    csv+=cells.join(";")+"\r\n";
+  }
+  var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  a.href=url; a.download="hotel_"+nowDateStr()+".csv"; a.click();
+  URL.revokeObjectURL(url);
+  showToast("CSV завантажено","success");
 }
 
 // =============================================
 // UTILS
 // =============================================
 function nowStr(){
-var d=new Date();
-return d.toLocaleDateString("uk-UA")+" "+d.toLocaleTimeString("uk-UA",{hour:"2-digit",minute:"2-digit"});
+  var d=new Date();
+  return d.toLocaleDateString("uk-UA")+" "+d.toLocaleTimeString("uk-UA",{hour:"2-digit",minute:"2-digit"});
 }
 function nowDateStr(){
-return new Date().toISOString().slice(0,10);
+  return new Date().toISOString().slice(0,10);
 }
 function esc(str){
-return String(str||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return String(str||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 function showToast(msg,type){
-var t=document.getElementById("toast");
-t.textContent=msg; t.className="toast "+(type||"");
-t.classList.add("show");
-setTimeout(function(){t.classList.remove("show");},2400);
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.className="toast "+(type||"");
+  t.classList.add("show");
+  setTimeout(function(){t.classList.remove("show");},2400);
 }
+// close autocomplete on outside click
 document.addEventListener("click",function(e){
-var l=document.getElementById("acList");
-if(l&&!l.contains(e.target)&&e.target.id!=="awInput") hideAC();
+  var l=document.getElementById("acList");
+  if(l&&!l.contains(e.target)&&e.target.id!=="awInput") hideAC();
 });
 </script>
 </body>
