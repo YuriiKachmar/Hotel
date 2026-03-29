@@ -412,18 +412,10 @@ auth=firebase.auth();
 db=firebase.database();
 
 document.getElementById('btnLogin').addEventListener('click',()=>{
-  const st=document.getElementById('loginStatus');
-  st.textContent='Підключення...';
   const provider=new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
-  auth.signInWithPopup(provider).catch(err=>{
-    if(err.code==='auth/popup-blocked'||err.code==='auth/popup-closed-by-user'){
-      st.textContent='Перенаправлення...';
-      auth.signInWithRedirect(provider);
-    } else {
-      st.textContent='Помилка: '+err.message;
-    }
-  });
+  document.getElementById('loginStatus').textContent='Перенаправлення на Google...';
+  auth.signInWithRedirect(provider);
 });
 
 auth.getRedirectResult().catch(()=>{});
