@@ -1420,12 +1420,13 @@ function makeRoomCellByWork(roomDef, workName){
   var borderColor;
   var opacity;
   var progCol;
-  var prog = 0;
+  var prog;
   if(wst===null){
-    // кімната не має цієї роботи - приглушена
+    // цієї роботи немає — дуже приглушено, сірий
     borderColor = "#2c2d33";
-    opacity = "0.25";
+    opacity = "0.18";
     progCol = "transparent";
+    prog = 0;
   } else if(wst==="done"){
     borderColor = "#16a34a";
     opacity = "1";
@@ -1442,10 +1443,10 @@ function makeRoomCellByWork(roomDef, workName){
     progCol = "#dc2626";
     prog = 0;
   } else {
-    // notstarted - має роботу але не розпочато
-    borderColor = "#e8b84b";
-    opacity = "0.7";
-    progCol = "#e8b84b";
+    // notstarted — є робота але не розпочато, повна яскравість
+    borderColor = "#2c2d33";
+    opacity = "1";
+    progCol = "transparent";
     prog = 0;
   }
   var shadow = wst==="problem" ? "box-shadow:0 0 10px rgba(220,38,38,.5);" : "";
@@ -1453,7 +1454,7 @@ function makeRoomCellByWork(roomDef, workName){
   h += "<div><div class='room-num'>"+roomDef.name+"</div>";
   h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'>";
-  if(conNames) h += "<div class='room-contractor'>"+conNames+"</div>";
+  if(conNames&&wst!==null) h += "<div class='room-contractor'>"+conNames+"</div>";
   h += "<div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div>";
   h += "</div></div>";
   return h;
@@ -1489,8 +1490,8 @@ function selByWork(name){
   h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#16a34a;margin-right:4px'></span>Виконано</span>";
   h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#2563eb;margin-right:4px'></span>В роботі</span>";
   h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#dc2626;margin-right:4px'></span>Проблема</span>";
-  h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8b84b;margin-right:4px'></span>Не розпочато</span>";
-  h+="<span style='font-size:11px;opacity:.4'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#888;margin-right:4px'></span>Немає роботи</span>";
+  h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--brd);margin-right:4px'></span>Не розпочато</span>";
+  h+="<span style='font-size:11px;opacity:.4'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#555;margin-right:4px'></span>Немає цієї роботи</span>";
   h+="</div>";
   document.getElementById("byWorkRooms").innerHTML=h;
 }
