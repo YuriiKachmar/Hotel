@@ -1555,7 +1555,18 @@ function selByCon(cid){
 function openFloorPdf(floorNum){
   var path = FLOOR_PLANS[String(floorNum)];
   if(!path){ showToast("PDF план не знайдено","err"); return; }
-  window.open(path, "_blank");
+  var panel = document.getElementById("floorPlanPanel");
+  var title = document.getElementById("floorPlanTitle");
+  var grid = document.getElementById("floorPlanGrid");
+  // знайти назву поверху
+  var floorLabel = "";
+  var i;
+  for(i=0;i<HOTEL.length;i++){
+    if(String(HOTEL[i].floor)===String(floorNum)){floorLabel=HOTEL[i].label;break;}
+  }
+  title.textContent = floorLabel;
+  grid.innerHTML = "<iframe src='"+path+"' style='width:100%;height:75vh;border:none;border-radius:8px' allowfullscreen></iframe>";
+  panel.classList.add("open");
 }
 function openFloorPlan(fi){
   var flr=HOTEL[fi];
