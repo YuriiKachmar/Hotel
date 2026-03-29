@@ -1,835 +1,1298 @@
-Content is user-generated and unverified.
-1
 <!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Готель -- Контроль робіт</title>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<title>Готель — Контроль ремонтних робіт</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#111214;--surf:#18191d;--surf2:#1f2025;--brd:#2c2d33;--txt:#e2e4ea;--mut:#5a5c6a;--acc:#e8b84b;--mmg:#6b7280;--std:#1e293b;--biz:#854d0e;--imp:#14532d;--semi:#581c87;--lux:#7f1d1d;--mmg-t:#fff;--std-t:#94a3b8;--biz-t:#fde68a;--imp-t:#86efac;--semi-t:#d8b4fe;--lux-t:#fca5a5;--sn:#2c2d33;--sw:#2563eb;--sd:#16a34a;--si:#dc2626}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--txt);display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:7px;padding:9px 15px;background:var(--surf);border-bottom:1px solid var(--brd);flex-shrink:0;flex-wrap:wrap}
-.logo{font-family:'Oswald',sans-serif;font-size:19px;letter-spacing:3px;color:var(--acc);white-space:nowrap}
-.logo em{font-style:normal;color:var(--mut);font-size:11px;letter-spacing:0;margin-left:8px;font-family:'IBM Plex Sans',sans-serif}
-.ml{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.btn{font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;padding:5px 11px;border-radius:5px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);cursor:pointer;transition:.14s;white-space:nowrap}
+:root{
+--bg:#111214;--surf:#18191d;--surf2:#1f2025;--brd:#2c2d33;
+--txt:#e2e4ea;--mut:#5a5c6a;--acc:#e8b84b;
+--blue:#2563eb;--green:#16a34a;--red:#dc2626;
+}
+body{background:var(--bg);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spacing:.5px}
+.mono{font-family:'IBM Plex Mono',monospace}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--surf)}
+::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+
+/* AUTH */
+#authScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000}
+.auth-box{background:var(--surf);border:1px solid var(--brd);border-radius:16px;padding:48px 40px;width:380px;text-align:center}
+.auth-box h1{font-size:28px;color:var(--acc);margin-bottom:6px}
+.auth-box .sub{color:var(--mut);font-size:12px;margin-bottom:32px;letter-spacing:1px;text-transform:uppercase}
+.auth-box input{width:100%;padding:11px 14px;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;color:var(--txt);font-family:inherit;font-size:14px;margin-bottom:12px;outline:none;transition:border-color .2s}
+.auth-box input:focus{border-color:var(--acc)}
+.auth-err{color:var(--red);font-size:12px;margin-top:-6px;margin-bottom:10px;min-height:18px}
+
+/* TOPBAR */
+#topbar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surf);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:90;flex-wrap:wrap}
+.logo-text{font-size:20px;color:var(--acc);white-space:nowrap}
+.logo-sub{font-size:10px;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;line-height:1}
+#searchBox{padding:8px 12px;background:var(--surf2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;width:200px}
+#searchBox:focus{border-color:var(--acc)}
+.topbar-right{display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap}
+.user-email{font-size:11px;color:var(--mut);font-family:'IBM Plex Mono',monospace}
+
+/* BUTTONS */
+.btn{padding:8px 14px;border:1px solid var(--brd);border-radius:7px;background:transparent;color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
 .btn:hover{border-color:var(--acc);color:var(--acc)}
-.btn.pri{background:var(--acc);color:#111;border-color:var(--acc);font-weight:600}
-.btn.sm{font-size:10px;padding:3px 8px;color:var(--mut)}
-.srch{font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--surf2);border:1px solid var(--brd);color:var(--txt);padding:5px 9px;border-radius:5px;outline:none;width:95px}
-.srch:focus{border-color:var(--acc)}
-.layout{display:flex;flex:1;overflow:hidden}
-.sidebar{width:205px;background:var(--surf);border-right:1px solid var(--brd);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
-.main{flex:1;overflow-y:auto;padding:13px 17px}
-.sb-s{padding:10px 11px 3px}
-.sb-l{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);font-weight:600;margin-bottom:5px}
-.fb{display:flex;align-items:center;justify-content:space-between;width:100%;padding:5px 7px;border-radius:4px;background:none;border:none;color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:12px;cursor:pointer;transition:.1s;margin-bottom:1px;text-align:left}
-.fb:hover{background:var(--surf2)}
-.fb.act{background:var(--surf2);color:var(--acc);font-weight:500}
-.fbg{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mut);background:var(--bg);padding:1px 4px;border-radius:3px}
-.fb2{display:flex;align-items:center;gap:8px;width:100%;padding:5px 7px;border-radius:4px;background:none;border:none;color:var(--mut);font-family:'IBM Plex Sans',sans-serif;font-size:11px;cursor:pointer;transition:.1s;margin-bottom:1px;text-align:left}
-.fb2:hover,.fb2.act{background:var(--surf2);color:var(--txt)}
-.dot8{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-.leg{padding:10px 11px;margin-top:auto;border-top:1px solid var(--brd)}
-.lr{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px;color:var(--mut)}
-.lsw{width:22px;height:10px;border-radius:2px;flex-shrink:0;border:1px solid rgba(255,255,255,.1)}
-.stats{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.stat{background:var(--surf);border:1px solid var(--brd);border-radius:6px;padding:8px 11px;flex:1;min-width:76px}
-.sn{font-family:'Oswald',sans-serif;font-size:22px;line-height:1;margin-bottom:1px}
-.sl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
-.pw{flex:2;min-width:140px}
-.pb{background:var(--brd);border-radius:2px;height:4px;overflow:hidden;margin-top:5px}
-.pf{height:100%;border-radius:2px;background:var(--acc);transition:width .5s}
-.floor-block{margin-bottom:22px}
-.fh{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;color:var(--mut)}
-.fh::after{content:'';flex:1;height:1px;background:var(--brd)}
-.fi{font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:300;letter-spacing:0}
-.sec{margin-bottom:7px}
-.secl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);opacity:.55;margin-bottom:4px}
-.rg{display:flex;flex-wrap:wrap;gap:4px}
-.room{width:62px;height:54px;border-radius:5px;border:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .1s,box-shadow .1s;position:relative;user-select:none;flex-shrink:0}
-.room:hover{transform:scale(1.1);z-index:5;box-shadow:0 4px 16px rgba(0,0,0,.5)}
-.room.named{width:88px}
-.room.hidden{display:none}
-.rnum{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;line-height:1.15;text-align:center}
-.rtyp{font-size:8px;text-transform:uppercase;opacity:.65;margin-top:1px}
-.rpb{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 4px 4px;background:rgba(255,255,255,.07)}
-.rpbf{height:100%;border-radius:0 0 4px 4px;background:#22c55e;transition:width .3s}
-.t-mmg{background:var(--mmg);color:var(--mmg-t)}.t-std{background:var(--std);color:var(--std-t)}.t-biz{background:var(--biz);color:var(--biz-t)}.t-imp{background:var(--imp);color:var(--imp-t)}.t-semi{background:var(--semi);color:var(--semi-t)}.t-lux{background:var(--lux);color:var(--lux-t)}
-.room[data-s="n"]{border-color:var(--sn)}.room[data-s="w"]{border-color:var(--sw)}.room[data-s="d"]{border-color:var(--sd)}.room[data-s="i"]{border-color:var(--si)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:100;padding:13px;opacity:0;pointer-events:none;transition:opacity .17s}
-.ov.open{opacity:1;pointer-events:auto}
-.modal{background:var(--surf);border:1px solid var(--brd);border-radius:9px;width:100%;max-width:520px;position:relative;transform:translateY(14px);transition:transform .17s;max-height:91vh;display:flex;flex-direction:column;overflow:hidden}
-.ov.open .modal{transform:translateY(0)}
-.mhd{padding:13px 17px 11px;border-bottom:1px solid var(--brd);flex-shrink:0}
-.mbd{overflow-y:auto;padding:11px 17px;flex:1}
-.mft{padding:9px 17px;border-top:1px solid var(--brd);flex-shrink:0;display:flex;gap:6px}
-.mtit{font-family:'Oswald',sans-serif;font-size:21px;letter-spacing:2px}
-.mmeta{font-size:11px;color:var(--mut);margin-top:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.mbadge{padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600}
-.mpb{background:var(--brd);border-radius:2px;height:3px;overflow:hidden;margin-top:7px}
-.mpf{height:100%;border-radius:2px;background:#22c55e;transition:width .3s}
-.x{position:absolute;top:11px;right:11px;background:none;border:none;color:var(--mut);font-size:17px;cursor:pointer}
-.x:hover{color:var(--txt)}
-.fg{margin-bottom:12px}
-.fl{font-size:10px;color:var(--mut);font-weight:600;letter-spacing:.5px;margin-bottom:5px;text-transform:uppercase}
-.wr{border:1px solid var(--brd);border-radius:6px;margin-bottom:4px;overflow:hidden}
-.wr.sw{border-color:var(--sw)}.wr.sd{border-color:var(--sd)}.wr.si{border-color:var(--si)}
-.wrt{display:flex;align-items:center;gap:5px;padding:7px 9px;background:var(--surf2)}
-.wrn{flex:1;font-size:13px;font-weight:500}
-.wrbtns{display:flex;gap:2px;flex-shrink:0;flex-wrap:wrap}
-.stb{padding:4px 7px;border-radius:4px;border:1px solid var(--brd);background:none;font-size:10px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;color:var(--mut)}
-.stb.ow{background:#0c2340;border-color:var(--sw);color:#60a5fa}
-.stb.od{background:#052e16;border-color:var(--sd);color:#4ade80}
-.stb.oi{background:#2d0a0a;border-color:var(--si);color:#f87171}
-.wdel{background:none;border:none;color:var(--mut);cursor:pointer;font-size:13px;padding:0 2px;opacity:.3}
-.wdel:hover{opacity:1;color:#ef4444}
-.wcon{display:flex;align-items:center;gap:6px;padding:3px 9px 6px;background:var(--surf2)}
-.wconl{font-size:10px;color:var(--mut);font-weight:600;text-transform:uppercase;white-space:nowrap}
-.wcon select{flex:1;padding:4px 5px;font-size:12px;background:var(--bg);border:1px solid var(--brd);color:var(--txt);border-radius:4px;font-family:'IBM Plex Sans',sans-serif;outline:none}
-.wiss{background:var(--surf2);border-top:1px solid #3d1010}
-.wiss-hd{display:flex;align-items:center;justify-content:space-between;padding:5px 9px}
-.wiss-lbl{font-size:10px;color:#f87171;font-weight:600;text-transform:uppercase}
-.wiss-bd{padding:0 9px 8px}
-.ient{border-left:2px solid #7f2222;padding:3px 0 3px 8px;margin-bottom:5px}
-.idate{font-size:10px;color:var(--mut);margin-bottom:2px;display:flex;gap:5px;align-items:center}
-.itxt{font-size:12px;color:var(--txt)}
-.ist-o{font-size:9px;padding:1px 5px;border-radius:2px;background:#2d0a0a;color:#f87171;font-weight:600}
-.ist-c{font-size:9px;padding:1px 5px;border-radius:2px;background:#052e16;color:#4ade80;font-weight:600}
-.iadd{padding:5px 0;flex-direction:column;gap:5px;display:none}
-.iadd textarea{width:100%;background:var(--bg);border:1px solid #522;color:#fca5a5;border-radius:4px;padding:6px 8px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:50px}
-.iadd-row{display:flex;gap:5px}
-.aw{display:flex;gap:4px;margin-top:5px;position:relative}
-.aw input{flex:1;background:var(--bg);border:1px dashed var(--brd);color:var(--txt);border-radius:4px;padding:6px 8px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;outline:none}
-.aw input:focus{border-color:var(--acc)}
-.ab{background:none;border:1px solid var(--brd);color:var(--mut);border-radius:4px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
-.sugg-box{display:none;position:absolute;bottom:100%;left:0;right:60px;background:var(--surf);border:1px solid var(--acc);border-radius:5px;max-height:180px;overflow-y:auto;z-index:50;margin-bottom:3px}
-.sugg-item{padding:8px 11px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--brd);color:var(--txt)}
-.sugg-item:hover{background:var(--surf2);color:var(--acc)}
-textarea.rnotes{width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--txt);border-radius:4px;padding:6px 8px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:50px}
-.hist{max-height:75px;overflow-y:auto}
-.hi{border-left:2px solid var(--brd);padding:2px 0 2px 7px;margin-bottom:3px;font-size:11px;color:var(--mut)}
-.pm{background:var(--surf);border:1px solid var(--brd);border-radius:9px;width:100%;max-width:660px;padding:16px;position:relative;transform:translateY(14px);transition:transform .17s;max-height:91vh;overflow-y:auto}
-.ov.open .pm{transform:translateY(0)}
-.ptit{font-family:'Oswald',sans-serif;font-size:17px;letter-spacing:2px;margin-bottom:12px;color:var(--acc)}
-.psec{background:var(--surf2);border:1px solid var(--brd);border-radius:5px;padding:9px 11px;margin-bottom:7px}
-.psecl{font-size:10px;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
-.prg{display:flex;flex-wrap:wrap;gap:4px}
-.pr{border-radius:4px;border:2px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0;width:56px;height:50px}
-.pr.pn{width:80px}
-.prn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;text-align:center}
-.prt{font-size:7px;text-transform:uppercase;opacity:.65;margin-top:1px}
-.prdot{position:absolute;bottom:3px;right:3px;width:5px;height:5px;border-radius:50%}
-.prbar{position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:0 0 3px 3px}
-.pleg{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;padding-top:9px;border-top:1px solid var(--brd)}
-.pli{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mut)}
-.plsw{width:12px;height:12px;border-radius:2px;flex-shrink:0}
-.ci{display:flex;flex-direction:column;gap:4px;padding:8px 9px;background:var(--surf2);border:1px solid var(--brd);border-radius:5px;margin-bottom:4px}
-.cir{display:flex;align-items:center;gap:6px}
-.ci input{flex:1;background:var(--bg);border:1px solid var(--brd);color:var(--txt);border-radius:4px;padding:4px 7px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;outline:none}
-.ci input.em{font-size:11px;color:var(--mut)}
-.cdel{background:none;border:none;color:var(--mut);cursor:pointer;font-size:13px;padding:0 2px;opacity:.3}
-.csb{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 11px;border-radius:5px;background:var(--surf2);border:1px solid var(--brd);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;text-align:left}
-.csb:hover{border-color:var(--acc);color:var(--acc)}
-.cbg{font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--bg);padding:2px 5px;border-radius:3px;color:var(--mut)}
-.cp-ov{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:200;padding:13px;opacity:0;pointer-events:none;transition:opacity .17s}
-.cp-ov.open{opacity:1;pointer-events:auto}
-.cp{background:var(--surf);border:1px solid var(--brd);border-radius:9px;width:100%;max-width:540px;max-height:90vh;display:flex;flex-direction:column;position:relative;transform:translateY(14px);transition:transform .17s;overflow:hidden}
-.cp-ov.open .cp{transform:translateY(0)}
-.cphd{padding:13px 17px 9px;border-bottom:1px solid var(--brd);flex-shrink:0}
-.cptit{font-family:'Oswald',sans-serif;font-size:17px;letter-spacing:2px;color:var(--acc)}
-.cpsub{font-size:11px;color:var(--mut);margin-top:3px}
-.cpbd{overflow-y:auto;padding:10px 14px;flex:1}
-.det-stats{font-size:12px;color:var(--mut);margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.det-floor{margin-bottom:12px}
-.det-fl-title{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--mut);padding:4px 0 5px;border-bottom:1px solid var(--brd);margin-bottom:7px}
-.det-rooms{display:flex;flex-wrap:wrap;gap:5px}
-.det-room{min-width:60px;border-radius:5px;border:2px solid;padding:5px 6px;cursor:pointer;text-align:center}
-.det-rnum{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600}
-.det-rsub{font-size:9px;margin-top:2px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:76px}
-.rep-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:flex-end;z-index:100;opacity:0;pointer-events:none;transition:opacity .17s}
-.rep-ov.open{opacity:1;pointer-events:auto}
-.rep-p{background:var(--surf);border-top:1px solid var(--brd);width:100%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .22s}
-.rep-ov.open .rep-p{transform:translateY(0)}
-.rephd{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--brd);flex-shrink:0;flex-wrap:wrap;gap:8px}
-.reptit{font-family:'Oswald',sans-serif;font-size:18px;letter-spacing:2px}
-.tabs{display:flex;gap:4px;flex-wrap:wrap}
-.tab{font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;padding:5px 10px;border-radius:4px;border:1px solid var(--brd);background:none;color:var(--mut);cursor:pointer}
-.tab.act{background:var(--acc);color:#111;border-color:var(--acc);font-weight:600}
-.rep-body{overflow-y:auto;padding:14px 18px;flex:1}
-.rep-sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-.rc{background:var(--surf2);border:1px solid var(--brd);border-radius:6px;padding:11px}
-.rc h4{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--mut);margin-bottom:7px}
-.rr{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);padding:3px 0;border-bottom:1px solid var(--brd)}
-.rr strong{color:var(--txt)}
-.rep-2col{display:flex;height:100%;min-height:380px}
-.rep-list{width:210px;flex-shrink:0;overflow-y:auto;border-right:1px solid var(--brd);padding-right:12px}
-.rep-detail{flex:1;overflow-y:auto;padding-left:16px}
-.rep-item{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 10px;border-radius:5px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;margin-bottom:4px;text-align:left;gap:6px}
-.rep-item:hover,.rep-item.act{border-color:var(--acc);color:var(--acc)}
-.ri-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--bg);padding:2px 5px;border-radius:3px;color:var(--mut)}
-.ri-iss{font-size:10px;color:#f87171;font-weight:600}
-.iss-card{background:var(--surf2);border:1px solid var(--si);border-radius:6px;padding:10px;margin-bottom:7px}
-.iss-hd{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap}
-.iss-room{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--acc)}
-.iss-work{font-size:12px;color:var(--txt);flex:1}
-.iss-con{font-size:11px;color:var(--mut)}
-.iss-log{border-left:2px solid #7f2222;padding-left:8px}
-.iss-e{margin-bottom:5px}
-.iss-ed{font-size:10px;color:var(--mut);margin-bottom:1px;display:flex;gap:5px}
-.iss-et{font-size:12px;color:var(--txt)}
-.login-ov{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999}
-.login-box{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:32px 28px;display:flex;flex-direction:column;align-items:center;gap:16px;max-width:320px;width:100%}
-.login-logo{font-family:'Oswald',sans-serif;font-size:32px;letter-spacing:4px;color:var(--acc)}
-.login-sub{font-size:12px;color:var(--mut);text-align:center}
-.login-inp{width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;outline:none}
-.login-btn{width:100%;padding:12px 20px;border-radius:8px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer}
-.login-btn:hover{border-color:var(--acc);color:var(--acc)}
-.login-status{font-size:12px;color:#f87171;text-align:center;min-height:16px}
-.user-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut)}
-.signout-btn{background:none;border:1px solid var(--brd);color:var(--mut);cursor:pointer;font-size:10px;padding:2px 7px;border-radius:3px;font-family:'IBM Plex Sans',sans-serif}
-@media(max-width:560px){.sidebar{display:none}.room{width:54px;height:50px}.room.named{width:80px}}
+.btn-acc{background:var(--acc);color:#111;border-color:var(--acc);font-weight:600}
+.btn-acc:hover{background:#d4a43c;border-color:#d4a43c;color:#111}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-danger{border-color:var(--red);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+
+/* LAYOUT */
+#appWrap{display:flex;height:calc(100vh - 57px)}
+#sidebar{width:210px;min-width:210px;background:var(--surf);border-right:1px solid var(--brd);overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:12px}
+#mainArea{flex:1;overflow-y:auto;padding:16px}
+
+/* SIDEBAR */
+.sb-section h3{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-family:'IBM Plex Sans',sans-serif;font-weight:600}
+.sb-item{display:flex;align-items:center;gap:7px;padding:6px 7px;border-radius:6px;cursor:pointer;font-size:12px;transition:background .12s;user-select:none}
+.sb-item:hover{background:var(--surf2)}
+.sb-item input[type=checkbox]{accent-color:var(--acc);cursor:pointer;flex-shrink:0}
+.sb-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sb-box{width:13px;height:13px;border-radius:3px;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.stat-card{background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:12px 16px;flex:1;min-width:110px}
+.stat-card .num{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:500;line-height:1}
+.stat-card .lbl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+.stat-card .num.acc{color:var(--acc)}
+.stat-card .num.blue{color:var(--blue)}
+.stat-card .num.green{color:var(--green)}
+.stat-card .num.red{color:var(--red)}
+.prog-bar{height:4px;background:var(--brd);border-radius:2px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;background:var(--acc);border-radius:2px;transition:width .4s}
+
+/* FLOOR SECTIONS */
+.floor-section{margin-bottom:22px}
+.floor-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.floor-header h2{font-size:15px;color:var(--acc)}
+.floor-stat{font-size:11px;color:var(--mut);font-family:'IBM Plex Mono',monospace}
+.floor-grid{display:flex;flex-wrap:wrap;gap:7px}
+
+/* ROOM CELL */
+.room-cell{
+width:76px;height:68px;border-radius:8px;cursor:pointer;
+display:flex;flex-direction:column;justify-content:space-between;
+padding:7px 7px 5px;border:2px solid var(--brd);
+transition:transform .12s,box-shadow .12s;position:relative;overflow:hidden
+}
+.room-cell:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.room-num{font-family:'Oswald',sans-serif;font-size:15px;font-weight:500;letter-spacing:.5px;line-height:1;color:#fff}
+.room-type-label{font-size:9px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.5px;line-height:1;margin-top:2px}
+.room-bottom{display:flex;flex-direction:column;gap:2px}
+.room-contractor{font-size:9px;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-prog-bar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.room-prog-fill{height:100%;border-radius:2px;transition:width .3s}
+.status-notstarted{border-color:#2c2d33}
+.status-inprogress{border-color:#2563eb;box-shadow:0 0 0 1px rgba(37,99,235,.25)}
+.status-done{border-color:#16a34a}
+.status-problem{border-color:#dc2626;box-shadow:0 0 10px rgba(220,38,38,.5),0 0 0 1px rgba(220,38,38,.3)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(3px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surf);border:1px solid var(--brd);border-radius:14px;width:96%;max-width:660px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .2s;display:flex;flex-direction:column}
+.overlay.open .modal{transform:none}
+.modal-header{padding:18px 22px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:sticky;top:0;background:var(--surf);border-radius:14px 14px 0 0;z-index:5;border-bottom:1px solid var(--brd)}
+.modal-body{padding:18px 22px;flex:1}
+.modal-footer{padding:12px 22px;border-top:1px solid var(--brd);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--surf);border-radius:0 0 14px 14px}
+.room-modal-title{font-size:21px;color:var(--acc)}
+.room-modal-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.meta-chip{padding:2px 9px;border-radius:20px;font-size:11px;border:1px solid var(--brd);color:var(--mut)}
+.section-label{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:8px;margin-top:16px;padding-bottom:4px;border-bottom:1px solid var(--brd)}
+
+/* WORKS */
+.works-list{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.work-row{display:flex;align-items:center;gap:7px;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:8px 11px;transition:border-color .15s;flex-wrap:wrap}
+.work-row.work-done{border-color:rgba(22,163,74,.3)}
+.work-row.work-problem{border-color:rgba(220,38,38,.35)}
+.work-name{flex:1;font-size:13px;min-width:100px}
+.work-status-btns{display:flex;gap:3px;flex-shrink:0}
+.wsb{padding:4px 7px;border:1px solid var(--brd);border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--mut);transition:all .12s;text-transform:uppercase;letter-spacing:.5px}
+.wsb.active-inprogress{background:rgba(37,99,235,.18);border-color:#2563eb;color:#2563eb}
+.wsb.active-done{background:rgba(22,163,74,.18);border-color:#16a34a;color:#16a34a}
+.wsb.active-problem{background:rgba(220,38,38,.18);border-color:#dc2626;color:#dc2626}
+.work-contractor-sel{padding:4px 7px;background:var(--surf);border:1px solid var(--brd);border-radius:5px;color:var(--txt);font-family:inherit;font-size:11px;outline:none;cursor:pointer;max-width:120px}
+.work-del-btn{width:22px;height:22px;border-radius:4px;border:1px solid var(--brd);background:transparent;color:var(--mut);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.work-del-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* ADD WORK */
+.add-work-row{display:flex;gap:7px;align-items:center;position:relative;margin-bottom:14px}
+.add-work-input{flex:1;padding:8px 11px;background:var(--surf2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:inherit;font-size:13px;outline:none}
+.add-work-input:focus{border-color:var(--acc)}
+.autocomplete-list{position:absolute;top:100%;left:0;right:70px;background:var(--surf2);border:1px solid var(--brd);border-radius:7px;z-index:50;max-height:150px;overflow-y:auto;margin-top:2px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.autocomplete-item{padding:7px 11px;cursor:pointer;font-size:13px;transition:background .1s}
+.autocomplete-item:hover{background:var(--surf)}
+
+/* PROBLEMS */
+.problem-row{background:var(--surf2);border:1px solid var(--brd);border-radius:7px;padding:9px 11px;margin-bottom:5px}
+.problem-row.open-p{border-color:rgba(220,38,38,.4)}
+.problem-meta{display:flex;gap:7px;align-items:center;margin-bottom:4px;flex-wrap:wrap}
+.problem-date{font-size:10px;color:var(--mut);font-family:'IBM Plex Mono',monospace}
+.problem-status{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600}
+.ps-open{background:rgba(220,38,38,.18);color:#dc2626}
+.ps-closed{background:rgba(22,163,74,.18);color:#16a34a}
+.problem-text{font-size:13px}
+.add-problem-row{display:flex;gap:7px;margin-top:8px}
+.add-problem-input{flex:1;padding:7px 10px;background:var(--surf2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;resize:none}
+.add-problem-input:focus{border-color:var(--red)}
+.notes-textarea{width:100%;padding:9px 11px;background:var(--surf2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;resize:vertical;min-height:64px}
+.notes-textarea:focus{border-color:var(--acc)}
+.changelog-list{display:flex;flex-direction:column;gap:3px;max-height:140px;overflow-y:auto}
+.changelog-item{font-size:11px;color:var(--mut);padding:4px 0;border-bottom:1px solid var(--brd);display:flex;gap:8px;align-items:flex-start}
+.cl-date{font-family:'IBM Plex Mono',monospace;flex-shrink:0;font-size:10px}
+
+/* CONTRACTORS VIEW */
+.cons-grid{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.cons-list-panel{flex:1;min-width:280px;display:flex;flex-direction:column;gap:6px}
+.con-row{background:var(--surf);border:1px solid var(--brd);border-radius:8px;padding:11px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.con-name{font-size:14px;font-weight:600;flex:1}
+.con-email{font-size:11px;color:var(--mut);font-family:'IBM Plex Mono',monospace}
+.cons-add-panel{width:280px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.cons-add-panel h3{font-size:14px;margin-bottom:12px}
+.form-input{width:100%;padding:9px 11px;background:var(--surf2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;margin-bottom:8px;transition:border-color .15s}
+.form-input:focus{border-color:var(--acc)}
+.form-label{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;font-weight:600}
+
+/* REPORT PANEL */
+#reportPanel{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:2px solid var(--acc);z-index:150;transform:translateY(100%);transition:transform .25s;max-height:68vh;display:flex;flex-direction:column}
+#reportPanel.open{transform:none}
+.report-header{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--brd);flex-shrink:0;flex-wrap:wrap}
+.report-header h2{font-size:15px;color:var(--acc)}
+.report-tabs{display:flex;gap:3px}
+.rtab{padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;border:none;background:transparent;color:var(--mut);transition:all .12s}
+.rtab.active{background:var(--acc);color:#111;font-weight:600}
+.report-body{overflow-y:auto;padding:14px;flex:1;display:flex;gap:14px}
+.report-left{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+.report-right{flex:1}
+.report-list-item{padding:7px 9px;border-radius:6px;cursor:pointer;font-size:12px;border:1px solid transparent;transition:all .12s}
+.report-list-item:hover{background:var(--surf2)}
+.report-list-item.active{border-color:var(--acc);background:var(--surf2);color:var(--acc)}
+.report-table{width:100%;border-collapse:collapse}
+.report-table th{text-align:left;padding:7px 9px;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--brd);font-family:'IBM Plex Sans',sans-serif;font-weight:600}
+.report-table td{padding:7px 9px;font-size:12px;border-bottom:1px solid var(--brd)}
+.report-table tr:hover td{background:var(--surf2)}
+
+/* FLOOR PLAN */
+#floorPlanPanel{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);z-index:180;display:none;align-items:center;justify-content:center}
+#floorPlanPanel.open{display:flex}
+.floor-plan-box{background:var(--surf);border:1px solid var(--brd);border-radius:14px;padding:22px;max-width:860px;width:96%;max-height:85vh;overflow-y:auto}
+.floor-plan-box h2{font-size:18px;color:var(--acc);margin-bottom:14px}
+
+/* BY CONTRACTOR */
+#byConView{position:fixed;inset:0;background:var(--bg);z-index:100;display:none;flex-direction:column}
+#byConView.open{display:flex}
+.bycon-header{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--surf);border-bottom:1px solid var(--brd)}
+.bycon-body{display:flex;flex:1;overflow:hidden}
+.bycon-left{width:230px;border-right:1px solid var(--brd);overflow-y:auto;padding:10px}
+.bycon-right{flex:1;overflow-y:auto;padding:14px}
+.bycon-item{padding:9px 11px;border-radius:7px;cursor:pointer;font-size:13px;transition:background .12s;border:1px solid transparent;margin-bottom:3px}
+.bycon-item:hover{background:var(--surf2)}
+.bycon-item.active{border-color:var(--acc);background:var(--surf2);color:var(--acc)}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:10px 18px;font-size:13px;z-index:999;transition:transform .25s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
+
+@media(max-width:700px){
+#sidebar{display:none}
+.room-cell{width:62px;height:58px}
+.room-num{font-size:13px}
+.cons-add-panel{width:100%}
+}
 </style>
 </head>
 <body>
 
-<div class="login-ov" id="loginOv">
-  <div class="login-box">
-    <div class="login-logo">ГОТЕЛЬ</div>
-    <div class="login-sub">Контроль ремонтних робіт<br>Замарстинівська 25</div>
-    <input class="login-inp" id="loginEmail" type="email" placeholder="Email">
-    <input class="login-inp" id="loginPass" type="password" placeholder="Пароль">
-    <button class="login-btn" id="btnLogin">Увійти</button>
-    <div class="login-status" id="loginStatus"></div>
-  </div>
+<!-- AUTH -->
+<div id="authScreen">
+<div class="auth-box">
+<h1>ГОТЕЛЬ</h1>
+<div class="sub">Замарстинівська 25, Львів</div>
+<input type="email" id="authEmail" placeholder="Email" autocomplete="username">
+<input type="password" id="authPass" placeholder="Пароль" autocomplete="current-password">
+<div class="auth-err" id="authErr"></div>
+<button class="btn btn-acc" style="width:100%;padding:11px" onclick="doLogin()">Увійти</button>
+</div>
 </div>
 
-<div class="topbar">
-  <div class="logo">ГОТЕЛЬ <em>контроль ремонту</em></div>
-  <div class="ml" id="topRight">
-    <input class="srch" id="srch" placeholder="пошук..." oninput="renderAll()">
-    <button class="btn" id="btnCV">По підряднику</button>
-    <button class="btn" id="btnCM">Підрядники</button>
-    <button class="btn" id="btnRep">Звіт</button>
-    <button class="btn pri" onclick="doCSV()">CSV</button>
-  </div>
+<!-- APP -->
+<div id="appScreen" style="display:none">
+<div id="topbar">
+<div>
+<div class="logo-text">ГОТЕЛЬ</div>
+<div class="logo-sub">Контроль ремонту · Замарстинівська 25</div>
+</div>
+<input type="text" id="searchBox" placeholder="Пошук кімнати..." oninput="onSearch()">
+<div class="topbar-right">
+<button class="btn btn-sm" onclick="openByContractor()">По підряднику</button>
+<button class="btn btn-sm" onclick="openContractors()">Підрядники</button>
+<button class="btn btn-sm" onclick="openReport()">Звіт</button>
+<button class="btn btn-sm" onclick="exportCSV()">CSV</button>
+<span class="user-email" id="userEmailEl"></span>
+<button class="btn btn-sm btn-danger" onclick="doLogout()">Вийти</button>
+</div>
 </div>
 
-<div class="layout">
-  <div class="sidebar">
-    <div class="sb-s"><div class="sb-l">Поверхи</div><div id="sbFloors"></div></div>
-    <div class="sb-s"><div class="sb-l">Статус</div><div id="sbStatus"></div></div>
-    <div class="sb-s"><div class="sb-l">Тип</div><div id="sbType"></div></div>
-    <div class="sb-s"><div class="sb-l">По підряднику</div><div id="sbCon"></div></div>
-    <div class="leg">
-      <div class="sb-l">Статус (рамка)</div>
-      <div class="lr"><div class="lsw" style="background:var(--surf2);border-color:var(--sn)"></div>Не розпочато</div>
-      <div class="lr"><div class="lsw" style="background:var(--surf2);border-color:var(--sw)"></div>В роботі</div>
-      <div class="lr"><div class="lsw" style="background:var(--surf2);border-color:var(--sd)"></div>Готово</div>
-      <div class="lr"><div class="lsw" style="background:var(--surf2);border-color:var(--si)"></div>Проблема</div>
-    </div>
-  </div>
-  <div class="main">
-    <div class="stats" id="statsBar"></div>
-    <div id="floorsWrap"></div>
-  </div>
+<div id="appWrap">
+<div id="sidebar">
+<div class="sb-section">
+<h3>Поверхи</h3>
+<div id="sbFloors"></div>
+</div>
+<div class="sb-section">
+<h3>Статус</h3>
+<div class="sb-item" onclick="toggleFilter('status','notstarted',this)"><input type="checkbox" id="fs_ns"> <div class="sb-dot" style="background:#3a3b42;border:1px solid #666"></div> Не розпочато</div>
+<div class="sb-item" onclick="toggleFilter('status','inprogress',this)"><input type="checkbox" id="fs_ip"> <div class="sb-dot" style="background:#2563eb"></div> В роботі</div>
+<div class="sb-item" onclick="toggleFilter('status','done',this)"><input type="checkbox" id="fs_d"> <div class="sb-dot" style="background:#16a34a"></div> Готово</div>
+<div class="sb-item" onclick="toggleFilter('status','problem',this)"><input type="checkbox" id="fs_pr"> <div class="sb-dot" style="background:#dc2626"></div> Проблема</div>
+</div>
+<div class="sb-section">
+<h3>Тип</h3>
+<div class="sb-item" onclick="toggleFilter('type','mmg',this)"><input type="checkbox"> <div class="sb-box" style="background:#6b7280"></div> ММГ</div>
+<div class="sb-item" onclick="toggleFilter('type','standard',this)"><input type="checkbox"> <div class="sb-box" style="background:#1e293b;border-color:#334155"></div> Стандарт</div>
+<div class="sb-item" onclick="toggleFilter('type','business',this)"><input type="checkbox"> <div class="sb-box" style="background:#854d0e"></div> Бізнес</div>
+<div class="sb-item" onclick="toggleFilter('type','improved',this)"><input type="checkbox"> <div class="sb-box" style="background:#14532d"></div> Покращений</div>
+<div class="sb-item" onclick="toggleFilter('type','semilux',this)"><input type="checkbox"> <div class="sb-box" style="background:#581c87"></div> Півлюкс</div>
+<div class="sb-item" onclick="toggleFilter('type','lux',this)"><input type="checkbox"> <div class="sb-box" style="background:#7f1d1d"></div> Люкс</div>
+</div>
+<div class="sb-section">
+<h3>Підрядник</h3>
+<div id="sbContractors"><div style="font-size:11px;color:var(--mut);padding:4px 6px">Немає підрядників</div></div>
+</div>
 </div>
 
-<div class="ov" id="ovRM">
-  <div class="modal">
-    <div class="mhd">
-      <button class="x" id="xRM">X</button>
-      <div class="mtit" id="mTit"></div>
-      <div class="mmeta" id="mMeta"></div>
-      <div class="mpb"><div class="mpf" id="mPf" style="width:0%"></div></div>
-    </div>
-    <div class="mbd">
-      <div class="fg"><div class="fl">Перелік робіт</div><div id="worksList"></div>
-        <div class="aw">
-          <input id="newWork" placeholder="Додати роботу..." autocomplete="off" oninput="filterSugg(this.value)" onfocus="filterSugg(this.value)">
-          <div class="sugg-box" id="suggBox"></div>
-          <button class="ab" id="btnAW">+ Додати</button>
-        </div>
-      </div>
-      <div class="fg"><div class="fl">Примітки</div><textarea class="rnotes" id="roomNotes" placeholder="Коментар..."></textarea></div>
-      <div class="fg"><div class="fl">Журнал змін</div><div class="hist" id="hist"></div></div>
-    </div>
-    <div class="mft">
-      <button class="btn pri" style="flex:1;padding:8px" id="btnSave">Зберегти</button>
-      <button class="btn" style="padding:8px 11px" id="btnCancel">Скасувати</button>
-    </div>
-  </div>
+<div id="mainArea">
+<div class="stats-bar" id="statsBar"></div>
+<div id="floorsContainer"></div>
+
+<!-- CONTRACTORS VIEW -->
+<div id="consView" style="display:none">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<h2 style="font-size:20px;color:var(--acc)">Підрядники</h2>
+<button class="btn btn-sm" onclick="closeContractors()">← Назад</button>
+</div>
+<div class="cons-grid">
+<div class="cons-list-panel" id="consListPanel"></div>
+<div class="cons-add-panel" id="consAddPanel">
+<h3>Додати підрядника</h3>
+<label class="form-label">Назва</label>
+<input class="form-input" id="conNameInput" placeholder="Назва або ПІБ">
+<label class="form-label">Email</label>
+<input class="form-input" id="conEmailInput" type="email" placeholder="email@example.com">
+<button class="btn btn-acc" style="width:100%;margin-bottom:18px" onclick="addContractor()">+ Додати підрядника</button>
+<div style="border-top:1px solid var(--brd);padding-top:14px">
+<h3 style="margin-bottom:12px">Створити Firebase-користувача</h3>
+<label class="form-label">Email нового користувача</label>
+<input class="form-input" id="fbUserEmail" type="email" placeholder="email@example.com">
+<label class="form-label">Пароль</label>
+<input class="form-input" id="fbUserPass" type="password" placeholder="Мінімум 6 символів">
+<button class="btn btn-acc" style="width:100%" onclick="createFirebaseUser()">Створити користувача</button>
+<div style="color:var(--red);font-size:12px;margin-top:8px;min-height:18px" id="fbUserErr"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ov" id="ovPlan">
-  <div class="pm">
-    <button class="x" id="xPlan">X</button>
-    <div class="ptit" id="planTit"></div>
-    <div id="planGrid"></div>
-    <div class="pleg" id="planLeg"></div>
-  </div>
+<!-- BY CONTRACTOR FULLSCREEN -->
+<div id="byConView">
+<div class="bycon-header">
+<button class="btn btn-sm" onclick="closeByContractor()">← Назад</button>
+<h2 style="font-size:17px;color:var(--acc)">Кімнати по підряднику</h2>
+</div>
+<div class="bycon-body">
+<div class="bycon-left" id="byConList"></div>
+<div class="bycon-right" id="byConRooms"></div>
+</div>
 </div>
 
-<div class="ov" id="ovCS">
-  <div class="modal" style="max-width:350px">
-    <div class="mhd"><button class="x" id="xCS">X</button>
-      <div class="mtit" style="font-size:17px">По підряднику</div>
-    </div>
-    <div class="mbd" id="csBody"></div>
-  </div>
+<!-- FLOOR PLAN -->
+<div id="floorPlanPanel">
+<div class="floor-plan-box">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+<h2 id="floorPlanTitle"></h2>
+<button class="btn btn-sm" onclick="closeFloorPlan()">✕ Закрити</button>
+</div>
+<div id="floorPlanGrid" class="floor-grid"></div>
+</div>
 </div>
 
-<div class="ov" id="ovCM">
-  <div class="modal" style="max-width:370px">
-    <div class="mhd"><button class="x" id="xCM">X</button>
-      <div class="mtit" style="font-size:17px">Підрядники</div>
-    </div>
-    <div class="mbd"><div id="conList"></div>
-      <div class="aw" style="margin-top:4px"><input id="newCon" placeholder="Назва підрядника..."><button class="ab" id="btnAC">+ Додати</button></div>
-    </div>
-    <div class="mft"><button class="btn pri" style="flex:1;padding:8px" id="btnCMok">Готово</button></div>
-  </div>
+<!-- REPORT PANEL -->
+<div id="reportPanel">
+<div class="report-header">
+<h2>Звіт</h2>
+<div class="report-tabs">
+<button class="rtab active" onclick="switchReportTab('general',this)">Загальний</button>
+<button class="rtab" onclick="switchReportTab('bycon',this)">По підряднику</button>
+<button class="rtab" onclick="switchReportTab('bywork',this)">По роботах</button>
+<button class="rtab" onclick="switchReportTab('problems',this)">Проблеми</button>
+</div>
+<button class="btn btn-sm" style="margin-left:auto" onclick="printReport()">Друк</button>
+<button class="btn btn-sm" onclick="closeReport()">✕</button>
+</div>
+<div class="report-body" id="reportBody"></div>
 </div>
 
-<div class="cp-ov" id="ovCP">
-  <div class="cp">
-    <div class="cphd"><button class="x" id="xCP">X</button>
-      <div class="cptit" id="cpTit"></div>
-      <div class="cpsub" id="cpSub"></div>
-    </div>
-    <div class="cpbd" id="cpBd"></div>
-  </div>
+<!-- ROOM MODAL -->
+<div class="overlay" id="roomOverlay" onclick="overlayClickHandler(event)">
+<div class="modal" id="roomModal">
+<div class="modal-header">
+<div>
+<div class="room-modal-title" id="modalTitle"></div>
+<div class="room-modal-meta" id="modalMeta"></div>
+</div>
+<button class="btn btn-sm" onclick="closeRoomModal()">✕</button>
+</div>
+<div class="modal-body" id="modalBody"></div>
+<div class="modal-footer">
+<button class="btn" onclick="closeRoomModal()">Скасувати</button>
+<button class="btn btn-acc" onclick="saveRoom()">Зберегти</button>
+</div>
+</div>
 </div>
 
-<div class="rep-ov" id="ovRep">
-  <div class="rep-p">
-    <div class="rephd">
-      <div class="reptit">Звіт</div>
-      <div class="tabs">
-        <button class="tab act" data-tab="sum">Загальний</button>
-        <button class="tab" data-tab="con">По підряднику</button>
-        <button class="tab" data-tab="work">По видах робіт</button>
-        <button class="tab" data-tab="iss">Проблеми</button>
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
-        <button class="btn" onclick="printRep()">Друк</button>
-        <button class="x" style="position:static" id="xRep">X</button>
-      </div>
-    </div>
-    <div class="rep-body" id="repBody"></div>
-  </div>
-</div>
+<div class="toast" id="toast"></div>
 
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-'use strict';
+// =============================================
+// CONFIG & INIT
+// =============================================
+var FB_CONFIG = {
+apiKey: "AIzaSyC9yXNFHumEj54WijGfEDnuc1-1cvPYCfE",
+authDomain: "zamarstynivska-25.firebaseapp.com",
+databaseURL: "https://zamarstynivska-25-default-rtdb.europe-west1.firebasedatabase.app",
+projectId: "zamarstynivska-25",
+storageBucket: "zamarstynivska-25.appspot.com",
+messagingSenderId: "1066701061895",
+appId: "1:1066701061895:web:b0a87dd095308e1c244fa2"
+};
+var fbApp = firebase.initializeApp(FB_CONFIG);
+var fbAuth = firebase.auth();
+var fbDb = firebase.database();
+var ADMIN_EMAIL = "lvivbau2@gmail.com";
+var currentUser = null;
+var isAdmin = false;
 
-var ROOM_NAMES = {'f1-hall':'Хол','f1-reception':'Рецепція','f1-wc':'Туалети','f1-conf':'Конференц-зал','f1-restaurant':'Ресторан/Бар','f1-kitchen':'Кухня 1','p-parking':'Паркінг','p-kitchen':'Кухня -1','p-security':'Кімн.охорони','p-water':'Водомірний вузол','p-laundry':'Пральня','p-fire':'Протипожежна','p-kns':'КНС'};
-var RT = {206:'std',207:'std',208:'std',209:'std',210:'std',211:'std',212:'std',213:'std',214:'imp',215:'imp',216:'std',217:'std',218:'std',219:'std',220:'std',221:'std',222:'std',223:'std',224:'std',225:'std',226:'semi',227:'std',301:'mmg',302:'biz',303:'biz',304:'biz',305:'biz',306:'std',307:'std',308:'biz',309:'std',310:'biz',311:'std',312:'biz',313:'std',314:'imp',315:'imp',316:'std',317:'std',318:'std',319:'std',320:'std',321:'std',322:'std',323:'std',324:'std',325:'std',326:'semi',327:'std',401:'mmg',402:'biz',403:'biz',404:'biz',405:'biz',406:'std',407:'std',408:'std',409:'std',410:'std',411:'std',412:'std',413:'std',414:'imp',415:'imp',416:'std',417:'std',418:'std',419:'std',420:'std',421:'std',422:'std',423:'std',424:'std',425:'std',426:'semi',427:'std',501:'std',502:'std',503:'std',504:'std',505:'std',506:'std',507:'std',508:'imp',509:'imp',510:'std',511:'std',512:'std',513:'std',514:'std',515:'std',516:'std',517:'std',518:'std',519:'std',520:'semi',521:'std',601:'std',603:'std',604:'std',605:'std',606:'std',607:'std',608:'imp',609:'imp',610:'std',611:'biz',612:'std',613:'biz',614:'std',615:'biz',616:'std',617:'biz',618:'std',619:'biz',620:'lux'};
-var FLOORS = [
-  {id:-1,name:'-1 поверх',sections:[{name:'Приміщення',rooms:['p-parking','p-kitchen','p-security','p-water','p-laundry','p-fire','p-kns']}]},
-  {id:1,name:'1 поверх',sections:[{name:'Приміщення',rooms:['f1-hall','f1-reception','f1-wc','f1-conf','f1-restaurant','f1-kitchen']}]},
-  {id:2,name:'2 поверх',sections:[{name:'2 секція',rooms:[206,207,208,209,210,211,212,213]},{name:'1 секція',rooms:[214,215,216,217,218,219,220,221,222,223,224,225,226,227]}]},
-  {id:3,name:'3 поверх',sections:[{name:'3 секція',rooms:[301,302,303,304,305]},{name:'2 секція',rooms:[306,307,308,309,310,311,312,313]},{name:'1 секція',rooms:[314,315,316,317,318,319,320,321,322,323,324,325,326,327]}]},
-  {id:4,name:'4 поверх',sections:[{name:'3 секція',rooms:[401,402,403,404,405]},{name:'2 секція',rooms:[406,407,408,409,410,411,412,413]},{name:'1 секція',rooms:[414,415,416,417,418,419,420,421,422,423,424,425,426,427]}]},
-  {id:5,name:'5 поверх',sections:[{name:'2 секція',rooms:[501,502,503,504,505,506,507]},{name:'1 секція',rooms:[508,509,510,511,512,513,514,515,516,517,518,519,520,521]}]},
-  {id:6,name:'6 поверх',sections:[{name:'2 секція',rooms:[601,603,604,605,606,607]},{name:'1 секція',rooms:[608,609,610,611,612,613,614,615,616,617,618,619,620]}]}
-];
-var TM = {mmg:{label:'ММГ',cls:'t-mmg',col:'#6b7280'},std:{label:'Стандарт',cls:'t-std',col:'#334155'},biz:{label:'Бізнес',cls:'t-biz',col:'#b45309'},imp:{label:'Покращений',cls:'t-imp',col:'#15803d'},semi:{label:'Півлюкс',cls:'t-semi',col:'#7e22ce'},lux:{label:'Люкс',cls:'t-lux',col:'#991b1b'}};
-var SDOT = {n:'#3d3f4a',w:'#3b82f6',d:'#22c55e',i:'#ef4444'};
-var SID = {n:'Не розпочато',w:'В роботі',d:'Готово',i:'Проблема'};
-var WSLBL = {n:'Не розпочато',w:'В роботі',d:'Виконано',i:'Проблема'};
-var WSBG = {n:'#1f2025',w:'#0c2340',d:'#052e16',i:'#2d0a0a'};
-var WSBD = {n:'#2c2d33',w:'#2563eb',d:'#16a34a',i:'#dc2626'};
-var WSTX = {n:'#5a5c6a',w:'#60a5fa',d:'#4ade80',i:'#f87171'};
-var DW = ['Шпаклівка стін','Фарбування стін і стель','Шпалери','Ковролін'];
-var ADMIN = 'lvivbau2@gmail.com';
-var FB_CFG = {apiKey:"AIzaSyC9yXNFHumEj54WijGfEDnuc1-1cvPYCfE",authDomain:"zamarstynivska-25.firebaseapp.com",databaseURL:"https://zamarstynivska-25-default-rtdb.europe-west1.firebasedatabase.app",projectId:"zamarstynivska-25",storageBucket:"zamarstynivska-25.firebasestorage.app",messagingSenderId:"1066701061895",appId:"1:1066701061895:web:b0a87dd095308e1c244fa2"};
+// =============================================
+// TYPE & STATUS MAPS
+// =============================================
+var TYPE_COLORS = {mmg:"#6b7280",standard:"#1e293b",business:"#854d0e",improved:"#14532d",semilux:"#581c87",lux:"#7f1d1d"};
+var TYPE_LABELS = {mmg:"ММГ",standard:"Стандарт",business:"Бізнес",improved:"Покращений",semilux:"Півлюкс",lux:"Люкс"};
+var DEFAULT_WORKS = ["Шпаклівка стін","Фарбування стін і стель","Шпалери","Ковролін"];
 
-function allRooms(){return FLOORS.reduce(function(a,f){return a.concat(f.sections.reduce(function(b,s){return b.concat(s.rooms);},[]));},[]);}
-function mkWork(n){return {name:n,ws:'n',con:'',issues:[]};}
-function mkIssue(t){return {id:Date.now()+Math.random(),date:new Date().toLocaleString('uk',{dateStyle:'short',timeStyle:'short'}),text:t,status:'open'};}
-function cName(c){return typeof c==='string'?c:(c.name||'');}
-function cEmail(c){return typeof c==='string'?'':(c.email||'');}
-function rl(n){return ROOM_NAMES[n]||String(n);}
-function rtp(n){return TM[RT[n]||'std'];}
-function pct(ws){if(!ws||!ws.length)return 0;return Math.round(ws.filter(function(w){return w.ws==='d';}).length/ws.length*100);}
-function tp(d,t){return t?Math.round(d/t*100):0;}
-function nowStr(){return new Date().toLocaleString('uk',{dateStyle:'short',timeStyle:'short'});}
-function toN(r){return isNaN(r)?r:Number(r);}
-function ovOpen(id){document.getElementById(id).classList.add('open');}
-function ovClose(id){document.getElementById(id).classList.remove('open');}
-function autoS(works){
-  if(!works||!works.length)return 'n';
-  var ws=works.map(function(w){return w.ws;});
-  if(ws.some(function(s){return s==='i';}))return 'i';
-  if(ws.every(function(s){return s==='d';}))return 'd';
-  if(ws.every(function(s){return s==='n';}))return 'n';
-  return 'w';
+// =============================================
+// HOTEL STRUCTURE
+// =============================================
+var HOTEL = [];
+
+// -1 floor
+HOTEL.push({floor:-1,label:"-1 поверх",rooms:[
+{id:"m_parking",name:"Паркінг",type:"standard"},
+{id:"m_kitchen",name:"Кухня -1",type:"standard"},
+{id:"m_guard",name:"Кімн.охорони",type:"standard"},
+{id:"m_water",name:"Водомірний вузол",type:"standard"},
+{id:"m_laundry",name:"Пральня",type:"standard"},
+{id:"m_fire",name:"Протипожежна",type:"standard"},
+{id:"m_kns",name:"КНС",type:"standard"}
+]});
+
+// 1 floor
+HOTEL.push({floor:1,label:"1 поверх",rooms:[
+{id:"f1_hall",name:"Хол",type:"standard"},
+{id:"f1_rec",name:"Рецепція",type:"standard"},
+{id:"f1_wc",name:"Туалети",type:"standard"},
+{id:"f1_conf",name:"Конференц-зал",type:"standard"},
+{id:"f1_rest",name:"Ресторан/Бар",type:"standard"},
+{id:"f1_kitch",name:"Кухня 1",type:"standard"}
+]});
+
+// 2 floor: 206-227
+(function(){
+var rooms = [];
+var i;
+for(i = 206; i <= 227; i++){
+var t = "standard";
+if(i === 214 || i === 215) t = "improved";
+else if(i === 226) t = "semilux";
+rooms.push({id:"r"+i, name:""+i, type:t});
+}
+HOTEL.push({floor:2,label:"2 поверх",rooms:rooms});
+})();
+
+// 3 floor: 301-327
+(function(){
+var rooms = [];
+var i;
+var biz3 = {302:1,303:1,304:1,305:1,308:1,310:1,312:1};
+for(i = 301; i <= 327; i++){
+var t = "standard";
+if(i === 301) t = "mmg";
+else if(biz3[i]) t = "business";
+else if(i === 314 || i === 315) t = "improved";
+else if(i === 326) t = "semilux";
+rooms.push({id:"r"+i, name:""+i, type:t});
+}
+HOTEL.push({floor:3,label:"3 поверх",rooms:rooms});
+})();
+
+// 4 floor: 401-427
+(function(){
+var rooms = [];
+var i;
+var biz4 = {402:1,403:1,404:1,405:1,408:1,410:1,412:1};
+for(i = 401; i <= 427; i++){
+var t = "standard";
+if(i === 401) t = "mmg";
+else if(biz4[i]) t = "business";
+else if(i === 414 || i === 415) t = "improved";
+else if(i === 426) t = "semilux";
+rooms.push({id:"r"+i, name:""+i, type:t});
+}
+HOTEL.push({floor:4,label:"4 поверх",rooms:rooms});
+})();
+
+// 5 floor: 501-521
+(function(){
+var rooms = [];
+var i;
+for(i = 501; i <= 521; i++){
+var t = "standard";
+if(i === 508 || i === 509) t = "improved";
+else if(i === 520) t = "semilux";
+rooms.push({id:"r"+i, name:""+i, type:t});
+}
+HOTEL.push({floor:5,label:"5 поверх",rooms:rooms});
+})();
+
+// 6 floor: 601-620 no 602
+(function(){
+var rooms = [];
+var i;
+var biz6 = {611:1,613:1,615:1,617:1,619:1};
+for(i = 601; i <= 620; i++){
+if(i === 602) continue;
+var t = "standard";
+if(i === 608 || i === 609) t = "improved";
+else if(biz6[i]) t = "business";
+else if(i === 620) t = "lux";
+rooms.push({id:"r"+i, name:""+i, type:t});
+}
+HOTEL.push({floor:6,label:"6 поверх",rooms:rooms});
+})();
+
+// =============================================
+// STATE
+// =============================================
+var roomsData = {};
+var consData = {};
+var filters = {status:{},type:{},contractor:{},floor:{}};
+var searchQ = "";
+var modalRoomId = null;
+var modalDraft = null;
+var reportTab = "general";
+var activeByConId = null;
+var reportConId = null;
+var reportWorkName = null;
+var probFilter = "open";
+
+// =============================================
+// AUTH
+// =============================================
+fbAuth.onAuthStateChanged(function(user){
+if(user){
+currentUser = user;
+isAdmin = (user.email === ADMIN_EMAIL);
+document.getElementById("authScreen").style.display = "none";
+document.getElementById("appScreen").style.display = "block";
+document.getElementById("userEmailEl").textContent = user.email;
+initListeners();
+} else {
+currentUser = null; isAdmin = false;
+document.getElementById("authScreen").style.display = "flex";
+document.getElementById("appScreen").style.display = "none";
+}
+});
+
+function doLogin(){
+var email = document.getElementById("authEmail").value.trim();
+var pass = document.getElementById("authPass").value;
+document.getElementById("authErr").textContent = "";
+fbAuth.signInWithEmailAndPassword(email, pass).catch(function(e){
+var m = "Помилка входу";
+if(e.code === "auth/user-not-found" || e.code === "auth/wrong-password") m = "Невірний email або пароль";
+if(e.code === "auth/invalid-email") m = "Невірний формат email";
+if(e.code === "auth/too-many-requests") m = "Забагато спроб. Спробуйте пізніше";
+document.getElementById("authErr").textContent = m;
+});
+}
+function doLogout(){ fbAuth.signOut(); }
+
+document.getElementById("authEmail").addEventListener("keydown", function(e){ if(e.key==="Enter") document.getElementById("authPass").focus(); });
+document.getElementById("authPass").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+
+// =============================================
+// FIREBASE LISTENERS
+// =============================================
+function initListeners(){
+fbDb.ref("/rooms").on("value", function(snap){
+roomsData = snap.val() || {};
+renderAll();
+});
+fbDb.ref("/cons").on("value", function(snap){
+consData = snap.val() || {};
+renderSidebarContractors();
+if(document.getElementById("consView").style.display !== "none") renderConsList();
+if(document.getElementById("byConView").classList.contains("open")) renderByConList();
+});
 }
 
-var rooms={}, CONS=['--',{name:'Бригада А',email:''},{name:'Бригада Б',email:''},{name:'Бригада В',email:''},{name:'ТОВ Буд-Сервіс',email:''},{name:'Іваненко',email:''},{name:'Петренко',email:''}];
-var cFloor='all', cSt='all', cTp='all', editing=null, curTab='sum';
-var db, auth, fbReady=false, currentUser=null, isAdmin=false;
+function getRoom(id){ return roomsData[id] || null; }
 
-allRooms().forEach(function(n){rooms[n]={s:'n',works:DW.map(mkWork),notes:'',hist:[]};});
-function rd(n){if(!rooms[n])rooms[n]={s:'n',works:DW.map(mkWork),notes:'',hist:[]};return rooms[n];}
-function saveRooms(){if(fbReady&&db)db.ref('rooms').set(rooms).catch(function(){});}
-function saveCons(){if(fbReady&&db)db.ref('cons').set(CONS).catch(function(){});}
-
-// FIREBASE
-firebase.initializeApp(FB_CFG);
-auth = firebase.auth();
-db = firebase.database();
-
-document.getElementById('btnLogin').addEventListener('click', function(){
-  var email = document.getElementById('loginEmail').value.trim();
-  var pass = document.getElementById('loginPass').value;
-  var st = document.getElementById('loginStatus');
-  if(!email||!pass){st.textContent='Введіть email і пароль';return;}
-  st.textContent='Підключення...';
-  auth.signInWithEmailAndPassword(email, pass).catch(function(err){
-    if(err.code==='auth/user-not-found'||err.code==='auth/wrong-password'||err.code==='auth/invalid-credential'){
-      st.textContent='Невірний email або пароль';
-    } else {
-      st.textContent='Помилка: '+err.message;
-    }
-  });
-});
-
-document.getElementById('loginPass').addEventListener('keydown', function(e){
-  if(e.key==='Enter') document.getElementById('btnLogin').click();
-});
-
-auth.onAuthStateChanged(function(user){
-  if(!user){document.getElementById('loginOv').style.display='flex';return;}
-  currentUser = user;
-  isAdmin = (user.email===ADMIN);
-  document.getElementById('loginOv').style.display='none';
-  var bar = document.createElement('div');
-  bar.className = 'user-bar';
-  bar.innerHTML = user.email+(isAdmin?' [адмін]':'')+' <button class="signout-btn" onclick="firebase.auth().signOut()">Вийти</button>';
-  document.getElementById('topRight').prepend(bar);
-  fbReady = true;
-  db.ref('rooms').once('value').then(function(snap){
-    var d = snap.val();
-    if(d){
-      rooms = d;
-      allRooms().forEach(function(n){if(!rooms[n])rooms[n]={s:'n',works:DW.map(mkWork),notes:'',hist:[]};});
-    }
-    db.ref('cons').once('value').then(function(snap2){
-      var c = snap2.val();
-      if(c&&Array.isArray(c))CONS=c.map(function(x){return typeof x==='string'&&x!=='--'?{name:x,email:''}:x;});
-      renderAll();
-      db.ref('rooms').on('value',function(s){var d=s.val();if(d){rooms=d;allRooms().forEach(function(n){if(!rooms[n])rooms[n]={s:'n',works:DW.map(mkWork),notes:'',hist:[]};});renderAll();if(editing!==null)renderWorks();}});
-      db.ref('cons').on('value',function(s){var d=s.val();if(d&&Array.isArray(d)){CONS=d.map(function(x){return typeof x==='string'&&x!=='--'?{name:x,email:''}:x;});renderConNav();}});
-    });
-  }).catch(function(){renderAll();});
-});
-
-function renderAll(){renderSidebar();renderStats();renderFloors();}
-
-function renderSidebar(){
-  var total=allRooms().length;
-  var fn=document.getElementById('sbFloors');
-  var fhtml='<button class="fb'+(cFloor==='all'?' act':'')+'" data-fid="all">Всі поверхи<span class="fbg">'+total+'</span></button>';
-  FLOORS.forEach(function(f){fhtml+='<button class="fb'+(cFloor===f.id?' act':'')+'" data-fid="'+f.id+'">'+f.name+'<span class="fbg">'+f.sections.reduce(function(a,s){return a+s.rooms.length;},0)+'</span></button>';});
-  fn.innerHTML=fhtml;
-  fn.querySelectorAll('.fb').forEach(function(b){b.addEventListener('click',function(){cFloor=b.dataset.fid==='all'?'all':parseInt(b.dataset.fid);renderAll();});});
-  var sn=document.getElementById('sbStatus');
-  var stats=[['all','Всі','#e2e4ea'],['n',SID.n,SDOT.n],['w',SID.w,SDOT.w],['d',SID.d,SDOT.d],['i',SID.i,SDOT.i]];
-  sn.innerHTML=stats.map(function(x){return '<button class="fb2'+(cSt===x[0]?' act':'')+'" data-sid="'+x[0]+'"><span class="dot8" style="background:'+x[2]+'"></span>'+x[1]+'</button>';}).join('');
-  sn.querySelectorAll('.fb2').forEach(function(b){b.addEventListener('click',function(){cSt=b.dataset.sid;renderAll();});});
-  var tn=document.getElementById('sbType');
-  var thtml='<button class="fb2'+(cTp==='all'?' act':'')+'" data-tid="all"><span class="dot8" style="background:var(--mut)"></span>Всі</button>';
-  Object.keys(TM).forEach(function(k){thtml+='<button class="fb2'+(cTp===k?' act':'')+'" data-tid="'+k+'"><span class="dot8" style="background:'+TM[k].col+'"></span>'+TM[k].label+'</button>';});
-  tn.innerHTML=thtml;
-  tn.querySelectorAll('.fb2').forEach(function(b){b.addEventListener('click',function(){cTp=b.dataset.tid;renderAll();});});
-  renderConNav();
+function getOrCreateRoom(id){
+if(roomsData[id]) return JSON.parse(JSON.stringify(roomsData[id]));
+var r = {works:[],notes:"",changelog:[],problems:[]};
+var i;
+for(i = 0; i < DEFAULT_WORKS.length; i++){
+r.works.push({name:DEFAULT_WORKS[i],status:"notstarted",contractor:""});
+}
+return r;
 }
 
-function renderConNav(){
-  var stats=buildConStats();
-  var active=Object.keys(stats).filter(function(nm){return stats[nm].totalW>0;});
-  var nav=document.getElementById('sbCon');
-  if(!active.length){nav.innerHTML='<div style="font-size:11px;color:var(--mut);padding:3px 7px">Ще не призначено</div>';return;}
-  nav.innerHTML=active.map(function(nm){var v=stats[nm];return '<button class="fb2" data-con="'+encodeURIComponent(nm)+'"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nm+'</span><span class="fbg">'+v.rooms+'</span></button>';}).join('');
-  nav.querySelectorAll('.fb2').forEach(function(b){b.addEventListener('click',function(){openCPanel(decodeURIComponent(b.dataset.con));});});
+function saveRoomFb(id, data){ fbDb.ref("/rooms/"+id).set(data); }
+
+// =============================================
+// STATUS / PROGRESS
+// =============================================
+function calcStatus(rd){
+if(!rd || !rd.works || rd.works.length === 0) return "notstarted";
+var hasProb = false, hasProg = false, allDone = true;
+var i;
+for(i = 0; i < rd.works.length; i++){
+var s = rd.works[i].status || "notstarted";
+if(s === "problem") hasProb = true;
+if(s === "inprogress") hasProg = true;
+if(s !== "done") allDone = false;
+}
+if(hasProb) return "problem";
+if(allDone) return "done";
+if(hasProg) return "inprogress";
+return "notstarted";
+}
+
+function calcProgress(rd){
+if(!rd || !rd.works || rd.works.length === 0) return 0;
+var done = 0;
+var i;
+for(i = 0; i < rd.works.length; i++){
+if((rd.works[i].status||"notstarted") === "done") done++;
+}
+return Math.round(done / rd.works.length * 100);
+}
+
+function stLabel(st){
+if(st==="notstarted") return "Не розпочато";
+if(st==="inprogress") return "В роботі";
+if(st==="done") return "Виконано";
+if(st==="problem") return "Проблема";
+return st;
+}
+
+// =============================================
+// RENDER ALL
+// =============================================
+function renderAll(){
+renderStats();
+renderFloors();
+renderSidebarFloors();
+renderSidebarContractors();
 }
 
 function renderStats(){
-  var all=allRooms(),total=all.length,c={n:0,w:0,d:0,i:0};
-  all.forEach(function(n){c[rd(n).s]++;});
-  var p=tp(c.d,total);
-  document.getElementById('statsBar').innerHTML='<div class="stat"><div class="sn" style="color:var(--acc)">'+total+'</div><div class="sl">Всього</div></div><div class="stat"><div class="sn" style="color:#22c55e">'+c.d+'</div><div class="sl">Готово</div></div><div class="stat"><div class="sn" style="color:#3b82f6">'+c.w+'</div><div class="sl">В роботі</div></div><div class="stat"><div class="sn" style="color:#ef4444">'+c.i+'</div><div class="sl">Проблеми</div></div><div class="stat pw"><div class="sl">Прогрес -- '+p+'%</div><div class="pb"><div class="pf" style="width:'+p+'%"></div></div></div>';
+var total=0,done=0,ip=0,prob=0;
+var fi, ri;
+for(fi=0;fi<HOTEL.length;fi++){
+for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+var st = calcStatus(getRoom(HOTEL[fi].rooms[ri].id));
+total++;
+if(st==="done") done++;
+else if(st==="inprogress") ip++;
+else if(st==="problem") prob++;
+}
+}
+var pct = total ? Math.round(done/total*100) : 0;
+var h = "";
+h += "<div class='stat-card'><div class='num'>"+total+"</div><div class='lbl'>Всього</div></div>";
+h += "<div class='stat-card'><div class='num green'>"+done+"</div><div class='lbl'>Готово</div></div>";
+h += "<div class='stat-card'><div class='num blue'>"+ip+"</div><div class='lbl'>В роботі</div></div>";
+h += "<div class='stat-card'><div class='num red'>"+prob+"</div><div class='lbl'>Проблеми</div></div>";
+h += "<div class='stat-card'><div class='num acc'>"+pct+"%</div><div class='lbl'>Прогрес</div><div class='prog-bar'><div class='prog-fill' style='width:"+pct+"%'></div></div></div>";
+document.getElementById("statsBar").innerHTML = h;
 }
 
-function isVis(n){
-  var q=document.getElementById('srch').value.trim().toLowerCase();
-  if(q&&String(n).toLowerCase().indexOf(q)<0&&(ROOM_NAMES[n]||'').toLowerCase().indexOf(q)<0)return false;
-  if(cSt!=='all'&&rd(n).s!==cSt)return false;
-  if(cTp!=='all'&&(RT[n]||'std')!==cTp)return false;
-  return true;
+function renderSidebarFloors(){
+var h = "";
+var i;
+for(i=0;i<HOTEL.length;i++){
+var f = HOTEL[i];
+var chk = filters.floor[f.floor] ? "checked" : "";
+h += "<div class='sb-item' onclick='toggleFilter(\"floor\",\""+f.floor+"\",this)'><input type='checkbox' "+chk+"> "+f.label+"</div>";
+}
+document.getElementById("sbFloors").innerHTML = h;
 }
 
-function roomCell(n){
-  var r=rd(n),tpe=rtp(n),p=pct(r.works),named=!!ROOM_NAMES[n];
-  return '<div class="room '+tpe.cls+(named?' named':'')+(isVis(n)?'':' hidden')+'" data-s="'+r.s+'" data-rid="'+n+'"><div class="rnum"'+(named?' style="font-size:9px"':'')+'>'+rl(n)+'</div>'+(named?'':'<div class="rtyp">'+tpe.label+'</div>')+'<div class="rpb"><div class="rpbf" style="width:'+p+'%"></div></div></div>';
+function renderSidebarContractors(){
+var keys = Object.keys(consData);
+var h = "";
+var i;
+for(i=0;i<keys.length;i++){
+var cid = keys[i];
+var con = consData[cid];
+var chk = filters.contractor[cid] ? "checked" : "";
+h += "<div class='sb-item' onclick='toggleFilter(\"contractor\",\""+cid+"\",this)'><input type='checkbox' "+chk+"> "+(con.name||con.email)+"</div>";
+}
+if(!h) h = "<div style='font-size:11px;color:var(--mut);padding:4px 6px'>Немає підрядників</div>";
+document.getElementById("sbContractors").innerHTML = h;
+}
+
+function passesFilter(roomDef){
+var rd = getRoom(roomDef.id);
+var st = calcStatus(rd);
+var fkeys = Object.keys(filters.floor);
+if(fkeys.length > 0){
+var ok = false;
+var fi, ri;
+for(fi=0;fi<HOTEL.length;fi++){
+if(!filters.floor[HOTEL[fi].floor]) continue;
+for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+if(HOTEL[fi].rooms[ri].id===roomDef.id){ok=true;break;}
+}
+if(ok) break;
+}
+if(!ok) return false;
+}
+if(Object.keys(filters.status).length>0 && !filters.status[st]) return false;
+if(Object.keys(filters.type).length>0 && !filters.type[roomDef.type]) return false;
+var ckeys = Object.keys(filters.contractor);
+if(ckeys.length>0){
+var hasCon = false;
+if(rd && rd.works){
+var w;
+for(w=0;w<rd.works.length;w++){
+if(rd.works[w].contractor && filters.contractor[rd.works[w].contractor]){hasCon=true;break;}
+}
+}
+if(!hasCon) return false;
+}
+if(searchQ){
+var q = searchQ.toLowerCase();
+if(roomDef.name.toLowerCase().indexOf(q)===-1) return false;
+}
+return true;
+}
+
+function makeRoomCell(roomDef, clickExtra){
+var rd = getRoom(roomDef.id);
+var st = calcStatus(rd);
+var prog = calcProgress(rd);
+var bg = TYPE_COLORS[roomDef.type] || "#1e293b";
+var stCls = "status-"+st;
+var progCol = st==="problem"?"#dc2626":(st==="done"?"#16a34a":"#e8b84b");
+var conNames = "";
+if(rd && rd.works){
+var seen = {};
+var w;
+for(w=0;w<rd.works.length;w++){
+var cid = rd.works[w].contractor;
+if(cid && !seen[cid] && consData[cid]){
+seen[cid]=true;
+if(conNames) conNames+=",";
+conNames += (consData[cid].name||consData[cid].email||"").split(" ")[0];
+}
+}
+}
+var extra = clickExtra || "";
+var h = "<div class='room-cell "+stCls+"' style='background:"+bg+"' onclick='openRoom(\""+roomDef.id+"\")"+(extra?";"+extra:"")+"'>";
+h += "<div><div class='room-num'>"+roomDef.name+"</div>";
+h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
+h += "<div class='room-bottom'>";
+if(conNames) h += "<div class='room-contractor'>"+conNames+"</div>";
+h += "<div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div>";
+h += "</div></div>";
+return h;
 }
 
 function renderFloors(){
-  var floors=cFloor==='all'?FLOORS:FLOORS.filter(function(f){return f.id===cFloor;});
-  document.getElementById('floorsWrap').innerHTML=floors.map(function(f){
-    var allF=f.sections.reduce(function(a,s){return a.concat(s.rooms);},[]);
-    var vis=allF.filter(function(n){return isVis(n);}).length;
-    return '<div class="floor-block"><div class="fh">'+f.name+'<span class="fi">'+vis+' з '+allF.length+' прим.</span><button class="btn sm" data-planfid="'+f.id+'">План</button></div>'+f.sections.map(function(s){return '<div class="sec"><div class="secl">'+s.name+'</div><div class="rg">'+s.rooms.map(roomCell).join('')+'</div></div>';}).join('')+'</div>';
-  }).join('');
-  document.querySelectorAll('.room[data-rid]').forEach(function(el){el.addEventListener('click',function(){openRM(toN(el.dataset.rid));});});
-  document.querySelectorAll('[data-planfid]').forEach(function(b){b.addEventListener('click',function(){openPlan(parseInt(b.dataset.planfid));});});
+var h = "";
+var fi, ri;
+for(fi=0;fi<HOTEL.length;fi++){
+var flr = HOTEL[fi];
+var total=0,done=0;
+var cellsH = "";
+for(ri=0;ri<flr.rooms.length;ri++){
+var roomDef = flr.rooms[ri];
+total++;
+var st = calcStatus(getRoom(roomDef.id));
+if(st==="done") done++;
+if(passesFilter(roomDef)) cellsH += makeRoomCell(roomDef,"");
+}
+var pct = total ? Math.round(done/total*100) : 0;
+h += "<div class='floor-section'>";
+h += "<div class='floor-header'>";
+h += "<h2>"+flr.label+"</h2>";
+h += "<span class='floor-stat'>"+done+"/"+total+" ("+pct+"%)</span>";
+h += "<button class='btn btn-sm' style='margin-left:auto' onclick='openFloorPlan("+fi+")'>Плян</button>";
+h += "</div>";
+h += cellsH ? "<div class='floor-grid'>"+cellsH+"</div>" : "<div style='color:var(--mut);font-size:12px;padding:6px 0'>Нічого за фільтром</div>";
+h += "</div>";
+}
+document.getElementById("floorsContainer").innerHTML = h;
 }
 
-function openRM(n){
-  editing=n;
-  var r=rd(n),tpe=rtp(n);
-  var fl=FLOORS.filter(function(f){return f.sections.some(function(s){return s.rooms.indexOf(n)>=0;});})[0];
-  var sec=fl?fl.sections.filter(function(s){return s.rooms.indexOf(n)>=0;})[0]:null;
-  document.getElementById('mTit').textContent=rl(n);
-  document.getElementById('mMeta').innerHTML='<span>'+(fl?fl.name:'')+' . '+(sec?sec.name:'')+'</span><span class="mbadge" style="background:'+tpe.col+'33;color:'+tpe.col+';border:1px solid '+tpe.col+'55">'+tpe.label+'</span><span id="mPct" style="font-family:IBM Plex Mono,monospace;font-size:11px">'+pct(r.works)+'%</span>';
-  document.getElementById('roomNotes').value=r.notes||'';
-  var h=(r.hist||[]).slice().reverse();
-  document.getElementById('hist').innerHTML=h.length?h.map(function(x){return '<div class="hi"><strong>'+x.d+'</strong> -- '+x.t+'</div>';}).join(''):'<div style="font-size:11px;color:var(--mut)">Немає записів</div>';
-  window._awn=[];
-  var seen={};
-  allRooms().forEach(function(rn){rd(rn).works.forEach(function(w){if(!seen[w.name]){seen[w.name]=true;window._awn.push(w.name);}});});
-  window._awn.sort();
-  renderWorks();
-  ovOpen('ovRM');
+// =============================================
+// FILTERS
+// =============================================
+function toggleFilter(cat, key, el){
+var cb = el.querySelector("input[type=checkbox]");
+if(filters[cat][key]){ delete filters[cat][key]; if(cb) cb.checked=false; }
+else { filters[cat][key]=true; if(cb) cb.checked=true; }
+renderFloors();
+}
+function onSearch(){ searchQ = document.getElementById("searchBox").value.trim(); renderFloors(); }
+
+// =============================================
+// ROOM MODAL
+// =============================================
+function openRoom(id){
+modalRoomId = id;
+modalDraft = getOrCreateRoom(id);
+renderModal();
+document.getElementById("roomOverlay").classList.add("open");
+}
+function closeRoomModal(){
+document.getElementById("roomOverlay").classList.remove("open");
+modalRoomId = null; modalDraft = null;
+}
+function overlayClickHandler(e){
+if(e.target===document.getElementById("roomOverlay")) closeRoomModal();
 }
 
-function renderWorks(){
-  if(editing===null)return;
-  var r=rd(editing);
-  var p=pct(r.works);
-  document.getElementById('mPf').style.width=p+'%';
-  var pe=document.getElementById('mPct');
-  if(pe)pe.textContent=p+'%';
-  var coHtml=CONS.map(function(c){return '<option value="'+cName(c)+'">'+cName(c)+'</option>';}).join('');
-  var html='';
-  r.works.forEach(function(w,i){
-    var issues=w.issues||[];
-    var oc=issues.filter(function(e){return e.status==='open';}).length;
-    var si=w.ws==='i'||issues.length>0;
-    var wrCls='wr'+(w.ws==='w'?' sw':w.ws==='d'?' sd':w.ws==='i'?' si':'');
-    var selHtml=coHtml.replace('value="'+w.con+'"','value="'+w.con+'" selected');
-    var issHtml='';
-    if(si){
-      var logHtml=issues.slice().reverse().map(function(e){
-        var cls=e.status==='open'?'ist-o':'ist-c';
-        var lbl=e.status==='open'?'Відкрита':'Закрита';
-        var closeBtn=e.status==='open'?'<button class="btn sm" data-cli="'+i+'" data-eid="'+e.id+'" style="margin-top:3px">Закрити</button>':'';
-        return '<div class="ient"><div class="idate"><span>'+e.date+'</span><span class="'+cls+'">'+lbl+'</span></div><div class="itxt">'+e.text+'</div>'+closeBtn+'</div>';
-      }).join('');
-      issHtml='<div class="wiss"><div class="wiss-hd"><span class="wiss-lbl">Журнал'+(oc?' ('+oc+')':'')+'</span><button class="btn sm" data-ai="'+i+'" style="color:#f87171;border-color:#522">+ Запис</button></div><div class="wiss-bd">'+logHtml+'<div class="iadd" id="iadd'+i+'"><textarea placeholder="Опишіть проблему..." id="ita'+i+'"></textarea><div class="iadd-row"><button class="btn sm" style="color:var(--mut)">Фото</button><button class="btn pri" style="font-size:11px;padding:4px 10px" data-si="'+i+'">Зберегти</button></div></div></div></div>';
-    }
-    var stw=w.ws==='w'?' ow':'';
-    var std=w.ws==='d'?' od':'';
-    var sti=w.ws==='i'?' oi':'';
-    html+='<div class="'+wrCls+'"><div class="wrt"><div class="wrn">'+w.name+'</div><div class="wrbtns"><button class="stb'+stw+'" data-idx="'+i+'" data-ws="w">В роботі</button><button class="stb'+std+'" data-idx="'+i+'" data-ws="d">Виконано</button><button class="stb'+sti+'" data-idx="'+i+'" data-ws="i">Проблема</button></div><button class="wdel" data-di="'+i+'">X</button></div><div class="wcon"><span class="wconl">Підрядник:</span><select data-ci="'+i+'">'+selHtml+'</select></div>'+issHtml+'</div>';
-  });
-  document.getElementById('worksList').innerHTML=html;
-  document.querySelectorAll('.stb[data-ws]').forEach(function(b){b.addEventListener('click',function(){var r=rd(editing),i=Number(b.dataset.idx),ws=b.dataset.ws;r.works[i].ws=r.works[i].ws===ws?'n':ws;if(!r.works[i].issues)r.works[i].issues=[];r.s=autoS(r.works);saveRooms();renderWorks();});});
-  document.querySelectorAll('.wdel[data-di]').forEach(function(b){b.addEventListener('click',function(){var r=rd(editing);r.works.splice(Number(b.dataset.di),1);r.s=autoS(r.works);renderWorks();});});
-  document.querySelectorAll('select[data-ci]').forEach(function(s){s.addEventListener('change',function(){rd(editing).works[Number(s.dataset.ci)].con=s.value;saveRooms();});});
-  document.querySelectorAll('[data-ai]').forEach(function(b){b.addEventListener('click',function(){var d=document.getElementById('iadd'+b.dataset.ai);if(d)d.style.display=d.style.display==='flex'?'none':'flex';});});
-  document.querySelectorAll('[data-si]').forEach(function(b){b.addEventListener('click',function(){var i=Number(b.dataset.si),ta=document.getElementById('ita'+i);var txt=ta?ta.value.trim():'';if(!txt)return;var r=rd(editing);if(!r.works[i].issues)r.works[i].issues=[];r.works[i].issues.push(mkIssue(txt));r.works[i].ws='i';r.s=autoS(r.works);saveRooms();renderWorks();});});
-  document.querySelectorAll('[data-cli]').forEach(function(b){b.addEventListener('click',function(){var i=Number(b.dataset.cli),id=Number(b.dataset.eid);var r=rd(editing),w=r.works[i];var e=w.issues.filter(function(x){return Math.round(x.id)===Math.round(id);})[0];if(e){e.status='closed';e.closedDate=nowStr();}if(w.issues.every(function(x){return x.status==='closed';})&&w.ws==='i')w.ws='n';r.s=autoS(r.works);saveRooms();renderWorks();});});
+function findRoomDef(id){
+var fi, ri;
+for(fi=0;fi<HOTEL.length;fi++){
+for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+if(HOTEL[fi].rooms[ri].id===id) return {floor:HOTEL[fi],room:HOTEL[fi].rooms[ri]};
+}
+}
+return null;
 }
 
-function addWork(){var inp=document.getElementById('newWork'),val=inp.value.trim();if(!val)return;rd(editing).works.push(mkWork(val));inp.value='';document.getElementById('suggBox').style.display='none';renderWorks();inp.focus();}
+function renderModal(){
+var id = modalRoomId;
+var def = findRoomDef(id);
+if(!def) return;
+var rd = modalDraft;
+var prog = calcProgress(rd);
+var bg = TYPE_COLORS[def.room.type]||"#1e293b";
 
-function saveRM(){
-  var n=editing;if(n===null)return;
-  var old=rd(n),ns=autoS(old.works),hist=old.hist||[];
-  if(old.s!==ns)hist.push({d:nowStr(),t:SID[old.s]+' -> '+SID[ns]});
-  rooms[n]={s:ns,works:old.works,notes:document.getElementById('roomNotes').value,hist:hist};
-  saveRooms();renderAll();ovClose('ovRM');
+document.getElementById("modalTitle").textContent = "Кімната " + def.room.name;
+
+var metaH = "<span class='meta-chip'>"+def.floor.label+"</span>";
+metaH += "<span class='meta-chip' style='background:"+bg+";border-color:"+bg+";color:#fff'>"+TYPE_LABELS[def.room.type]+"</span>";
+metaH += "<span class='meta-chip'>"+prog+"%</span>";
+document.getElementById("modalMeta").innerHTML = metaH;
+
+var h = "";
+
+h += "<div class='section-label'>Роботи</div>";
+if(!rd.works || rd.works.length===0){
+h += "<div style='color:var(--mut);font-size:13px;margin-bottom:10px'>Немає робіт</div>";
+} else {
+h += "<div class='works-list'>";
+var wi;
+for(wi=0;wi<rd.works.length;wi++){
+var wk = rd.works[wi];
+var wst = wk.status||"notstarted";
+var rowCls = "work-row";
+if(wst==="done") rowCls+=" work-done";
+if(wst==="problem") rowCls+=" work-problem";
+h += "<div class='"+rowCls+"'>";
+h += "<div class='work-name'>"+wk.name+"</div>";
+h += "<div class='work-status-btns'>";
+h += "<button class='wsb"+(wst==="inprogress"?" active-inprogress":"")+"' onclick='setWkSt("+wi+",\"inprogress\")'>В роботі</button>";
+h += "<button class='wsb"+(wst==="done"?" active-done":"")+"' onclick='setWkSt("+wi+",\"done\")'>Виконано</button>";
+h += "<button class='wsb"+(wst==="problem"?" active-problem":"")+"' onclick='setWkSt("+wi+",\"problem\")'>Проблема</button>";
+h += "</div>";
+h += "<select class='work-contractor-sel' onchange='setWkCon("+wi+",this.value)'>";
+h += "<option value=''>— Підрядник —</option>";
+var ckeys = Object.keys(consData);
+var ci;
+for(ci=0;ci<ckeys.length;ci++){
+var cid = ckeys[ci];
+var con = consData[cid];
+var sel = (wk.contractor===cid) ? " selected" : "";
+h += "<option value='"+cid+"'"+sel+">"+(con.name||con.email)+"</option>";
+}
+h += "</select>";
+h += "<button class='work-del-btn' onclick='delWork("+wi+")'>x</button>";
+h += "</div>";
+}
+h += "</div>";
 }
 
-function filterSugg(val){
-  var box=document.getElementById('suggBox'),names=window._awn||[];
-  var q=val.trim().toLowerCase();
-  var filtered=q?names.filter(function(n){return n.toLowerCase().indexOf(q)>=0;}):names;
-  var added=editing!==null?rd(editing).works.map(function(w){return w.name;}):[];
-  var show=filtered.filter(function(n){return added.indexOf(n)<0;});
-  if(!show.length){box.style.display='none';return;}
-  box.innerHTML=show.map(function(n){return '<div class="sugg-item" data-val="'+n+'">'+n+'</div>';}).join('');
-  box.style.display='block';
-  box.querySelectorAll('.sugg-item').forEach(function(el){
-    function pick(){document.getElementById('newWork').value=el.dataset.val;box.style.display='none';addWork();}
-    el.addEventListener('mousedown',function(e){e.preventDefault();pick();});
-    el.addEventListener('touchend',function(e){e.preventDefault();pick();});
-  });
-}
-document.addEventListener('click',function(e){var box=document.getElementById('suggBox'),inp=document.getElementById('newWork');if(box&&inp&&!box.contains(e.target)&&e.target!==inp)box.style.display='none';});
+h += "<div class='add-work-row'>";
+h += "<input class='add-work-input' id='awInput' placeholder='Нова робота...' oninput='showAC(this)' onkeydown='awKey(event)'>";
+h += "<button class='btn btn-sm btn-acc' onclick='doAddWork()'>+ Додати</button>";
+h += "<div class='autocomplete-list' id='acList' style='display:none'></div>";
+h += "</div>";
 
-function openPlan(fid){
-  var f=FLOORS.filter(function(f){return f.id===fid;})[0];if(!f)return;
-  document.getElementById('planTit').textContent='План -- '+f.name;
-  document.getElementById('planGrid').innerHTML=f.sections.map(function(s){
-    return '<div class="psec"><div class="psecl">'+s.name+'</div><div class="prg">'+s.rooms.map(function(n){
-      var r=rd(n),tpe=rtp(n),p=pct(r.works),named=!!ROOM_NAMES[n];
-      return '<div class="pr '+tpe.cls+(named?' pn':'')+'" data-s="'+r.s+'" data-rid="'+n+'"><div class="prn">'+rl(n)+'</div>'+(named?'':'<div class="prt">'+tpe.label+'</div>')+'<div class="prdot" style="background:'+SDOT[r.s]+'"></div><div class="prbar" style="background:linear-gradient(to right,#22c55e '+p+'%,transparent '+p+'%)"></div></div>';
-    }).join('')+'</div></div>';
-  }).join('');
-  document.getElementById('planLeg').innerHTML=Object.keys(TM).map(function(k){return '<div class="pli"><div class="plsw" style="background:'+TM[k].col+'"></div>'+TM[k].label+'</div>';}).join('');
-  document.querySelectorAll('.pr[data-rid]').forEach(function(el){el.addEventListener('click',function(){ovClose('ovPlan');openRM(toN(el.dataset.rid));});});
-  ovOpen('ovPlan');
+var hasProbs = rd.problems && rd.problems.length>0;
+h += "<div class='section-label'>Журнал проблем</div>";
+if(hasProbs){
+var pi;
+for(pi=0;pi<rd.problems.length;pi++){
+var prob = rd.problems[pi];
+var pst = prob.status||"open";
+h += "<div class='problem-row"+(pst==="open"?" open-p":"")+"'>";
+h += "<div class='problem-meta'><span class='problem-date'>"+(prob.date||"")+"</span>";
+h += "<span class='problem-status "+(pst==="open"?"ps-open":"ps-closed")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</span>";
+if(pst==="open") h += "<button class='btn btn-sm' onclick='closeProb("+pi+")'>Закрити</button>";
+h += "</div><div class='problem-text'>"+prob.text+"</div></div>";
 }
+}
+h += "<div class='add-problem-row'>";
+h += "<textarea class='add-problem-input' id='probText' placeholder='Опис проблеми...' rows='2'></textarea>";
+h += "<button class='btn btn-sm btn-danger' onclick='addProb()'>+ Проблема</button>";
+h += "</div>";
 
-function buildConStats(){
-  var stats={};
-  CONS.filter(function(c){return cName(c)!=='--';}).forEach(function(c){stats[cName(c)]={rooms:0,totalW:0,doneW:0,issW:0,_s:[]};});
-  allRooms().forEach(function(n){
-    rd(n).works.forEach(function(w){
-      if(!w.con||w.con==='--')return;
-      if(!stats[w.con])stats[w.con]={rooms:0,totalW:0,doneW:0,issW:0,_s:[]};
-      var s=stats[w.con];
-      if(s._s.indexOf(n)<0){s._s.push(n);s.rooms++;}
-      s.totalW++;
-      if(w.ws==='d')s.doneW++;
-      if(w.ws==='i')s.issW++;
-    });
-  });
-  return stats;
+h += "<div class='section-label'>Примітки</div>";
+h += "<textarea class='notes-textarea' id='roomNotes'>"+esc(rd.notes||"")+"</textarea>";
+
+if(rd.changelog && rd.changelog.length>0){
+h += "<div class='section-label'>Журнал змін</div><div class='changelog-list'>";
+var cl = rd.changelog.slice().reverse();
+var ci2;
+for(ci2=0;ci2<cl.length;ci2++){
+h += "<div class='changelog-item'><span class='cl-date'>"+(cl[ci2].date||"")+"</span><span>"+esc(cl[ci2].text||"")+"</span></div>";
+}
+h += "</div>";
 }
 
-function conDetailHTML(nm){
-  var bf={},tw=0,dw=0,iw=0,rc=0;
-  FLOORS.forEach(function(f){f.sections.forEach(function(s){s.rooms.forEach(function(n){
-    var ws=rd(n).works.filter(function(w){return w.con===nm;});
-    if(!ws.length)return;
-    rc++;tw+=ws.length;
-    dw+=ws.filter(function(w){return w.ws==='d';}).length;
-    iw+=ws.filter(function(w){return w.ws==='i';}).length;
-    var k=f.id+'|'+s.name;
-    if(!bf[k])bf[k]={fn:f.name,sn:s.name,rooms:[]};
-    bf[k].rooms.push({n:n,ws:ws});
-  });});});
-  if(!rc)return '<div style="color:var(--mut);font-size:12px;padding:16px">Немає призначених робіт</div>';
-  var h='<div class="det-stats"><span>'+rc+' кімнат . '+dw+'/'+tw+' виконано . '+tp(dw,tw)+'%</span>'+(iw?'<span style="color:#f87171;font-weight:600">! '+iw+' проблем</span>':'')+'</div>';
-  Object.keys(bf).forEach(function(k){
-    var v=bf[k];
-    h+='<div class="det-floor"><div class="det-fl-title">'+v.fn+' . '+v.sn+'</div><div class="det-rooms">';
-    v.rooms.forEach(function(x){
-      var hi=x.ws.some(function(w){return w.ws==='i';}),ad=x.ws.every(function(w){return w.ws==='d';}),hw=x.ws.some(function(w){return w.ws==='w';});
-      var st=hi?'i':ad?'d':hw?'w':'n';
-      h+='<div class="det-room" data-rid="'+x.n+'" style="border-color:'+WSBD[st]+';background:'+WSBG[st]+'"><div class="det-rnum" style="color:'+WSTX[st]+'">'+rl(x.n)+'</div>'+x.ws.map(function(w){return '<div class="det-rsub" style="color:'+WSTX[w.ws||'n']+'">'+w.name+'</div>';}).join('')+'</div>';
-    });
-    h+='</div></div>';
-  });
-  return h;
+document.getElementById("modalBody").innerHTML = h;
 }
 
-function workDetailHTML(wn){
-  var bf={},tot=0,don=0,inw=0,iss=0;
-  FLOORS.forEach(function(f){f.sections.forEach(function(s){s.rooms.forEach(function(n){
-    var w=rd(n).works.filter(function(x){return x.name===wn;})[0];
-    if(!w)return;
-    tot++;
-    if(w.ws==='d')don++;
-    if(w.ws==='w')inw++;
-    if(w.ws==='i')iss++;
-    var k=f.id+'|'+s.name;
-    if(!bf[k])bf[k]={fn:f.name,sn:s.name,rooms:[]};
-    bf[k].rooms.push({n:n,w:w});
-  });});});
-  if(!tot)return '<div style="color:var(--mut);font-size:12px;padding:16px">Не призначена жодній кімнаті</div>';
-  var p=tp(don,tot);
-  var h='<div class="det-stats"><span>'+tot+' кімнат . '+don+' виконано . '+inw+' в роботі</span>'+(iss?'<span style="color:#f87171;font-weight:600">! '+iss+' проблем</span>':'')+'<span style="font-family:monospace;font-size:11px">'+p+'%</span></div>';
-  Object.keys(bf).forEach(function(k){
-    var v=bf[k];
-    h+='<div class="det-floor"><div class="det-fl-title">'+v.fn+' . '+v.sn+'</div><div class="det-rooms">';
-    v.rooms.forEach(function(x){
-      var st=x.w.ws||'n';
-      h+='<div class="det-room" data-rid="'+x.n+'" style="border-color:'+WSBD[st]+';background:'+WSBG[st]+'"><div class="det-rnum" style="color:'+WSTX[st]+'">'+rl(x.n)+'</div>'+(x.w.con?'<div class="det-rsub" style="color:'+WSTX[st]+'">'+x.w.con+'</div>':'')+'</div>';
-    });
-    h+='</div></div>';
-  });
-  return h;
+function setWkSt(wi, newSt){
+if(!modalDraft||!modalDraft.works) return;
+var old = modalDraft.works[wi].status||"notstarted";
+modalDraft.works[wi].status = (old===newSt) ? "notstarted" : newSt;
+addCL("Робота \""+modalDraft.works[wi].name+"\": "+stLabel(old)+" > "+stLabel(modalDraft.works[wi].status));
+renderModal();
+}
+function setWkCon(wi, cid){ if(modalDraft&&modalDraft.works) modalDraft.works[wi].contractor=cid; }
+function delWork(wi){
+if(!modalDraft||!modalDraft.works) return;
+var name = modalDraft.works[wi].name;
+modalDraft.works.splice(wi,1);
+addCL("Видалено роботу \""+name+"\"");
+renderModal();
+}
+function doAddWork(){
+var inp = document.getElementById("awInput");
+if(!inp) return;
+var name = inp.value.trim();
+if(!name) return;
+if(!modalDraft.works) modalDraft.works=[];
+modalDraft.works.push({name:name,status:"notstarted",contractor:""});
+addCL("Додано роботу \""+name+"\"");
+inp.value=""; hideAC(); renderModal();
+}
+function awKey(e){ if(e.key==="Enter") doAddWork(); }
+function closeProb(pi){
+if(!modalDraft.problems) return;
+modalDraft.problems[pi].status="closed";
+addCL("Проблему закрито");
+renderModal();
+}
+function addProb(){
+var ta = document.getElementById("probText");
+if(!ta) return;
+var txt = ta.value.trim();
+if(!txt) return;
+if(!modalDraft.problems) modalDraft.problems=[];
+modalDraft.problems.push({text:txt,date:nowStr(),status:"open"});
+addCL("Додано проблему");
+ta.value=""; renderModal();
+}
+function addCL(txt){
+if(!modalDraft.changelog) modalDraft.changelog=[];
+modalDraft.changelog.push({date:nowStr(),text:txt,user:currentUser?currentUser.email:""});
+}
+function saveRoom(){
+if(!modalRoomId||!modalDraft) return;
+var nt = document.getElementById("roomNotes");
+if(nt) modalDraft.notes = nt.value;
+saveRoomFb(modalRoomId, modalDraft);
+showToast("Збережено", "success");
+closeRoomModal();
 }
 
-function bind2col(listSel,detailId,attr,fn){
-  var btns=document.querySelectorAll(listSel);
-  function sel(btn){
-    btns.forEach(function(b){b.classList.remove('act');});
-    btn.classList.add('act');
-    var val=decodeURIComponent(btn.dataset[attr]);
-    var det=document.getElementById(detailId);
-    det.innerHTML=fn(val);
-    det.querySelectorAll('[data-rid]').forEach(function(el){el.addEventListener('click',function(){ovClose('ovRep');openRM(toN(el.dataset.rid));});});
-  }
-  if(btns.length)sel(btns[0]);
-  btns.forEach(function(b){b.addEventListener('click',function(){sel(b);});});
+function getAllWorkNames(){
+var names = {};
+var k, i;
+for(k in roomsData){
+var rd = roomsData[k];
+if(rd&&rd.works) for(i=0;i<rd.works.length;i++) names[rd.works[i].name]=true;
+}
+return Object.keys(names).sort();
+}
+function showAC(inp){
+var val = inp.value.trim().toLowerCase();
+var list = document.getElementById("acList");
+if(!list||!val){if(list)list.style.display="none";return;}
+var all = getAllWorkNames();
+var matches = [];
+var i;
+for(i=0;i<all.length;i++) if(all[i].toLowerCase().indexOf(val)!==-1) matches.push(all[i]);
+if(!matches.length){list.style.display="none";return;}
+var h="";
+for(i=0;i<Math.min(matches.length,8);i++){
+var m = matches[i];
+h += "<div class='autocomplete-item' onclick='selAC(\""+m.replace(/"/g,"&quot;")+"\")'>" + m + "</div>";
+}
+list.innerHTML=h; list.style.display="block";
+}
+function selAC(n){ var i=document.getElementById("awInput"); if(i) i.value=n; hideAC(); }
+function hideAC(){ var l=document.getElementById("acList"); if(l) l.style.display="none"; }
+
+// =============================================
+// CONTRACTORS VIEW
+// =============================================
+function openContractors(){
+document.getElementById("floorsContainer").style.display="none";
+document.getElementById("statsBar").style.display="none";
+document.getElementById("consView").style.display="block";
+renderConsList();
+if(!isAdmin) document.getElementById("consAddPanel").style.display="none";
+else document.getElementById("consAddPanel").style.display="block";
+}
+function closeContractors(){
+document.getElementById("consView").style.display="none";
+document.getElementById("floorsContainer").style.display="block";
+document.getElementById("statsBar").style.display="flex";
+}
+function renderConsList(){
+var keys = Object.keys(consData);
+var h = "";
+var i;
+for(i=0;i<keys.length;i++){
+var cid=keys[i]; var con=consData[cid];
+var cnt=0;
+var rid;
+for(rid in roomsData){
+var rd=roomsData[rid];
+if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){if(rd.works[w].contractor===cid){cnt++;break;}}}
+}
+h+="<div class='con-row'>";
+h+="<div><div class='con-name'>"+(con.name||"--")+"</div><div class='con-email'>"+(con.email||"")+"</div></div>";
+h+="<div class='mono' style='font-size:12px;color:var(--mut);margin-left:auto'>"+cnt+" кімн.</div>";
+if(isAdmin) h+="<button class='btn btn-sm btn-danger' onclick='delCon(\""+cid+"\")'>Видалити</button>";
+h+="</div>";
+}
+if(!h) h="<div style='color:var(--mut);font-size:13px'>Немає підрядників</div>";
+document.getElementById("consListPanel").innerHTML=h;
+}
+function addContractor(){
+if(!isAdmin) return;
+var name=document.getElementById("conNameInput").value.trim();
+var email=document.getElementById("conEmailInput").value.trim();
+if(!name){showToast("Введіть назву","err");return;}
+var ref=fbDb.ref("/cons").push();
+ref.set({name:name,email:email});
+document.getElementById("conNameInput").value="";
+document.getElementById("conEmailInput").value="";
+showToast("Підрядника додано","success");
+}
+function delCon(cid){
+if(!isAdmin||!confirm("Видалити підрядника?")) return;
+fbDb.ref("/cons/"+cid).remove();
+showToast("Видалено","success");
+}
+function createFirebaseUser(){
+if(!isAdmin) return;
+var email=document.getElementById("fbUserEmail").value.trim();
+var pass=document.getElementById("fbUserPass").value;
+var errEl=document.getElementById("fbUserErr");
+errEl.textContent="";
+if(!email||!pass){errEl.textContent="Заповніть email і пароль";return;}
+var secApp;
+try{ secApp=firebase.app("secondary"); }
+catch(e){ secApp=firebase.initializeApp(FB_CONFIG,"secondary"); }
+secApp.auth().createUserWithEmailAndPassword(email,pass).then(function(){
+secApp.auth().signOut();
+document.getElementById("fbUserEmail").value="";
+document.getElementById("fbUserPass").value="";
+showToast("Користувача створено","success");
+}).catch(function(e){ errEl.textContent=e.message; });
 }
 
-function openConSelect(){
-  var stats=buildConStats();
-  var allC=CONS.filter(function(c){return cName(c)!=='--';});
-  var el=document.getElementById('csBody');
-  if(!allC.length){el.innerHTML='<div style="color:var(--mut);font-size:12px;padding:12px;text-align:center">Додайте підрядників</div>';}
-  else{
-    el.innerHTML=allC.map(function(c){
-      var nm=cName(c),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0},p=tp(v.doneW,v.totalW);
-      return '<button class="csb" data-con="'+encodeURIComponent(nm)+'"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">'+nm+'</span><span class="cbg">'+(v.totalW>0?v.rooms+' кімн. . '+p+'%':'немає робіт')+'</span></button>';
-    }).join('');
-    el.querySelectorAll('.csb').forEach(function(b){b.addEventListener('click',function(){ovClose('ovCS');openCPanel(decodeURIComponent(b.dataset.con));});});
-  }
-  ovOpen('ovCS');
+// =============================================
+// BY CONTRACTOR VIEW
+// =============================================
+function openByContractor(){
+document.getElementById("byConView").classList.add("open");
+activeByConId=null;
+renderByConList();
+document.getElementById("byConRooms").innerHTML="<div style='color:var(--mut)'>Оберіть підрядника</div>";
+}
+function closeByContractor(){ document.getElementById("byConView").classList.remove("open"); }
+function renderByConList(){
+var keys=Object.keys(consData);
+var h="";
+var i;
+for(i=0;i<keys.length;i++){
+var cid=keys[i]; var con=consData[cid];
+var ac=(activeByConId===cid)?" active":"";
+h+="<div class='bycon-item"+ac+"' onclick='selByCon(\""+cid+"\")'>";
+h+="<div style='font-weight:600'>"+(con.name||"--")+"</div>";
+h+="<div style='font-size:11px;color:var(--mut);font-family:IBM Plex Mono,monospace'>"+(con.email||"")+"</div></div>";
+}
+if(!h) h="<div style='color:var(--mut);font-size:13px'>Немає підрядників</div>";
+document.getElementById("byConList").innerHTML=h;
+}
+function selByCon(cid){
+activeByConId=cid;
+renderByConList();
+var con=consData[cid];
+var h="<h3 style='margin-bottom:12px;font-size:16px;color:var(--acc)'>"+(con?con.name||con.email:"")+"</h3>";
+var matched=[];
+var fi, ri;
+for(fi=0;fi<HOTEL.length;fi++){
+for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+var rd=getRoom(HOTEL[fi].rooms[ri].id);
+if(rd&&rd.works){
+var w;
+for(w=0;w<rd.works.length;w++){
+if(rd.works[w].contractor===cid){matched.push(HOTEL[fi].rooms[ri]);break;}
+}
+}
+}
+}
+if(!matched.length){h+="<div style='color:var(--mut)'>Немає кімнат</div>";}
+else{h+="<div class='floor-grid'>";var mi;for(mi=0;mi<matched.length;mi++) h+=makeRoomCell(matched[mi],"");h+="</div>";}
+document.getElementById("byConRooms").innerHTML=h;
 }
 
-function openCPanel(nm){
-  document.getElementById('cpTit').textContent=nm;
-  var stats=buildConStats(),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0};
-  document.getElementById('cpSub').innerHTML=v.rooms+' кімнат . '+v.doneW+'/'+v.totalW+' виконано ('+tp(v.doneW,v.totalW)+'%)'+(v.issW?' . ! '+v.issW+' проблем':'');
-  var bd=document.getElementById('cpBd');
-  bd.innerHTML=conDetailHTML(nm);
-  bd.querySelectorAll('[data-rid]').forEach(function(el){el.addEventListener('click',function(){ovClose('ovCP');openRM(toN(el.dataset.rid));});});
-  ovOpen('ovCP');
+// =============================================
+// FLOOR PLAN
+// =============================================
+function openFloorPlan(fi){
+var flr=HOTEL[fi];
+document.getElementById("floorPlanTitle").textContent=flr.label;
+var h="<div class='floor-grid'>";
+var ri;
+for(ri=0;ri<flr.rooms.length;ri++) h+=makeRoomCell(flr.rooms[ri],"closeFloorPlan()");
+h+="</div>";
+document.getElementById("floorPlanGrid").innerHTML=h;
+document.getElementById("floorPlanPanel").classList.add("open");
+}
+function closeFloorPlan(){ document.getElementById("floorPlanPanel").classList.remove("open"); }
+
+// =============================================
+// REPORT
+// =============================================
+function openReport(){
+document.getElementById("reportPanel").classList.add("open");
+renderReport();
+}
+function closeReport(){ document.getElementById("reportPanel").classList.remove("open"); }
+function switchReportTab(tab,el){
+reportTab=tab;
+document.querySelectorAll(".rtab").forEach(function(t){t.classList.remove("active");});
+el.classList.add("active");
+renderReport();
+}
+function renderReport(){
+var body=document.getElementById("reportBody");
+if(reportTab==="general") renderRepGeneral(body);
+else if(reportTab==="bycon") renderRepByCon(body);
+else if(reportTab==="bywork") renderRepByWork(body);
+else if(reportTab==="problems") renderRepProblems(body);
+}
+function renderRepGeneral(body){
+var h="<div style='flex:1'><table class='report-table'><thead><tr><th>Поверх</th><th>Всього</th><th>Готово</th><th>В роботі</th><th>Проблем</th><th>%</th></tr></thead><tbody>";
+var fi,ri;
+for(fi=0;fi<HOTEL.length;fi++){
+var flr=HOTEL[fi]; var t=0,d=0,ip=0,pr=0;
+for(ri=0;ri<flr.rooms.length;ri++){
+var st=calcStatus(getRoom(flr.rooms[ri].id));
+t++;if(st==="done")d++;else if(st==="inprogress")ip++;else if(st==="problem")pr++;
+}
+var pct=t?Math.round(d/t*100):0;
+h+="<tr><td>"+flr.label+"</td><td class='mono'>"+t+"</td><td class='mono' style='color:#16a34a'>"+d+"</td><td class='mono' style='color:#2563eb'>"+ip+"</td><td class='mono' style='color:#dc2626'>"+pr+"</td><td class='mono'>"+pct+"%</td></tr>";
+}
+h+="</tbody></table></div>";
+body.innerHTML=h;
+}
+function renderRepByCon(body){
+var keys=Object.keys(consData);
+var lh=""; var i;
+for(i=0;i<keys.length;i++){
+var cid=keys[i];var con=consData[cid];
+var ac=(reportConId===cid)?" active":"";
+lh+="<div class='report-list-item"+ac+"' onclick='selRepCon(\""+cid+"\")'>"+(con.name||con.email)+"</div>";
+}
+var rh="";
+if(reportConId&&consData[reportConId]){
+rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th></tr></thead><tbody>";
+var fi,ri;
+for(fi=0;fi<HOTEL.length;fi++){
+for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+var rd=getRoom(HOTEL[fi].rooms[ri].id);
+if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
+if(rd.works[w].contractor===reportConId)
+rh+="<tr><td>"+HOTEL[fi].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(rd.works[w].status||"notstarted")+"</td></tr>";
+}}
+}
+}
+rh+="</tbody></table>";
+} else rh="<div style='color:var(--mut)'>Оберіть підрядника</div>";
+body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
+}
+function selRepCon(cid){ reportConId=cid; renderReport(); }
+function renderRepByWork(body){
+var wmap={}; var fi,ri;
+for(fi=0;fi<HOTEL.length;fi++){
+for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+var rd=getRoom(HOTEL[fi].rooms[ri].id);
+if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
+var wn=rd.works[w].name;
+if(!wmap[wn]) wmap[wn]=[];
+wmap[wn].push({room:HOTEL[fi].rooms[ri].name,st:rd.works[w].status||"notstarted"});
+}}
+}
+}
+var wnames=Object.keys(wmap).sort();
+var lh=""; var i;
+for(i=0;i<wnames.length;i++){
+var wn=wnames[i];var ac=(reportWorkName===wn)?" active":"";
+lh+="<div class='report-list-item"+ac+"' onclick='selRepWork(\""+wn.replace(/"/g,"&quot;")+"\")'>" + wn+" <span style='color:var(--mut)'>("+wmap[wn].length+")</span></div>";
+}
+var rh="";
+if(reportWorkName&&wmap[reportWorkName]){
+rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th></tr></thead><tbody>";
+var items=wmap[reportWorkName];var j;
+for(j=0;j<items.length;j++) rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td></tr>";
+rh+="</tbody></table>";
+} else rh="<div style='color:var(--mut)'>Оберіть вид роботи</div>";
+body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
+}
+function selRepWork(n){ reportWorkName=n; renderReport(); }
+function renderRepProblems(body){
+var h="<div style='flex:1'>";
+h+="<div style='display:flex;gap:7px;margin-bottom:10px'>";
+h+="<button class='btn btn-sm"+(probFilter==="open"?" btn-acc":"")+"' onclick='setProbF(\"open\")'>Відкриті</button>";
+h+="<button class='btn btn-sm"+(probFilter==="all"?" btn-acc":"")+"' onclick='setProbF(\"all\")'>Всі</button>";
+h+="</div>";
+h+="<table class='report-table'><thead><tr><th>Кімната</th><th>Проблема</th><th>Дата</th><th>Статус</th></tr></thead><tbody>";
+var fi,ri;
+for(fi=0;fi<HOTEL.length;fi++){
+for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+var rd=getRoom(HOTEL[fi].rooms[ri].id);
+if(rd&&rd.problems){var pi;for(pi=0;pi<rd.problems.length;pi++){
+var prob=rd.problems[pi]; var pst=prob.status||"open";
+if(probFilter==="open"&&pst!=="open") continue;
+h+="<tr><td>"+HOTEL[fi].rooms[ri].name+"</td><td>"+esc(prob.text)+"</td><td class='mono'>"+(prob.date||"")+"</td><td class='mono' style='color:"+(pst==="open"?"#dc2626":"#16a34a")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</td></tr>";
+}}
+}
+}
+h+="</tbody></table></div>";
+body.innerHTML=h;
+}
+function setProbF(m){ probFilter=m; renderReport(); }
+function printReport(){ window.print(); }
+
+// =============================================
+// CSV EXPORT
+// =============================================
+function exportCSV(){
+var rows=[["Кімната","Тип","Поверх","Статус","Прогрес%","Робота","Статус роботи","Підрядник","Примітки"]];
+var fi,ri;
+for(fi=0;fi<HOTEL.length;fi++){
+for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+var rdef=HOTEL[fi].rooms[ri];
+var rd=getRoom(rdef.id);
+var st=calcStatus(rd); var prog=calcProgress(rd);
+if(rd&&rd.works&&rd.works.length){
+var w;
+for(w=0;w<rd.works.length;w++){
+var conName="";
+if(rd.works[w].contractor&&consData[rd.works[w].contractor]){
+conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"";
+}
+rows.push([rdef.name,TYPE_LABELS[rdef.type]||rdef.type,HOTEL[fi].label,stLabel(st),prog,rd.works[w].name,stLabel(rd.works[w].status||"notstarted"),conName,w===0?(rd?rd.notes||"":""):""]);
+}
+} else {
+rows.push([rdef.name,TYPE_LABELS[rdef.type]||rdef.type,HOTEL[fi].label,stLabel(st),prog,"","","",rd?rd.notes||"":""]);
+}
+}
+}
+var csv="\uFEFF";
+var ri2,ci;
+for(ri2=0;ri2<rows.length;ri2++){
+var cells=[];
+for(ci=0;ci<rows[ri2].length;ci++){
+cells.push("\""+String(rows[ri2][ci]).replace(/"/g,"\"\"")+"\"");
+}
+csv+=cells.join(";")+"\r\n";
+}
+var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+var url=URL.createObjectURL(blob);
+var a=document.createElement("a");
+a.href=url; a.download="hotel_"+nowDateStr()+".csv"; a.click();
+URL.revokeObjectURL(url);
+showToast("CSV завантажено","success");
 }
 
-function renderConList(){
-  document.getElementById('conList').innerHTML=CONS.map(function(c,i){
-    if(i===0)return '<div class="ci"><div class="cir"><span style="flex:1;font-size:12px;color:var(--mut)">-- (не призначено)</span></div></div>';
-    return '<div class="ci"><div class="cir"><input value="'+cName(c)+'" placeholder="Назва..." data-ni="'+i+'"><button class="cdel" data-di="'+i+'">X</button></div><input class="em" value="'+cEmail(c)+'" placeholder="Gmail для входу..." data-ei="'+i+'"></div>';
-  }).join('');
-  document.querySelectorAll('input[data-ni]').forEach(function(inp){inp.addEventListener('change',function(){var i=Number(inp.dataset.ni);if(typeof CONS[i]==='string')CONS[i]={name:CONS[i],email:''};CONS[i].name=inp.value.trim()||cName(CONS[i]);saveCons();});});
-  document.querySelectorAll('input[data-ei]').forEach(function(inp){inp.addEventListener('change',function(){var i=Number(inp.dataset.ei);if(typeof CONS[i]==='string')CONS[i]={name:CONS[i],email:''};CONS[i].email=inp.value.trim().toLowerCase();saveCons();});});
-  document.querySelectorAll('.cdel[data-di]').forEach(function(b){b.addEventListener('click',function(){CONS.splice(Number(b.dataset.di),1);saveCons();renderConList();});});
+// =============================================
+// UTILS
+// =============================================
+function nowStr(){
+var d=new Date();
+return d.toLocaleDateString("uk-UA")+" "+d.toLocaleTimeString("uk-UA",{hour:"2-digit",minute:"2-digit"});
 }
-function addCon(){var inp=document.getElementById('newCon'),val=inp.value.trim();if(!val)return;CONS.push({name:val,email:''});saveCons();renderConList();inp.value='';inp.focus();}
-
-function openRep(){renderTab(curTab);ovOpen('ovRep');}
-function renderTab(tab){
-  curTab=tab;
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('act',t.dataset.tab===tab);});
-  var body=document.getElementById('repBody');
-  if(tab==='sum'){body.innerHTML=repSum();return;}
-  if(tab==='iss'){body.innerHTML=repIss();return;}
-  if(tab==='con'){body.innerHTML=rep2col('con');setTimeout(function(){bind2col('.ri-con','repDetail','conname',conDetailHTML);},10);return;}
-  if(tab==='work'){body.innerHTML=rep2col('work');setTimeout(function(){bind2col('.ri-work','repDetail','wname',workDetailHTML);},10);return;}
+function nowDateStr(){
+return new Date().toISOString().slice(0,10);
 }
-
-function rep2col(type){
-  var items=[];
-  if(type==='con'){
-    var stats=buildConStats();
-    CONS.filter(function(c){return cName(c)!=='--';}).forEach(function(c){
-      var nm=cName(c),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0},p=tp(v.doneW,v.totalW);
-      items.push('<button class="rep-item ri-con" data-conname="'+encodeURIComponent(nm)+'"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">'+nm+'</span><span class="ri-badge">'+v.rooms+' . '+p+'%</span></button>');
-    });
-  } else {
-    var wnames=[];
-    var wseen={};
-    allRooms().forEach(function(n){rd(n).works.forEach(function(w){if(!wseen[w.name]){wseen[w.name]=true;wnames.push(w.name);}});});
-    wnames.forEach(function(wn){
-      var tot=0,don=0,iss=0;
-      allRooms().forEach(function(n){var w=rd(n).works.filter(function(x){return x.name===wn;})[0];if(!w)return;tot++;if(w.ws==='d')don++;if(w.ws==='i')iss++;});
-      var p=tp(don,tot);
-      items.push('<button class="rep-item ri-work" data-wname="'+encodeURIComponent(wn)+'"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+wn+'</span><span class="ri-badge">'+don+'/'+tot+' . '+p+'%</span></button>');
-    });
-  }
-  return '<div class="rep-2col"><div class="rep-list">'+items.join('')+'</div><div class="rep-detail" id="repDetail"><div style="color:var(--mut);font-size:12px">Оберіть зі списку</div></div></div>';
+function esc(str){
+return String(str||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
-
-function repSum(){
-  var all=allRooms(),tot=all.length,c={n:0,w:0,d:0,i:0};
-  all.forEach(function(n){c[rd(n).s]++;});
-  var p=tp(c.d,tot);
-  var h='<div class="rep-sum-grid"><div class="rc"><h4>Загальна статистика</h4>'+Object.keys(c).map(function(k){return '<div class="rr"><span>'+SID[k]+'</span><strong>'+c[k]+'</strong></div>';}).join('')+'<div class="pb" style="margin-top:7px"><div class="pf" style="width:'+p+'%"></div></div><div style="font-size:10px;color:var(--mut);margin-top:3px">Прогрес: '+p+'%</div></div>';
-  FLOORS.forEach(function(f){
-    var fr=f.sections.reduce(function(a,s){return a.concat(s.rooms);},[]);
-    var fc={n:0,w:0,d:0,i:0};
-    fr.forEach(function(n){fc[rd(n).s]++;});
-    var fp=tp(fc.d,fr.length);
-    h+='<div class="rc"><h4>'+f.name+'</h4>'+Object.keys(fc).filter(function(k){return fc[k]>0;}).map(function(k){return '<div class="rr"><span>'+SID[k]+'</span><strong>'+fc[k]+'</strong></div>';}).join('')+'<div class="pb" style="margin-top:6px"><div class="pf" style="width:'+fp+'%"></div></div><div style="font-size:10px;color:var(--mut);margin-top:2px">'+fp+'% готово</div></div>';
-  });
-  return h+'</div>';
+function showToast(msg,type){
+var t=document.getElementById("toast");
+t.textContent=msg; t.className="toast "+(type||"");
+t.classList.add("show");
+setTimeout(function(){t.classList.remove("show");},2400);
 }
-
-function repIss(){
-  var cards=[];
-  FLOORS.forEach(function(f){f.sections.forEach(function(s){s.rooms.forEach(function(n){rd(n).works.forEach(function(w){if((w.issues||[]).length)cards.push({n:n,w:w,fn:f.name});});});});});
-  if(!cards.length)return '<div style="color:var(--mut);padding:30px;text-align:center;font-size:14px">Проблем не зафіксовано</div>';
-  var oc=cards.filter(function(x){return x.w.issues.some(function(e){return e.status==='open';});});
-  function render(list){
-    return list.map(function(x){
-      return '<div class="iss-card"><div class="iss-hd"><div><div class="iss-room">'+rl(x.n)+'</div><div style="font-size:10px;color:var(--mut)">'+x.fn+'</div></div><div class="iss-work">'+x.w.name+'</div><div class="iss-con">'+(x.w.con||'--')+'</div></div><div class="iss-log">'+x.w.issues.slice().reverse().map(function(e){return '<div class="iss-e"><div class="iss-ed"><span>'+e.date+'</span><span class="'+(e.status==='open'?'ist-o':'ist-c')+'">'+(e.status==='open'?'Відкрита':'Закрита')+'</span></div><div class="iss-et">'+e.text+'</div></div>';}).join('')+'</div></div>';
-    }).join('');
-  }
-  var html='<div style="display:flex;gap:7px;margin-bottom:13px"><button class="btn pri" id="fOpen">Відкриті ('+oc.length+')</button><button class="btn" id="fAll">Всі ('+cards.length+')</button></div><div id="issCards">'+render(oc)+'</div>';
-  setTimeout(function(){
-    var fOpen=document.getElementById('fOpen'),fAll=document.getElementById('fAll'),issCards=document.getElementById('issCards');
-    if(fOpen){
-      fOpen.addEventListener('click',function(){fOpen.className='btn pri';fAll.className='btn';issCards.innerHTML=render(oc);});
-      fAll.addEventListener('click',function(){fAll.className='btn pri';fOpen.className='btn';issCards.innerHTML=render(cards);});
-    }
-  },10);
-  return html;
-}
-
-function printRep(){
-  var old=document.getElementById('printArea');if(old)old.remove();
-  var div=document.createElement('div');div.id='printArea';
-  var date=new Date().toLocaleDateString('uk',{dateStyle:'long'});
-  var tn={sum:'Загальний звіт',con:'По підряднику',work:'По видах робіт',iss:'Проблеми'}[curTab];
-  var html='<h1>ГОТЕЛЬ -- '+tn+'</h1><div style="font-size:11px;color:#666;margin-bottom:16px">'+date+'</div>';
-  div.innerHTML=html;
-  document.body.appendChild(div);
-  window.print();
-  div.remove();
-}
-
-function doCSV(){
-  var csv='Приміщення,Поверх,Секція,Тип,Статус,Вид роботи,Статус роботи,Підрядник\n';
-  FLOORS.forEach(function(f){f.sections.forEach(function(sec){sec.rooms.forEach(function(n){
-    var r=rd(n);
-    if(r.works&&r.works.length){
-      r.works.forEach(function(w){csv+=[rl(n),f.name,sec.name,rtp(n).label,SID[r.s],w.name,WSLBL[w.ws||'n'],w.con||''].map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',')+'\n';});
-    } else {
-      csv+=[rl(n),f.name,sec.name,rtp(n).label,SID[r.s],'','',''].map(function(v){return '"'+v+'"';}).join(',')+'\n';
-    }
-  });});});
-  var a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download='hotel_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();
-}
-
-document.getElementById('btnCV').addEventListener('click',openConSelect);
-document.getElementById('btnCM').addEventListener('click',function(){renderConList();ovOpen('ovCM');});
-document.getElementById('btnRep').addEventListener('click',openRep);
-document.getElementById('xRM').addEventListener('click',function(){ovClose('ovRM');});
-document.getElementById('btnSave').addEventListener('click',saveRM);
-document.getElementById('btnCancel').addEventListener('click',function(){ovClose('ovRM');});
-document.getElementById('btnAW').addEventListener('click',addWork);
-document.getElementById('xPlan').addEventListener('click',function(){ovClose('ovPlan');});
-document.getElementById('xCS').addEventListener('click',function(){ovClose('ovCS');});
-document.getElementById('xCM').addEventListener('click',function(){ovClose('ovCM');});
-document.getElementById('btnCMok').addEventListener('click',function(){saveCons();ovClose('ovCM');renderConNav();if(editing!==null)renderWorks();});
-document.getElementById('xCP').addEventListener('click',function(){ovClose('ovCP');});
-document.getElementById('xRep').addEventListener('click',function(){ovClose('ovRep');});
-document.getElementById('btnAC').addEventListener('click',addCon);
-document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){renderTab(t.dataset.tab);});});
-['ovRM','ovPlan','ovCS','ovCM'].forEach(function(id){document.getElementById(id).addEventListener('click',function(e){if(e.target===e.currentTarget)ovClose(id);});});
-document.getElementById('ovRep').addEventListener('click',function(e){if(e.target===e.currentTarget)ovClose('ovRep');});
-document.getElementById('ovCP').addEventListener('click',function(e){if(e.target===e.currentTarget)ovClose('ovCP');});
-document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if(document.activeElement.id==='newWork')addWork();if(document.activeElement.id==='newCon')addCon();});
+document.addEventListener("click",function(e){
+var l=document.getElementById("acList");
+if(l&&!l.contains(e.target)&&e.target.id!=="awInput") hideAC();
+});
 </script>
 </body>
 </html>
