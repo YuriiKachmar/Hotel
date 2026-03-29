@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Готель — Контроль ремонтних робіт</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#111214">
@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden}
 :root{
   --bg:#111214;--surf:#18191d;--surf2:#1f2025;--brd:#2c2d33;
   --txt:#e2e4ea;--mut:#5a5c6a;--acc:#e8b84b;
@@ -215,9 +216,39 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 
 @media(max-width:700px){
   #sidebar{display:none}
-  .room-cell{width:62px;height:58px}
-  .room-num{font-size:13px}
+  #appWrap{height:calc(100vh - 48px)}
+  .room-cell{width:58px;height:54px}
+  .room-num{font-size:12px}
   .cons-add-panel{width:100%}
+  .topbar-right{gap:4px}
+  .btn-sm{padding:4px 7px;font-size:10px}
+  .user-email{display:none}
+  #searchBox{width:120px}
+  .stats-bar{gap:6px}
+  .stat-card{min-width:70px;padding:8px 10px}
+  .stat-card .num{font-size:20px}
+  .bycon-left{width:160px}
+  .report-left{width:150px}
+  .report-tabs{gap:2px}
+  .rtab{padding:4px 7px;font-size:10px}
+  .modal{max-height:95vh}
+  .modal-header{padding:12px 14px 10px}
+  .modal-body{padding:12px 14px}
+  .modal-footer{padding:8px 14px}
+  .work-row{gap:5px}
+  .work-status-btns{flex-wrap:wrap}
+  .wsb{font-size:9px;padding:3px 5px}
+  .work-contractor-sel{max-width:90px;font-size:10px}
+  .floor-plan-box{padding:14px}
+  .bycon-body{flex-direction:column}
+  .bycon-left{width:100%;max-height:180px;border-right:none;border-bottom:1px solid var(--brd)}
+}
+@media(max-width:400px){
+  .room-cell{width:52px;height:50px}
+  .room-num{font-size:11px}
+  .room-type-label{display:none}
+  #searchBox{width:90px}
+  .btn-sm{padding:4px 6px;font-size:10px}
 }
 @media print{
   #topbar,#sidebar,#appWrap,#byConView,#byWorkView,#floorPlanPanel,#authScreen,.report-header{display:none!important}
