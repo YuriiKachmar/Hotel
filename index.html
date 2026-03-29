@@ -1,9 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Готель — Контроль ремонтних робіт</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#111214">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Готель">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -1756,8 +1762,15 @@ function showToast(msg,type){
   t.classList.add("show");
   setTimeout(function(){t.classList.remove("show");},2400);
 }
-// close autocomplete on outside click
-document.addEventListener("click",function(e){
+// SERVICE WORKER
+if("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(e){
+      console.log("SW error:", e);
+    });
+  });
+}
+
   var l=document.getElementById("acList");
   if(l&&!l.contains(e.target)&&e.target.id!=="awInput") hideAC();
 });
