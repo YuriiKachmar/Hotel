@@ -478,7 +478,7 @@ HOTEL.push({floor:1,label:"1 поверх",sections:[
 (function(){
   var i; var t;
   var biz3 = {302:1,303:1,304:1,305:1};
-  var biz3b = {308:1,310:1,312:1};
+  var biz3b = {};
   var sec3 = [];
   for(i=301;i<=305;i++){
     t="standard";
@@ -1417,44 +1417,24 @@ function makeRoomCellByWork(roomDef, workName){
       }
     }
   }
-  var borderColor;
-  var opacity;
-  var progCol;
-  var prog;
-  if(wst===null){
-    // цієї роботи немає — дуже приглушено, сірий
-    borderColor = "#2c2d33";
-    opacity = "0.18";
-    progCol = "transparent";
-    prog = 0;
-  } else if(wst==="done"){
-    borderColor = "#16a34a";
-    opacity = "1";
-    progCol = "#16a34a";
-    prog = 100;
+  var borderColor = "#2c2d33";
+  var opacity = "0.2";
+  var progCol = "transparent";
+  var prog = 0;
+  var shadow = "";
+  if(wst==="done"){
+    borderColor="#16a34a"; opacity="1"; progCol="#16a34a"; prog=100;
   } else if(wst==="inprogress"){
-    borderColor = "#2563eb";
-    opacity = "1";
-    progCol = "#2563eb";
-    prog = 50;
+    borderColor="#2563eb"; opacity="1"; progCol="#2563eb"; prog=50;
   } else if(wst==="problem"){
-    borderColor = "#dc2626";
-    opacity = "1";
-    progCol = "#dc2626";
-    prog = 0;
-  } else {
-    // notstarted — є робота але не розпочато, повна яскравість
-    borderColor = "#2c2d33";
-    opacity = "1";
-    progCol = "transparent";
-    prog = 0;
+    borderColor="#dc2626"; opacity="1"; progCol="#dc2626"; prog=0;
+    shadow="box-shadow:0 0 10px rgba(220,38,38,.5);";
   }
-  var shadow = wst==="problem" ? "box-shadow:0 0 10px rgba(220,38,38,.5);" : "";
   var h = "<div class='room-cell' style='background:"+bg+";border:2px solid "+borderColor+";opacity:"+opacity+";"+shadow+"' onclick='openRoom(\""+roomDef.id+"\")'>";
   h += "<div><div class='room-num'>"+roomDef.name+"</div>";
   h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'>";
-  if(conNames&&wst!==null) h += "<div class='room-contractor'>"+conNames+"</div>";
+  if(conNames&&opacity==="1") h += "<div class='room-contractor'>"+conNames+"</div>";
   h += "<div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div>";
   h += "</div></div>";
   return h;
@@ -1490,8 +1470,7 @@ function selByWork(name){
   h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#16a34a;margin-right:4px'></span>Виконано</span>";
   h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#2563eb;margin-right:4px'></span>В роботі</span>";
   h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#dc2626;margin-right:4px'></span>Проблема</span>";
-  h+="<span style='font-size:11px'><span style='display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--brd);margin-right:4px'></span>Не розпочато</span>";
-  h+="<span style='font-size:11px;opacity:.4'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#555;margin-right:4px'></span>Немає цієї роботи</span>";
+  h+="<span style='font-size:11px;opacity:.35'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#888;margin-right:4px'></span>Не розпочато / не призначено</span>";
   h+="</div>";
   document.getElementById("byWorkRooms").innerHTML=h;
 }
