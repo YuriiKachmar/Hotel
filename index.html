@@ -5,295 +5,246 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Готель — Контроль робіт</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#111214;--surf:#18191d;--surf2:#1f2025;--brd:#2c2d33;
-  --txt:#e2e4ea;--mut:#5a5c6a;--acc:#e8b84b;
-  --mmg:#6b7280;--std:#1e293b;--biz:#854d0e;--imp:#14532d;--semi:#581c87;--lux:#7f1d1d;
-  --mmg-t:#fff;--std-t:#94a3b8;--biz-t:#fde68a;--imp-t:#86efac;--semi-t:#d8b4fe;--lux-t:#fca5a5;
-  --sn:#2c2d33;--sw:#2563eb;--sd:#16a34a;--si:#dc2626;
-  --cn:#5a5c6a;--cw:#3b82f6;--cd:#22c55e;--ci:#ef4444;
-  --wn-bg:#1f2025;--ww-bg:#0c2340;--wd-bg:#052e16;--wi-bg:#2d0a0a;
-}
+:root{--bg:#111214;--surf:#18191d;--surf2:#1f2025;--brd:#2c2d33;--txt:#e2e4ea;--mut:#5a5c6a;--acc:#e8b84b;--mmg:#6b7280;--std:#1e293b;--biz:#854d0e;--imp:#14532d;--semi:#581c87;--lux:#7f1d1d;--mmg-t:#fff;--std-t:#94a3b8;--biz-t:#fde68a;--imp-t:#86efac;--semi-t:#d8b4fe;--lux-t:#fca5a5;--sn:#2c2d33;--sw:#2563eb;--sd:#16a34a;--si:#dc2626}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--txt);display:flex;flex-direction:column}
-
-.topbar{display:flex;align-items:center;gap:7px;padding:9px 15px;background:var(–surf);border-bottom:1px solid var(–brd);flex-shrink:0;flex-wrap:wrap}
-.logo{font-family:‘Oswald’,sans-serif;font-size:19px;letter-spacing:3px;color:var(–acc);white-space:nowrap}
-.logo em{font-style:normal;color:var(–mut);font-size:11px;letter-spacing:0;margin-left:8px;font-family:‘IBM Plex Sans’,sans-serif}
+.topbar{display:flex;align-items:center;gap:7px;padding:9px 15px;background:var(--surf);border-bottom:1px solid var(--brd);flex-shrink:0;flex-wrap:wrap}
+.logo{font-family:'Oswald',sans-serif;font-size:19px;letter-spacing:3px;color:var(--acc);white-space:nowrap}
+.logo em{font-style:normal;color:var(--mut);font-size:11px;letter-spacing:0;margin-left:8px;font-family:'IBM Plex Sans',sans-serif}
 .ml{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.btn{font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;font-weight:500;padding:5px 11px;border-radius:5px;border:1px solid var(–brd);background:var(–surf2);color:var(–txt);cursor:pointer;transition:.14s;white-space:nowrap}
-.btn:hover{border-color:var(–acc);color:var(–acc)}
-.btn.pri{background:var(–acc);color:#111;border-color:var(–acc);font-weight:600}
-.btn.pri:hover{background:#f5d060}
-.btn.sm{font-size:10px;padding:3px 8px;color:var(–mut)}
-.btn.sm:hover{color:var(–acc);border-color:var(–acc)}
-.srch{font-family:‘IBM Plex Mono’,monospace;font-size:12px;background:var(–surf2);border:1px solid var(–brd);color:var(–txt);padding:5px 9px;border-radius:5px;outline:none;width:95px}
-.srch:focus{border-color:var(–acc)}
-.srch::placeholder{color:var(–mut)}
-
+.btn{font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;padding:5px 11px;border-radius:5px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);cursor:pointer;transition:.14s;white-space:nowrap}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);color:#111;border-color:var(--acc);font-weight:600}
+.btn.sm{font-size:10px;padding:3px 8px;color:var(--mut)}
+.btn.sm:hover{color:var(--acc);border-color:var(--acc)}
+.srch{font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--surf2);border:1px solid var(--brd);color:var(--txt);padding:5px 9px;border-radius:5px;outline:none;width:95px}
+.srch:focus{border-color:var(--acc)}
+.srch::placeholder{color:var(--mut)}
 .layout{display:flex;flex:1;overflow:hidden}
-.sidebar{width:205px;background:var(–surf);border-right:1px solid var(–brd);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.sidebar{width:205px;background:var(--surf);border-right:1px solid var(--brd);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
 .main{flex:1;overflow-y:auto;padding:13px 17px}
-
 .sb-s{padding:10px 11px 3px}
-.sb-l{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(–mut);font-weight:600;margin-bottom:5px}
-.fb{display:flex;align-items:center;justify-content:space-between;width:100%;padding:5px 7px;border-radius:4px;background:none;border:none;color:var(–txt);font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;cursor:pointer;transition:.1s;margin-bottom:1px;text-align:left}
-.fb:hover{background:var(–surf2)}
-.fb.act{background:var(–surf2);color:var(–acc);font-weight:500}
-.fbg{font-family:‘IBM Plex Mono’,monospace;font-size:10px;color:var(–mut);background:var(–bg);padding:1px 4px;border-radius:3px}
-.fb.act .fbg{color:var(–acc)}
-.leg{padding:10px 11px;margin-top:auto;border-top:1px solid var(–brd)}
-.lr{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px;color:var(–mut)}
-.lsw{width:22px;height:10px;border-radius:2px;flex-shrink:0;border:1px solid rgba(255,255,255,.1)}
-
-.stats{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.stat{background:var(–surf);border:1px solid var(–brd);border-radius:6px;padding:8px 11px;flex:1;min-width:76px}
-.sn{font-family:‘Oswald’,sans-serif;font-size:22px;line-height:1;margin-bottom:1px}
-.sl{font-size:10px;color:var(–mut);text-transform:uppercase;letter-spacing:.4px}
-.pw{flex:2;min-width:140px}
-.pb{background:var(–brd);border-radius:2px;height:4px;overflow:hidden;margin-top:5px}
-.pf{height:100%;border-radius:2px;background:var(–acc);transition:width .5s}
-
-.fb2{display:flex;align-items:center;gap:8px;width:100%;padding:5px 7px;border-radius:4px;background:none;border:none;color:var(–mut);font-family:‘IBM Plex Sans’,sans-serif;font-size:11px;cursor:pointer;transition:.1s;margin-bottom:1px;text-align:left}
-.fb2:hover,.fb2.act{background:var(–surf2);color:var(–txt)}
+.sb-l{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);font-weight:600;margin-bottom:5px}
+.fb{display:flex;align-items:center;justify-content:space-between;width:100%;padding:5px 7px;border-radius:4px;background:none;border:none;color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:12px;cursor:pointer;transition:.1s;margin-bottom:1px;text-align:left}
+.fb:hover{background:var(--surf2)}
+.fb.act{background:var(--surf2);color:var(--acc);font-weight:500}
+.fbg{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mut);background:var(--bg);padding:1px 4px;border-radius:3px}
+.fb.act .fbg{color:var(--acc)}
+.fb2{display:flex;align-items:center;gap:8px;width:100%;padding:5px 7px;border-radius:4px;background:none;border:none;color:var(--mut);font-family:'IBM Plex Sans',sans-serif;font-size:11px;cursor:pointer;transition:.1s;margin-bottom:1px;text-align:left}
+.fb2:hover,.fb2.act{background:var(--surf2);color:var(--txt)}
 .dot8{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-
+.leg{padding:10px 11px;margin-top:auto;border-top:1px solid var(--brd)}
+.lr{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px;color:var(--mut)}
+.lsw{width:22px;height:10px;border-radius:2px;flex-shrink:0;border:1px solid rgba(255,255,255,.1)}
+.stats{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.stat{background:var(--surf);border:1px solid var(--brd);border-radius:6px;padding:8px 11px;flex:1;min-width:76px}
+.sn{font-family:'Oswald',sans-serif;font-size:22px;line-height:1;margin-bottom:1px}
+.sl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+.pw{flex:2;min-width:140px}
+.pb{background:var(--brd);border-radius:2px;height:4px;overflow:hidden;margin-top:5px}
+.pf{height:100%;border-radius:2px;background:var(--acc);transition:width .5s}
 .floor-block{margin-bottom:22px}
-.fh{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-family:‘Oswald’,sans-serif;font-size:13px;letter-spacing:2px;color:var(–mut)}
-.fh::after{content:’’;flex:1;height:1px;background:var(–brd)}
-.fi{font-size:11px;font-family:‘IBM Plex Sans’,sans-serif;font-weight:300;letter-spacing:0}
+.fh{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;color:var(--mut)}
+.fh::after{content:'';flex:1;height:1px;background:var(--brd)}
+.fi{font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:300;letter-spacing:0}
 .sec{margin-bottom:7px}
-.secl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(–mut);opacity:.55;margin-bottom:4px;padding-left:1px}
+.secl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);opacity:.55;margin-bottom:4px;padding-left:1px}
 .rg{display:flex;flex-wrap:wrap;gap:4px}
-
 .room{width:62px;height:54px;border-radius:5px;border:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .1s,box-shadow .1s;position:relative;user-select:none;flex-shrink:0}
 .room:hover{transform:scale(1.1);z-index:5;box-shadow:0 4px 16px rgba(0,0,0,.5)}
 .room.named{width:88px}
 .room.hidden{display:none}
-.rnum{font-family:‘IBM Plex Mono’,monospace;font-size:12px;font-weight:600;line-height:1.15;text-align:center;padding:0 2px}
+.rnum{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;line-height:1.15;text-align:center;padding:0 2px}
 .rtyp{font-size:8px;letter-spacing:.2px;text-transform:uppercase;opacity:.65;margin-top:1px}
 .rpb{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 4px 4px;background:rgba(255,255,255,.07)}
 .rpbf{height:100%;border-radius:0 0 4px 4px;background:#22c55e;transition:width .3s}
-.t-mmg{background:var(–mmg);color:var(–mmg-t)}
-.t-std{background:var(–std);color:var(–std-t)}
-.t-biz{background:var(–biz);color:var(–biz-t)}
-.t-imp{background:var(–imp);color:var(–imp-t)}
-.t-semi{background:var(–semi);color:var(–semi-t)}
-.t-lux{background:var(–lux);color:var(–lux-t)}
-.room[data-s=“n”]{border-color:var(–sn)}
-.room[data-s=“w”]{border-color:var(–sw)}
-.room[data-s=“d”]{border-color:var(–sd)}
-.room[data-s=“i”]{border-color:var(–si);box-shadow:0 0 6px #dc262644}
-
+.t-mmg{background:var(--mmg);color:var(--mmg-t)}.t-std{background:var(--std);color:var(--std-t)}.t-biz{background:var(--biz);color:var(--biz-t)}.t-imp{background:var(--imp);color:var(--imp-t)}.t-semi{background:var(--semi);color:var(--semi-t)}.t-lux{background:var(--lux);color:var(--lux-t)}
+.room[data-s="n"]{border-color:var(--sn)}.room[data-s="w"]{border-color:var(--sw)}.room[data-s="d"]{border-color:var(--sd)}.room[data-s="i"]{border-color:var(--si);box-shadow:0 0 6px #dc262644}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:100;padding:13px;opacity:0;pointer-events:none;transition:opacity .17s}
 .ov.open{opacity:1;pointer-events:auto}
-.modal{background:var(–surf);border:1px solid var(–brd);border-radius:9px;width:100%;max-width:520px;position:relative;transform:translateY(14px);transition:transform .17s;max-height:91vh;display:flex;flex-direction:column;overflow:hidden}
+.modal{background:var(--surf);border:1px solid var(--brd);border-radius:9px;width:100%;max-width:520px;position:relative;transform:translateY(14px);transition:transform .17s;max-height:91vh;display:flex;flex-direction:column;overflow:hidden}
 .ov.open .modal{transform:translateY(0)}
-.mhd{padding:13px 17px 11px;border-bottom:1px solid var(–brd);flex-shrink:0}
+.mhd{padding:13px 17px 11px;border-bottom:1px solid var(--brd);flex-shrink:0}
 .mbd{overflow-y:auto;padding:11px 17px;flex:1}
-.mft{padding:9px 17px;border-top:1px solid var(–brd);flex-shrink:0;display:flex;gap:6px}
-.mtit{font-family:‘Oswald’,sans-serif;font-size:21px;letter-spacing:2px}
-.mmeta{font-size:11px;color:var(–mut);margin-top:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mft{padding:9px 17px;border-top:1px solid var(--brd);flex-shrink:0;display:flex;gap:6px}
+.mtit{font-family:'Oswald',sans-serif;font-size:21px;letter-spacing:2px}
+.mmeta{font-size:11px;color:var(--mut);margin-top:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .mbadge{padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600}
-.mpb{background:var(–brd);border-radius:2px;height:3px;overflow:hidden;margin-top:7px}
+.mpb{background:var(--brd);border-radius:2px;height:3px;overflow:hidden;margin-top:7px}
 .mpf{height:100%;border-radius:2px;background:#22c55e;transition:width .3s}
-.x{position:absolute;top:11px;right:11px;background:none;border:none;color:var(–mut);font-size:17px;cursor:pointer;line-height:1}
-.x:hover{color:var(–txt)}
+.x{position:absolute;top:11px;right:11px;background:none;border:none;color:var(--mut);font-size:17px;cursor:pointer;line-height:1}
+.x:hover{color:var(--txt)}
 .fg{margin-bottom:12px}
-.fl{font-size:10px;color:var(–mut);font-weight:600;letter-spacing:.5px;margin-bottom:5px;text-transform:uppercase}
-
-.wr{border:1px solid var(–brd);border-radius:6px;margin-bottom:4px;overflow:hidden}
-.wr.sw{border-color:var(–sw)}
-.wr.sd{border-color:var(–sd)}
-.wr.si{border-color:var(–si)}
-.wrt{display:flex;align-items:center;gap:5px;padding:7px 9px;background:var(–surf2)}
+.fl{font-size:10px;color:var(--mut);font-weight:600;letter-spacing:.5px;margin-bottom:5px;text-transform:uppercase}
+.wr{border:1px solid var(--brd);border-radius:6px;margin-bottom:4px;overflow:hidden}
+.wr.sw{border-color:var(--sw)}.wr.sd{border-color:var(--sd)}.wr.si{border-color:var(--si)}
+.wrt{display:flex;align-items:center;gap:5px;padding:7px 9px;background:var(--surf2)}
 .wrn{flex:1;font-size:13px;font-weight:500}
 .wrbtns{display:flex;gap:2px;flex-shrink:0;flex-wrap:wrap}
-.stb{padding:4px 7px;border-radius:4px;border:1px solid var(–brd);background:none;font-size:10px;font-weight:600;cursor:pointer;font-family:‘IBM Plex Sans’,sans-serif;color:var(–mut);transition:.1s}
-.stb:hover{border-color:var(–txt);color:var(–txt)}
-.stb.ow{background:var(–ww-bg);border-color:var(–sw);color:#60a5fa}
-.stb.od{background:var(–wd-bg);border-color:var(–sd);color:#4ade80}
-.stb.oi{background:var(–wi-bg);border-color:var(–si);color:#f87171}
-.wdel{background:none;border:none;color:var(–mut);cursor:pointer;font-size:13px;padding:0 2px;opacity:.3;flex-shrink:0}
+.stb{padding:4px 7px;border-radius:4px;border:1px solid var(--brd);background:none;font-size:10px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;color:var(--mut);transition:.1s}
+.stb:hover{border-color:var(--txt);color:var(--txt)}
+.stb.ow{background:#0c2340;border-color:var(--sw);color:#60a5fa}
+.stb.od{background:#052e16;border-color:var(--sd);color:#4ade80}
+.stb.oi{background:#2d0a0a;border-color:var(--si);color:#f87171}
+.wdel{background:none;border:none;color:var(--mut);cursor:pointer;font-size:13px;padding:0 2px;opacity:.3;flex-shrink:0}
 .wdel:hover{opacity:1;color:#ef4444}
-.wcon{display:flex;align-items:center;gap:6px;padding:3px 9px 6px;background:var(–surf2)}
-.wconl{font-size:10px;color:var(–mut);font-weight:600;text-transform:uppercase;white-space:nowrap}
-.wcon select{flex:1;padding:4px 5px;font-size:12px;background:var(–bg);border:1px solid var(–brd);color:var(–txt);border-radius:4px;font-family:‘IBM Plex Sans’,sans-serif;outline:none}
-.wcon select:focus{border-color:var(–acc)}
-
-.wiss{background:var(–surf2);border-top:1px solid #3d1010}
+.wcon{display:flex;align-items:center;gap:6px;padding:3px 9px 6px;background:var(--surf2)}
+.wconl{font-size:10px;color:var(--mut);font-weight:600;text-transform:uppercase;white-space:nowrap}
+.wcon select{flex:1;padding:4px 5px;font-size:12px;background:var(--bg);border:1px solid var(--brd);color:var(--txt);border-radius:4px;font-family:'IBM Plex Sans',sans-serif;outline:none}
+.wiss{background:var(--surf2);border-top:1px solid #3d1010}
 .wiss-hd{display:flex;align-items:center;justify-content:space-between;padding:5px 9px}
 .wiss-lbl{font-size:10px;color:#f87171;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
 .wiss-bd{padding:0 9px 8px}
 .ient{border-left:2px solid #7f2222;padding:3px 0 3px 8px;margin-bottom:5px}
-.idate{font-size:10px;color:var(–mut);margin-bottom:2px;display:flex;gap:5px;align-items:center}
-.itxt{font-size:12px;color:var(–txt)}
-.ist-o{font-size:9px;padding:1px 5px;border-radius:2px;background:var(–wi-bg);color:#f87171;font-weight:600}
-.ist-c{font-size:9px;padding:1px 5px;border-radius:2px;background:var(–wd-bg);color:#4ade80;font-weight:600}
-.iadd{padding:5px 0}
-.iadd textarea{width:100%;background:var(–bg);border:1px solid #522;color:#fca5a5;border-radius:4px;padding:6px 8px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;outline:none;resize:vertical;min-height:50px}
-.iadd textarea::placeholder{color:#7f4040}
-.iadd-row{display:flex;gap:5px;margin-top:4px}
-
-.aw{display:flex;gap:4px;margin-top:5px}
-.aw input{flex:1;background:var(–bg);border:1px dashed var(–brd);color:var(–txt);border-radius:4px;padding:6px 8px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;outline:none}
-.aw input:focus{border-color:var(–acc)}
-.aw input::placeholder{color:var(–mut)}
-.aw .ab{background:none;border:1px solid var(–brd);color:var(–mut);border-radius:4px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:‘IBM Plex Sans’,sans-serif;transition:.1s;white-space:nowrap}
-.aw .ab:hover{border-color:var(–acc);color:var(–acc)}
-
-textarea.rnotes{width:100%;background:var(–bg);border:1px solid var(–brd);color:var(–txt);border-radius:4px;padding:6px 8px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;outline:none;resize:vertical;min-height:50px}
-textarea.rnotes:focus{border-color:var(–acc)}
+.idate{font-size:10px;color:var(--mut);margin-bottom:2px;display:flex;gap:5px;align-items:center}
+.itxt{font-size:12px;color:var(--txt)}
+.ist-o{font-size:9px;padding:1px 5px;border-radius:2px;background:#2d0a0a;color:#f87171;font-weight:600}
+.ist-c{font-size:9px;padding:1px 5px;border-radius:2px;background:#052e16;color:#4ade80;font-weight:600}
+.iadd{padding:5px 0;flex-direction:column;gap:5px;display:none}
+.iadd textarea{width:100%;background:var(--bg);border:1px solid #522;color:#fca5a5;border-radius:4px;padding:6px 8px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:50px}
+.iadd-row{display:flex;gap:5px}
+.aw{display:flex;gap:4px;margin-top:5px;position:relative}
+.aw input{flex:1;background:var(--bg);border:1px dashed var(--brd);color:var(--txt);border-radius:4px;padding:6px 8px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;outline:none}
+.aw input:focus{border-color:var(--acc)}
+.aw input::placeholder{color:var(--mut)}
+.ab{background:none;border:1px solid var(--brd);color:var(--mut);border-radius:4px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:.1s;white-space:nowrap}
+.ab:hover{border-color:var(--acc);color:var(--acc)}
+.sugg-box{display:none;position:absolute;bottom:100%;left:0;right:60px;background:var(--surf);border:1px solid var(--acc);border-radius:5px;max-height:180px;overflow-y:auto;z-index:50;margin-bottom:3px}
+.sugg-item{padding:8px 11px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--brd);color:var(--txt)}
+.sugg-item:last-child{border:none}
+.sugg-item:hover,.sugg-item:active{background:var(--surf2);color:var(--acc)}
+textarea.rnotes{width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--txt);border-radius:4px;padding:6px 8px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:50px}
+textarea.rnotes:focus{border-color:var(--acc)}
 .hist{max-height:75px;overflow-y:auto}
-.hi{border-left:2px solid var(–brd);padding:2px 0 2px 7px;margin-bottom:3px;font-size:11px;color:var(–mut)}
-.hi strong{color:var(–txt)}
-
-.pm{background:var(–surf);border:1px solid var(–brd);border-radius:9px;width:100%;max-width:660px;padding:16px;position:relative;transform:translateY(14px);transition:transform .17s;max-height:91vh;overflow-y:auto}
+.hi{border-left:2px solid var(--brd);padding:2px 0 2px 7px;margin-bottom:3px;font-size:11px;color:var(--mut)}
+.hi strong{color:var(--txt)}
+.pm{background:var(--surf);border:1px solid var(--brd);border-radius:9px;width:100%;max-width:660px;padding:16px;position:relative;transform:translateY(14px);transition:transform .17s;max-height:91vh;overflow-y:auto}
 .ov.open .pm{transform:translateY(0)}
-.ptit{font-family:‘Oswald’,sans-serif;font-size:17px;letter-spacing:2px;margin-bottom:12px;color:var(–acc)}
-.psec{background:var(–surf2);border:1px solid var(–brd);border-radius:5px;padding:9px 11px;margin-bottom:7px}
-.psecl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(–mut);margin-bottom:6px}
+.ptit{font-family:'Oswald',sans-serif;font-size:17px;letter-spacing:2px;margin-bottom:12px;color:var(--acc)}
+.psec{background:var(--surf2);border:1px solid var(--brd);border-radius:5px;padding:9px 11px;margin-bottom:7px}
+.psecl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
 .prg{display:flex;flex-wrap:wrap;gap:4px}
 .pr{border-radius:4px;border:2px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0;transition:transform .1s;width:56px;height:50px}
 .pr.pn{width:80px}
 .pr:hover{transform:scale(1.08);z-index:3}
-.prn{font-family:‘IBM Plex Mono’,monospace;font-size:11px;font-weight:600;text-align:center;padding:0 2px;line-height:1.2}
+.prn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;text-align:center;padding:0 2px;line-height:1.2}
 .prt{font-size:7px;text-transform:uppercase;opacity:.65;margin-top:1px}
 .prdot{position:absolute;bottom:3px;right:3px;width:5px;height:5px;border-radius:50%}
 .prbar{position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:0 0 3px 3px}
-.pleg{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;padding-top:9px;border-top:1px solid var(–brd)}
-.pli{display:flex;align-items:center;gap:4px;font-size:10px;color:var(–mut)}
+.pleg{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;padding-top:9px;border-top:1px solid var(--brd)}
+.pli{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mut)}
 .plsw{width:12px;height:12px;border-radius:2px;flex-shrink:0}
-
-.ci{display:flex;flex-direction:column;gap:4px;padding:8px 9px;background:var(–surf2);border:1px solid var(–brd);border-radius:5px;margin-bottom:4px}
+.ci{display:flex;flex-direction:column;gap:4px;padding:8px 9px;background:var(--surf2);border:1px solid var(--brd);border-radius:5px;margin-bottom:4px}
 .cir{display:flex;align-items:center;gap:6px}
-.ci input{flex:1;background:var(–bg);border:1px solid var(–brd);color:var(–txt);border-radius:4px;padding:4px 7px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;outline:none}
-.ci input.em{font-size:11px;color:var(–mut)}
-.ci input:focus{border-color:var(–acc)}
-.cdel{background:none;border:none;color:var(–mut);cursor:pointer;font-size:13px;padding:0 2px;opacity:.3;flex-shrink:0}
+.ci input{flex:1;background:var(--bg);border:1px solid var(--brd);color:var(--txt);border-radius:4px;padding:4px 7px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;outline:none}
+.ci input.em{font-size:11px;color:var(--mut)}
+.ci input:focus{border-color:var(--acc)}
+.cdel{background:none;border:none;color:var(--mut);cursor:pointer;font-size:13px;padding:0 2px;opacity:.3;flex-shrink:0}
 .cdel:hover{opacity:1;color:#ef4444}
-
-.csb{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 11px;border-radius:5px;background:var(–surf2);border:1px solid var(–brd);color:var(–txt);font-family:‘IBM Plex Sans’,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:.12s;margin-bottom:4px;text-align:left}
-.csb:hover{border-color:var(–acc);color:var(–acc)}
-.cbg{font-family:‘IBM Plex Mono’,monospace;font-size:10px;background:var(–bg);padding:2px 5px;border-radius:3px;color:var(–mut)}
-
+.csb{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 11px;border-radius:5px;background:var(--surf2);border:1px solid var(--brd);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:.12s;margin-bottom:4px;text-align:left}
+.csb:hover{border-color:var(--acc);color:var(--acc)}
+.cbg{font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--bg);padding:2px 5px;border-radius:3px;color:var(--mut)}
 .cp-ov{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:200;padding:13px;opacity:0;pointer-events:none;transition:opacity .17s}
 .cp-ov.open{opacity:1;pointer-events:auto}
-.cp{background:var(–surf);border:1px solid var(–brd);border-radius:9px;width:100%;max-width:540px;max-height:90vh;display:flex;flex-direction:column;position:relative;transform:translateY(14px);transition:transform .17s;overflow:hidden}
+.cp{background:var(--surf);border:1px solid var(--brd);border-radius:9px;width:100%;max-width:540px;max-height:90vh;display:flex;flex-direction:column;position:relative;transform:translateY(14px);transition:transform .17s;overflow:hidden}
 .cp-ov.open .cp{transform:translateY(0)}
-.cphd{padding:13px 17px 9px;border-bottom:1px solid var(–brd);flex-shrink:0}
-.cptit{font-family:‘Oswald’,sans-serif;font-size:17px;letter-spacing:2px;color:var(–acc)}
-.cpsub{font-size:11px;color:var(–mut);margin-top:3px}
+.cphd{padding:13px 17px 9px;border-bottom:1px solid var(--brd);flex-shrink:0}
+.cptit{font-family:'Oswald',sans-serif;font-size:17px;letter-spacing:2px;color:var(--acc)}
+.cpsub{font-size:11px;color:var(--mut);margin-top:3px}
 .cpbd{overflow-y:auto;padding:10px 14px;flex:1}
-.cpfl{font-family:‘Oswald’,sans-serif;font-size:11px;letter-spacing:1.5px;color:var(–mut);padding:5px 0 6px;border-bottom:1px solid var(–brd);margin-bottom:8px}
-.cpsl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(–mut);opacity:.55;margin-bottom:3px;margin-top:7px}
-.cpr{background:var(–surf2);border:1px solid var(–brd);border-radius:5px;margin-bottom:4px;overflow:hidden}
+.cpfl{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--mut);padding:5px 0 6px;border-bottom:1px solid var(--brd);margin-bottom:8px}
+.cpsl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);opacity:.55;margin-bottom:3px;margin-top:7px}
+.cpr{background:var(--surf2);border:1px solid var(--brd);border-radius:5px;margin-bottom:4px;overflow:hidden}
 .cprhd{display:flex;align-items:center;gap:7px;padding:7px 9px}
-.cprnum{font-family:‘IBM Plex Mono’,monospace;font-size:13px;font-weight:600;color:var(–acc);min-width:40px}
-.cprt{font-size:10px;color:var(–mut);text-transform:uppercase;flex:1}
-.cprpct{font-family:‘IBM Plex Mono’,monospace;font-size:11px;color:var(–mut)}
+.cprnum{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--acc);min-width:40px}
+.cprt{font-size:10px;color:var(--mut);text-transform:uppercase;flex:1}
+.cprpct{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mut)}
 .cpw{padding:2px 9px 7px}
-.cpwr{display:flex;align-items:center;gap:7px;padding:3px 0;border-bottom:1px solid var(–brd)}
+.cpwr{display:flex;align-items:center;gap:7px;padding:3px 0;border-bottom:1px solid var(--brd)}
 .cpwr:last-child{border:none}
 .cpwn{flex:1;font-size:12px}
 .cpwst{font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;white-space:nowrap}
-.ws-n{background:var(–surf);color:var(–mut)}
-.ws-w{background:var(–ww-bg);color:#60a5fa}
-.ws-d{background:var(–wd-bg);color:#4ade80}
-.ws-i{background:var(–wi-bg);color:#f87171}
-.cpwnote{font-size:10px;color:#f87171;font-style:italic;padding:1px 0 3px}
-
+.ws-n{background:var(--surf);color:var(--mut)}.ws-w{background:#0c2340;color:#60a5fa}.ws-d{background:#052e16;color:#4ade80}.ws-i{background:#2d0a0a;color:#f87171}
 .rep-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:flex-end;z-index:100;opacity:0;pointer-events:none;transition:opacity .17s}
 .rep-ov.open{opacity:1;pointer-events:auto}
-.rep-p{background:var(–surf);border-top:1px solid var(–brd);width:100%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .22s}
+.rep-p{background:var(--surf);border-top:1px solid var(--brd);width:100%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .22s}
 .rep-ov.open .rep-p{transform:translateY(0)}
-.rephd{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(–brd);flex-shrink:0;flex-wrap:wrap;gap:8px}
-.reptit{font-family:‘Oswald’,sans-serif;font-size:18px;letter-spacing:2px}
+.rephd{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--brd);flex-shrink:0;flex-wrap:wrap;gap:8px}
+.reptit{font-family:'Oswald',sans-serif;font-size:18px;letter-spacing:2px}
 .tabs{display:flex;gap:4px;flex-wrap:wrap}
-.tab{font-family:‘IBM Plex Sans’,sans-serif;font-size:11px;font-weight:500;padding:5px 10px;border-radius:4px;border:1px solid var(–brd);background:none;color:var(–mut);cursor:pointer;transition:.12s}
-.tab:hover{border-color:var(–acc);color:var(–acc)}
-.tab.act{background:var(–acc);color:#111;border-color:var(–acc);font-weight:600}
+.tab{font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;padding:5px 10px;border-radius:4px;border:1px solid var(--brd);background:none;color:var(--mut);cursor:pointer;transition:.12s}
+.tab:hover{border-color:var(--acc);color:var(--acc)}
+.tab.act{background:var(--acc);color:#111;border-color:var(--acc);font-weight:600}
 .rep-body{overflow-y:auto;padding:14px 18px;flex:1}
-
 .rep-sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-.rc{background:var(–surf2);border:1px solid var(–brd);border-radius:6px;padding:11px}
-.rc h4{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(–mut);margin-bottom:7px}
-.rr{display:flex;justify-content:space-between;font-size:12px;color:var(–mut);padding:3px 0;border-bottom:1px solid var(–brd)}
+.rc{background:var(--surf2);border:1px solid var(--brd);border-radius:6px;padding:11px}
+.rc h4{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);margin-bottom:7px}
+.rr{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);padding:3px 0;border-bottom:1px solid var(--brd)}
 .rr:last-child{border:none}
-.rr strong{color:var(–txt)}
-
+.rr strong{color:var(--txt)}
 .rep-2col{display:flex;gap:0;height:100%;min-height:380px}
-.rep-list{width:210px;flex-shrink:0;overflow-y:auto;border-right:1px solid var(–brd);padding-right:12px}
+.rep-list{width:210px;flex-shrink:0;overflow-y:auto;border-right:1px solid var(--brd);padding-right:12px}
 .rep-detail{flex:1;overflow-y:auto;padding-left:16px}
-.rep-item{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 10px;border-radius:5px;border:1px solid var(–brd);background:var(–surf2);color:var(–txt);font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;font-weight:500;cursor:pointer;margin-bottom:4px;text-align:left;transition:.12s;gap:6px}
-.rep-item:hover{border-color:var(–acc)}
-.rep-item.act{border-color:var(–acc);color:var(–acc)}
-.rep-item-r{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.ri-badge{font-family:‘IBM Plex Mono’,monospace;font-size:10px;background:var(–bg);padding:2px 5px;border-radius:3px;color:var(–mut)}
+.rep-item{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 10px;border-radius:5px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;margin-bottom:4px;text-align:left;transition:.12s;gap:6px}
+.rep-item:hover{border-color:var(--acc)}
+.rep-item.act{border-color:var(--acc);color:var(--acc)}
+.ri-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--bg);padding:2px 5px;border-radius:3px;color:var(--mut)}
 .ri-iss{font-size:10px;color:#f87171;font-weight:600}
-.det-title{font-family:‘Oswald’,sans-serif;font-size:15px;letter-spacing:2px;color:var(–acc);margin-bottom:10px}
-.det-stats{font-size:12px;color:var(–mut);margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.det-legend{display:flex;gap:9px;margin-bottom:12px;flex-wrap:wrap}
-.det-leg-i{display:flex;align-items:center;gap:4px;font-size:11px;color:var(–mut)}
+.det-stats{font-size:12px;color:var(--mut);margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .det-floor{margin-bottom:12px}
-.det-fl-title{font-family:‘Oswald’,sans-serif;font-size:11px;letter-spacing:1.5px;color:var(–mut);padding:4px 0 5px;border-bottom:1px solid var(–brd);margin-bottom:7px}
-.det-sec-title{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(–mut);opacity:.55;margin-bottom:4px;margin-top:6px}
+.det-fl-title{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--mut);padding:4px 0 5px;border-bottom:1px solid var(--brd);margin-bottom:7px}
 .det-rooms{display:flex;flex-wrap:wrap;gap:5px}
 .det-room{min-width:60px;border-radius:5px;border:2px solid;padding:5px 6px;cursor:pointer;text-align:center}
-.det-rnum{font-family:‘IBM Plex Mono’,monospace;font-size:11px;font-weight:600}
+.det-rnum{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600}
 .det-rsub{font-size:9px;margin-top:2px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:76px}
-
-.iss-card{background:var(–surf2);border:1px solid var(–si);border-radius:6px;padding:10px;margin-bottom:7px}
+.iss-card{background:var(--surf2);border:1px solid var(--si);border-radius:6px;padding:10px;margin-bottom:7px}
 .iss-hd{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap}
-.iss-room{font-family:‘IBM Plex Mono’,monospace;font-size:13px;font-weight:600;color:var(–acc)}
-.iss-work{font-size:12px;color:var(–txt);flex:1}
-.iss-con{font-size:11px;color:var(–mut)}
+.iss-room{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--acc)}
+.iss-work{font-size:12px;color:var(--txt);flex:1}
+.iss-con{font-size:11px;color:var(--mut)}
 .iss-log{border-left:2px solid #7f2222;padding-left:8px}
 .iss-e{margin-bottom:5px}
-.iss-ed{font-size:10px;color:var(–mut);margin-bottom:1px;display:flex;gap:5px;align-items:center}
-.iss-et{font-size:12px;color:var(–txt)}
-
-.sugg-item{padding:8px 11px;font-size:13px;cursor:pointer;border-bottom:1px solid var(–brd);color:var(–txt)}
-.sugg-item:last-child{border:none}
-.sugg-item:hover,.sugg-item:active{background:var(–surf2);color:var(–acc)}
-
-@media print {
-body * { visibility:hidden }
-#printArea, #printArea * { visibility:visible }
-#printArea {
-position:fixed;inset:0;background:#fff;color:#111;
-padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
-}
-#printArea h1{font-family:‘Oswald’,sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:4px;color:#111}
-#printArea h2{font-family:‘Oswald’,sans-serif;font-size:15px;letter-spacing:1px;margin:14px 0 6px;color:#111;border-bottom:1px solid #ccc;padding-bottom:4px}
-#printArea h3{font-size:12px;font-weight:600;margin:10px 0 4px;color:#333}
-#printArea table{width:100%;border-collapse:collapse;margin-bottom:10px}
-#printArea th{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#666;border-bottom:1px solid #ccc;padding:4px 6px;text-align:left}
-#printArea td{padding:4px 6px;border-bottom:1px solid #eee;font-size:11px;vertical-align:top}
-#printArea .p-badge{display:inline-block;padding:1px 6px;border-radius:2px;font-size:10px;font-weight:600}
-#printArea .p-n{background:#eee;color:#666}
-#printArea .p-w{background:#dbeafe;color:#1d4ed8}
-#printArea .p-d{background:#dcfce7;color:#16a34a}
-#printArea .p-i{background:#fee2e2;color:#dc2626}
-#printArea .p-iss{background:#fee2e2;border:1px solid #fca5a5;border-radius:4px;padding:6px 9px;margin-bottom:6px}
-#printArea .p-iss-hd{display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap}
-#printArea .p-iss-room{font-weight:700;font-size:13px}
-#printArea .p-iss-entry{border-left:2px solid #f87171;padding-left:7px;margin-bottom:4px}
-#printArea .p-iss-date{font-size:10px;color:#666;margin-bottom:1px}
-}
-
+.iss-ed{font-size:10px;color:var(--mut);margin-bottom:1px;display:flex;gap:5px;align-items:center}
+.iss-et{font-size:12px;color:var(--txt)}
+/* LOGIN */
+.login-ov{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999}
+.login-box{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:32px 28px;display:flex;flex-direction:column;align-items:center;gap:16px;max-width:320px;width:100%}
+.login-logo{font-family:'Oswald',sans-serif;font-size:32px;letter-spacing:4px;color:var(--acc)}
+.login-sub{font-size:12px;color:var(--mut);text-align:center}
+.login-btn{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:8px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:.15s;width:100%;justify-content:center}
+.login-btn:hover{border-color:var(--acc);color:var(--acc)}
+.login-status{font-size:12px;color:var(--mut);text-align:center;min-height:16px}
+.user-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut)}
+.user-bar img{border-radius:50%;width:22px;height:22px}
+.signout-btn{background:none;border:1px solid var(--brd);color:var(--mut);cursor:pointer;font-size:10px;padding:2px 7px;border-radius:3px;font-family:'IBM Plex Sans',sans-serif}
+.signout-btn:hover{border-color:var(--acc);color:var(--acc)}
+@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:fixed;inset:0;background:#fff;color:#111;padding:20px;font-family:'IBM Plex Sans',sans-serif;font-size:12px}#printArea h1{font-family:'Oswald',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:4px}#printArea h2{font-family:'Oswald',sans-serif;font-size:15px;margin:14px 0 6px;border-bottom:1px solid #ccc;padding-bottom:4px}#printArea table{width:100%;border-collapse:collapse;margin-bottom:10px}#printArea th{font-size:10px;text-transform:uppercase;color:#666;border-bottom:1px solid #ccc;padding:4px 6px;text-align:left}#printArea td{padding:4px 6px;border-bottom:1px solid #eee;font-size:11px}}
 @media(max-width:560px){.sidebar{display:none}.room{width:54px;height:50px}.room.named{width:80px}.stats{gap:4px}.wrbtns{flex-wrap:wrap}}
 </style>
-
 </head>
 <body>
 
+<div class="login-ov" id="loginOv">
+  <div class="login-box">
+    <div class="login-logo">ГОТЕЛЬ</div>
+    <div class="login-sub">Контроль ремонтних робіт<br>Замарстинівська 25</div>
+    <button class="login-btn" id="btnLogin">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20">
+      Увійти через Google
+    </button>
+    <div class="login-status" id="loginStatus"></div>
+  </div>
+</div>
+
 <div class="topbar">
   <div class="logo">ГОТЕЛЬ <em>контроль ремонту</em></div>
-  <div class="ml">
+  <div class="ml" id="topRight">
     <input class="srch" id="srch" placeholder="пошук..." oninput="renderAll()">
     <button class="btn" id="btnCV">👷 По підряднику</button>
     <button class="btn" id="btnCM">⚙ Підрядники</button>
@@ -329,8 +280,6 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
   </div>
 </div>
 
-<!-- ROOM MODAL -->
-
 <div class="ov" id="ovRM">
   <div class="modal">
     <div class="mhd">
@@ -341,9 +290,9 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
     </div>
     <div class="mbd">
       <div class="fg"><div class="fl">Перелік робіт</div><div id="worksList"></div>
-        <div class="aw" style="position:relative">
-          <input id="newWork" placeholder="Додати роботу..." autocomplete="off" oninput="filterWorkSugg(this.value)" onfocus="filterWorkSugg(this.value)">
-          <div id="workSuggBox" style="display:none;position:absolute;bottom:100%;left:0;right:0;background:var(--surf);border:1px solid var(--acc);border-radius:5px;max-height:180px;overflow-y:auto;z-index:50;margin-bottom:3px"></div>
+        <div class="aw">
+          <input id="newWork" placeholder="Додати роботу..." autocomplete="off" oninput="filterSugg(this.value)" onfocus="filterSugg(this.value)">
+          <div class="sugg-box" id="suggBox"></div>
           <button class="ab" id="btnAW">+ Додати</button>
         </div>
       </div>
@@ -357,8 +306,6 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
   </div>
 </div>
 
-<!-- PLAN MODAL -->
-
 <div class="ov" id="ovPlan">
   <div class="pm">
     <button class="x" id="xPlan">✕</button>
@@ -367,8 +314,6 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
     <div class="pleg" id="planLeg"></div>
   </div>
 </div>
-
-<!-- CON SELECT -->
 
 <div class="ov" id="ovCS">
   <div class="modal" style="max-width:350px">
@@ -379,8 +324,6 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
     <div class="mbd" id="csBody"></div>
   </div>
 </div>
-
-<!-- CON MANAGE -->
 
 <div class="ov" id="ovCM">
   <div class="modal" style="max-width:370px">
@@ -395,8 +338,6 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
   </div>
 </div>
 
-<!-- CP PANEL -->
-
 <div class="cp-ov" id="ovCP">
   <div class="cp">
     <div class="cphd"><button class="x" id="xCP">✕</button>
@@ -406,8 +347,6 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
     <div class="cpbd" id="cpBd"></div>
   </div>
 </div>
-
-<!-- REPORT -->
 
 <div class="rep-ov" id="ovRep">
   <div class="rep-p">
@@ -419,8 +358,10 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
         <button class="tab" data-tab="work">По видах робіт</button>
         <button class="tab" data-tab="iss">Проблеми</button>
       </div>
-      <button class="x" style="position:static;margin-left:auto" id="xRep">✕</button>
-      <button class="btn" onclick="printRep()" style="margin-left:4px">🖨 Друк / PDF</button>
+      <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
+        <button class="btn" onclick="printRep()">🖨 Друк</button>
+        <button class="x" style="position:static" id="xRep">✕</button>
+      </div>
     </div>
     <div class="rep-body" id="repBody"></div>
   </div>
@@ -428,846 +369,307 @@ padding:20px;font-family:‘IBM Plex Sans’,sans-serif;font-size:12px;
 
 <script>
 'use strict';
+const ROOM_NAMES={'f1-hall':'Хол','f1-reception':'Рецепція','f1-wc':'Туалети','f1-conf':'Конференц-зал','f1-restaurant':'Ресторан / Бар','f1-kitchen':'Кухня 1','p-parking':'Паркінг','p-kitchen':'Кухня -1','p-security':'Кімн. охорони','p-water':'Водомірний вузол','p-laundry':'Пральня','p-fire':'Протипожежна','p-kns':'КНС'};
+const RT={206:'std',207:'std',208:'std',209:'std',210:'std',211:'std',212:'std',213:'std',214:'imp',215:'imp',216:'std',217:'std',218:'std',219:'std',220:'std',221:'std',222:'std',223:'std',224:'std',225:'std',226:'semi',227:'std',301:'mmg',302:'biz',303:'biz',304:'biz',305:'biz',306:'std',307:'std',308:'biz',309:'std',310:'biz',311:'std',312:'biz',313:'std',314:'imp',315:'imp',316:'std',317:'std',318:'std',319:'std',320:'std',321:'std',322:'std',323:'std',324:'std',325:'std',326:'semi',327:'std',401:'mmg',402:'biz',403:'biz',404:'biz',405:'biz',406:'std',407:'std',408:'std',409:'std',410:'std',411:'std',412:'std',413:'std',414:'imp',415:'imp',416:'std',417:'std',418:'std',419:'std',420:'std',421:'std',422:'std',423:'std',424:'std',425:'std',426:'semi',427:'std',501:'std',502:'std',503:'std',504:'std',505:'std',506:'std',507:'std',508:'imp',509:'imp',510:'std',511:'std',512:'std',513:'std',514:'std',515:'std',516:'std',517:'std',518:'std',519:'std',520:'semi',521:'std',601:'std',603:'std',604:'std',605:'std',606:'std',607:'std',608:'imp',609:'imp',610:'std',611:'biz',612:'std',613:'biz',614:'std',615:'biz',616:'std',617:'biz',618:'std',619:'biz',620:'lux'};
+const FLOORS=[{id:-1,name:'-1 поверх',sections:[{name:'Приміщення',rooms:['p-parking','p-kitchen','p-security','p-water','p-laundry','p-fire','p-kns']}]},{id:1,name:'1 поверх',sections:[{name:'Приміщення',rooms:['f1-hall','f1-reception','f1-wc','f1-conf','f1-restaurant','f1-kitchen']}]},{id:2,name:'2 поверх',sections:[{name:'2 секція',rooms:[206,207,208,209,210,211,212,213]},{name:'1 секція',rooms:[214,215,216,217,218,219,220,221,222,223,224,225,226,227]}]},{id:3,name:'3 поверх',sections:[{name:'3 секція',rooms:[301,302,303,304,305]},{name:'2 секція',rooms:[306,307,308,309,310,311,312,313]},{name:'1 секція',rooms:[314,315,316,317,318,319,320,321,322,323,324,325,326,327]}]},{id:4,name:'4 поверх',sections:[{name:'3 секція',rooms:[401,402,403,404,405]},{name:'2 секція',rooms:[406,407,408,409,410,411,412,413]},{name:'1 секція',rooms:[414,415,416,417,418,419,420,421,422,423,424,425,426,427]}]},{id:5,name:'5 поверх',sections:[{name:'2 секція',rooms:[501,502,503,504,505,506,507]},{name:'1 секція',rooms:[508,509,510,511,512,513,514,515,516,517,518,519,520,521]}]},{id:6,name:'6 поверх',sections:[{name:'2 секція',rooms:[601,603,604,605,606,607]},{name:'1 секція',rooms:[608,609,610,611,612,613,614,615,616,617,618,619,620]}]}];
+const TM={mmg:{label:'ММГ',cls:'t-mmg',col:'#6b7280'},std:{label:'Стандарт',cls:'t-std',col:'#334155'},biz:{label:'Бізнес',cls:'t-biz',col:'#b45309'},imp:{label:'Покращений',cls:'t-imp',col:'#15803d'},semi:{label:'Півлюкс',cls:'t-semi',col:'#7e22ce'},lux:{label:'Люкс',cls:'t-lux',col:'#991b1b'}};
+const SDOT={n:'#3d3f4a',w:'#3b82f6',d:'#22c55e',i:'#ef4444'};
+const SID={n:'Не розпочато',w:'В роботі',d:'Готово',i:'Проблема'};
+const WSLBL={n:'Не розпочато',w:'В роботі',d:'Виконано ✓',i:'Проблема ⚠'};
+const WSBG={n:'#1f2025',w:'#0c2340',d:'#052e16',i:'#2d0a0a'};
+const WSBD={n:'#2c2d33',w:'#2563eb',d:'#16a34a',i:'#dc2626'};
+const WSTX={n:'#5a5c6a',w:'#60a5fa',d:'#4ade80',i:'#f87171'};
+const DW=['Шпаклівка стін','Фарбування стін і стель','Шпалери','Ковролін'];
+const ADMIN='lvivbau2@gmail.com';
+const FB={apiKey:"AIzaSyC9yXNFHumEj54WijGfEDnuc1-1cvPYCfE",authDomain:"zamarstynivska-25.firebaseapp.com",databaseURL:"https://zamarstynivska-25-default-rtdb.europe-west1.firebasedatabase.app",projectId:"zamarstynivska-25",storageBucket:"zamarstynivska-25.firebasestorage.app",messagingSenderId:"1066701061895",appId:"1:1066701061895:web:b0a87dd095308e1c244fa2"};
 
-// ═══════════════════════════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════════════════════════
-const ROOM_NAMES = {
-  'f1-hall':'Хол','f1-reception':'Рецепція','f1-wc':'Туалети',
-  'f1-conf':'Конференц-зал','f1-restaurant':'Ресторан / Бар','f1-kitchen':'Кухня 1',
-  'p-parking':'Паркінг','p-kitchen':'Кухня -1','p-security':'Кімн. охорони',
-  'p-water':'Водомірний вузол','p-laundry':'Пральня','p-fire':'Протипожежна','p-kns':'КНС',
-};
+const allRooms=()=>FLOORS.flatMap(f=>f.sections.flatMap(s=>s.rooms));
+const mkWork=n=>({name:n,ws:'n',con:'',issues:[]});
+const mkIssue=t=>({id:Date.now()+Math.random(),date:new Date().toLocaleString('uk',{dateStyle:'short',timeStyle:'short'}),text:t,status:'open'});
+const cName=c=>typeof c==='string'?c:(c.name||'');
+const cEmail=c=>typeof c==='string'?'':(c.email||'');
+const rl=n=>ROOM_NAMES[n]||String(n);
+const rtp=n=>TM[RT[n]||'std'];
+const pct=ws=>!ws||!ws.length?0:Math.round(ws.filter(w=>w.ws==='d').length/ws.length*100);
+const tp=(d,t)=>t?Math.round(d/t*100):0;
+const now=()=>new Date().toLocaleString('uk',{dateStyle:'short',timeStyle:'short'});
+const toN=r=>isNaN(r)?r:Number(r);
+const ov=id=>document.getElementById(id).classList.add('open');
+const cl=id=>document.getElementById(id).classList.remove('open');
+function autoS(w){if(!w||!w.length)return'n';const s=w.map(x=>x.ws);if(s.some(x=>x==='i'))return'i';if(s.every(x=>x==='d'))return'd';if(s.every(x=>x==='n'))return'n';return'w';}
 
-const RT = {
-  206:'std',207:'std',208:'std',209:'std',210:'std',211:'std',212:'std',213:'std',
-  214:'imp',215:'imp',216:'std',217:'std',218:'std',219:'std',220:'std',221:'std',
-  222:'std',223:'std',224:'std',225:'std',226:'semi',227:'std',
-  301:'mmg',302:'biz',303:'biz',304:'biz',305:'biz',
-  306:'std',307:'std',308:'biz',309:'std',310:'biz',311:'std',312:'biz',313:'std',
-  314:'imp',315:'imp',316:'std',317:'std',318:'std',319:'std',320:'std',321:'std',
-  322:'std',323:'std',324:'std',325:'std',326:'semi',327:'std',
-  401:'mmg',402:'biz',403:'biz',404:'biz',405:'biz',
-  406:'std',407:'std',408:'std',409:'std',410:'std',411:'std',412:'std',413:'std',
-  414:'imp',415:'imp',416:'std',417:'std',418:'std',419:'std',420:'std',421:'std',
-  422:'std',423:'std',424:'std',425:'std',426:'semi',427:'std',
-  501:'std',502:'std',503:'std',504:'std',505:'std',506:'std',507:'std',
-  508:'imp',509:'imp',510:'std',511:'std',512:'std',513:'std',514:'std',515:'std',
-  516:'std',517:'std',518:'std',519:'std',520:'semi',521:'std',
-  601:'std',603:'std',604:'std',605:'std',606:'std',607:'std',
-  608:'imp',609:'imp',610:'std',611:'biz',612:'std',613:'biz',614:'std',615:'biz',
-  616:'std',617:'biz',618:'std',619:'biz',620:'lux',
-};
+let rooms={},CONS=['—',{name:'Бригада А',email:''},{name:'Бригада Б',email:''},{name:'Бригада В',email:''},{name:'ТОВ Буд-Сервіс',email:''},{name:'Іваненко',email:''},{name:'Петренко',email:''}];
+let cFloor='all',cSt='all',cTp='all',editing=null,curTab='sum';
+let db,auth,fbReady=false,currentUser=null,isAdmin=false;
+allRooms().forEach(n=>{rooms[n]={s:'n',works:DW.map(mkWork),notes:'',hist:[]};});
+const rd=n=>{if(!rooms[n])rooms[n]={s:'n',works:DW.map(mkWork),notes:'',hist:[]};return rooms[n];};
+const saveRooms=()=>{if(fbReady&&db)db.ref('rooms').set(rooms).catch(()=>{});};
+const saveCons=()=>{if(fbReady&&db)db.ref('cons').set(CONS).catch(()=>{});};
 
-const FLOORS = [
-  {id:-1,name:'-1 поверх',sections:[{name:'Приміщення',rooms:['p-parking','p-kitchen','p-security','p-water','p-laundry','p-fire','p-kns']}]},
-  {id:1,name:'1 поверх',sections:[{name:'Приміщення',rooms:['f1-hall','f1-reception','f1-wc','f1-conf','f1-restaurant','f1-kitchen']}]},
-  {id:2,name:'2 поверх',sections:[{name:'2 секція',rooms:[206,207,208,209,210,211,212,213]},{name:'1 секція',rooms:[214,215,216,217,218,219,220,221,222,223,224,225,226,227]}]},
-  {id:3,name:'3 поверх',sections:[{name:'3 секція',rooms:[301,302,303,304,305]},{name:'2 секція',rooms:[306,307,308,309,310,311,312,313]},{name:'1 секція',rooms:[314,315,316,317,318,319,320,321,322,323,324,325,326,327]}]},
-  {id:4,name:'4 поверх',sections:[{name:'3 секція',rooms:[401,402,403,404,405]},{name:'2 секція',rooms:[406,407,408,409,410,411,412,413]},{name:'1 секція',rooms:[414,415,416,417,418,419,420,421,422,423,424,425,426,427]}]},
-  {id:5,name:'5 поверх',sections:[{name:'2 секція',rooms:[501,502,503,504,505,506,507]},{name:'1 секція',rooms:[508,509,510,511,512,513,514,515,516,517,518,519,520,521]}]},
-  {id:6,name:'6 поверх',sections:[{name:'2 секція',rooms:[601,603,604,605,606,607]},{name:'1 секція',rooms:[608,609,610,611,612,613,614,615,616,617,618,619,620]}]},
-];
-
-const TM = {
-  mmg:{label:'ММГ',cls:'t-mmg',col:'#6b7280'},std:{label:'Стандарт',cls:'t-std',col:'#334155'},
-  biz:{label:'Бізнес',cls:'t-biz',col:'#b45309'},imp:{label:'Покращений',cls:'t-imp',col:'#15803d'},
-  semi:{label:'Півлюкс',cls:'t-semi',col:'#7e22ce'},lux:{label:'Люкс',cls:'t-lux',col:'#991b1b'},
-};
-const SDOT = {n:'#3d3f4a',w:'#3b82f6',d:'#22c55e',i:'#ef4444'};
-const SID  = {n:'Не розпочато',w:'В роботі',d:'Готово',i:'Проблема'};
-const WSLBL= {n:'Не розпочато',w:'В роботі',d:'Виконано ✓',i:'Проблема ⚠'};
-const WSBG = {n:'#1f2025',w:'#0c2340',d:'#052e16',i:'#2d0a0a'};
-const WSBD = {n:'#2c2d33',w:'#2563eb',d:'#16a34a',i:'#dc2626'};
-const WSTX = {n:'#5a5c6a',w:'#60a5fa',d:'#4ade80',i:'#f87171'};
-const DEFAULT_WORKS = ['Шпаклівка стін','Фарбування стін і стель','Шпалери','Ковролін'];
-
-// ═══════════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════════
-const allRooms  = () => FLOORS.flatMap(f => f.sections.flatMap(s => s.rooms));
-const mkWork    = n  => ({name:n, ws:'n', con:'', issues:[]});
-const mkIssue   = t  => ({id:Date.now()+Math.random(), date:new Date().toLocaleString('uk',{dateStyle:'short',timeStyle:'short'}), text:t, status:'open'});
-const cName     = c  => typeof c==='string' ? c : (c.name||'');
-const cEmail    = c  => typeof c==='string' ? '' : (c.email||'');
-const rl        = n  => ROOM_NAMES[n] || String(n);
-const rtp       = n  => TM[RT[n]||'std'];
-const pct       = ws => !ws||!ws.length ? 0 : Math.round(ws.filter(w=>w.ws==='d').length/ws.length*100);
-const tp        = (d,t) => t ? Math.round(d/t*100) : 0;
-const nowStr    = () => new Date().toLocaleString('uk',{dateStyle:'short',timeStyle:'short'});
-const toN       = r  => isNaN(r) ? r : Number(r);
-
-function autoS(works) {
-  if(!works||!works.length) return 'n';
-  const ws = works.map(w=>w.ws);
-  if(ws.some(s=>s==='i')) return 'i';
-  if(ws.every(s=>s==='d')) return 'd';
-  if(ws.every(s=>s==='n')) return 'n';
-  return 'w';
-}
-
-// ═══════════════════════════════════════════════════════════
 // FIREBASE
-// ═══════════════════════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyC9yXNFHumEj54WijGfEDnuc1-1cvPYCfE",
-  authDomain: "zamarstynivska-25.firebaseapp.com",
-  databaseURL: "https://zamarstynivska-25-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "zamarstynivska-25",
-  storageBucket: "zamarstynivska-25.firebasestorage.app",
-  messagingSenderId: "1066701061895",
-  appId: "1:1066701061895:web:b0a87dd095308e1c244fa2"
-};
+firebase.initializeApp(FB);
+auth=firebase.auth();
+db=firebase.database();
 
-// Firebase буде завантажено з CDN
-let db, auth, fbReady = false;
+document.getElementById('btnLogin').addEventListener('click',()=>{
+  const st=document.getElementById('loginStatus');
+  st.textContent='Підключення...';
+  const provider=new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({prompt:'select_account'});
+  auth.signInWithPopup(provider).catch(err=>{
+    if(err.code==='auth/popup-blocked'||err.code==='auth/popup-closed-by-user'){
+      st.textContent='Перенаправлення...';
+      auth.signInWithRedirect(provider);
+    } else {
+      st.textContent='Помилка: '+err.message;
+    }
+  });
+});
 
-// ═══════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════
-let rooms = (() => {
-  try { const r=localStorage.getItem('ht_rooms'); if(r) return JSON.parse(r); } catch(e){}
-  const d={}; allRooms().forEach(n=>{ d[n]={s:'n',works:DEFAULT_WORKS.map(mkWork),notes:'',hist:[]}; }); return d;
-})();
+auth.getRedirectResult().catch(()=>{});
 
-let CONS = (() => {
-  try {
-    const c=localStorage.getItem('ht_cons');
-    if(c) return JSON.parse(c).map(c=>typeof c==='string'&&c!=='—'?{name:c,email:''}:c);
-  } catch(e){}
-  return ['—',{name:'Бригада А',email:''},{name:'Бригада Б',email:''},{name:'Бригада В',email:''},{name:'ТОВ Буд-Сервіс',email:''},{name:'Іваненко',email:''},{name:'Петренко',email:''}];
-})();
+auth.onAuthStateChanged(user=>{
+  if(!user){document.getElementById('loginOv').style.display='flex';return;}
+  currentUser=user;
+  isAdmin=(user.email===ADMIN);
+  document.getElementById('loginOv').style.display='none';
+  const bar=document.createElement('div');
+  bar.className='user-bar';
+  bar.innerHTML=`<img src="${user.photoURL||''}" onerror="this.style.display='none'">${user.displayName||user.email}${isAdmin?' <span style="color:var(--acc);font-size:10px">[адмін]</span>':''}<button class="signout-btn" onclick="firebase.auth().signOut()">Вийти</button>`;
+  document.getElementById('topRight').prepend(bar);
+  fbReady=true;
+  db.ref('rooms').once('value').then(snap=>{
+    const d=snap.val();
+    if(d){rooms=d;allRooms().forEach(n=>{if(!rooms[n])rooms[n]={s:'n',works:DW.map(mkWork),notes:'',hist:[]};});}
+    db.ref('cons').once('value').then(snap2=>{
+      const c=snap2.val();
+      if(c&&Array.isArray(c))CONS=c.map(x=>typeof x==='string'&&x!=='—'?{name:x,email:''}:x);
+      renderAll();
+      db.ref('rooms').on('value',s=>{const d=s.val();if(d){rooms=d;allRooms().forEach(n=>{if(!rooms[n])rooms[n]={s:'n',works:DW.map(mkWork),notes:'',hist:[]};});renderAll();if(editing!==null)renderWorks();}});
+      db.ref('cons').on('value',s=>{const d=s.val();if(d&&Array.isArray(d)){CONS=d.map(x=>typeof x==='string'&&x!=='—'?{name:x,email:''}:x);renderConNav();}});
+    });
+  }).catch(()=>renderAll());
+});
 
-// Збереження — спочатку localStorage, потім Firebase якщо є
-const saveRooms = () => {
-  try{localStorage.setItem('ht_rooms',JSON.stringify(rooms));}catch(e){}
-  if(fbReady && db) {
-    db.ref('rooms').set(rooms).catch(e=>console.log('FB save rooms:',e));
-  }
-};
-const saveCons = () => {
-  try{localStorage.setItem('ht_cons',JSON.stringify(CONS));}catch(e){}
-  if(fbReady && db) {
-    db.ref('cons').set(CONS).catch(e=>console.log('FB save cons:',e));
-  }
-};
-const rd = n => { if(!rooms[n]) rooms[n]={s:'n',works:DEFAULT_WORKS.map(mkWork),notes:'',hist:[]}; return rooms[n]; };
+function renderAll(){renderSidebar();renderStats();renderFloors();}
 
-let cFloor='all', cSt='all', cTp='all', editing=null, curTab='sum';
-let currentUser = null;
-let isAdmin = false;
-
-// ═══════════════════════════════════════════════════════════
-// RENDER MAIN
-// ═══════════════════════════════════════════════════════════
-function renderAll() { renderSidebar(); renderStats(); renderFloors(); }
-
-function renderSidebar() {
-  const total = allRooms().length;
-
-  // Floors
-  const fn = document.getElementById('sbFloors');
-  fn.innerHTML = `<button class="fb${cFloor==='all'?' act':''}" data-fid="all">Всі поверхи<span class="fbg">${total}</span></button>`
-    + FLOORS.map(f=>`<button class="fb${cFloor===f.id?' act':''}" data-fid="${f.id}">${f.name}<span class="fbg">${f.sections.flatMap(s=>s.rooms).length}</span></button>`).join('');
-  fn.querySelectorAll('.fb').forEach(b=>b.addEventListener('click',()=>{ cFloor=b.dataset.fid==='all'?'all':parseInt(b.dataset.fid); renderAll(); }));
-
-  // Status
-  const sn = document.getElementById('sbStatus');
-  const statuses = [['all','Всі','#e2e4ea'],['n',SID.n,SDOT.n],['w',SID.w,SDOT.w],['d',SID.d,SDOT.d],['i',SID.i,SDOT.i]];
-  sn.innerHTML = statuses.map(([id,lbl,col])=>`<button class="fb2${cSt===id?' act':''}" data-sid="${id}"><span class="dot8" style="background:${col}"></span>${lbl}</button>`).join('');
-  sn.querySelectorAll('.fb2').forEach(b=>b.addEventListener('click',()=>{ cSt=b.dataset.sid; renderAll(); }));
-
-  // Types
-  const tn = document.getElementById('sbType');
-  tn.innerHTML = `<button class="fb2${cTp==='all'?' act':''}" data-tid="all"><span class="dot8" style="background:var(--mut)"></span>Всі</button>`
-    + Object.entries(TM).map(([k,v])=>`<button class="fb2${cTp===k?' act':''}" data-tid="${k}"><span class="dot8" style="background:${v.col}"></span>${v.label}</button>`).join('');
-  tn.querySelectorAll('.fb2').forEach(b=>b.addEventListener('click',()=>{ cTp=b.dataset.tid; renderAll(); }));
-
-  // Con nav
+function renderSidebar(){
+  const total=allRooms().length;
+  const fn=document.getElementById('sbFloors');
+  fn.innerHTML=`<button class="fb${cFloor==='all'?' act':''}" data-fid="all">Всі поверхи<span class="fbg">${total}</span></button>`+FLOORS.map(f=>`<button class="fb${cFloor===f.id?' act':''}" data-fid="${f.id}">${f.name}<span class="fbg">${f.sections.flatMap(s=>s.rooms).length}</span></button>`).join('');
+  fn.querySelectorAll('.fb').forEach(b=>b.addEventListener('click',()=>{cFloor=b.dataset.fid==='all'?'all':parseInt(b.dataset.fid);renderAll();}));
+  const sn=document.getElementById('sbStatus');
+  sn.innerHTML=[['all','Всі','#e2e4ea'],['n',SID.n,SDOT.n],['w',SID.w,SDOT.w],['d',SID.d,SDOT.d],['i',SID.i,SDOT.i]].map(([id,lbl,col])=>`<button class="fb2${cSt===id?' act':''}" data-sid="${id}"><span class="dot8" style="background:${col}"></span>${lbl}</button>`).join('');
+  sn.querySelectorAll('.fb2').forEach(b=>b.addEventListener('click',()=>{cSt=b.dataset.sid;renderAll();}));
+  const tn=document.getElementById('sbType');
+  tn.innerHTML=`<button class="fb2${cTp==='all'?' act':''}" data-tid="all"><span class="dot8" style="background:var(--mut)"></span>Всі</button>`+Object.entries(TM).map(([k,v])=>`<button class="fb2${cTp===k?' act':''}" data-tid="${k}"><span class="dot8" style="background:${v.col}"></span>${v.label}</button>`).join('');
+  tn.querySelectorAll('.fb2').forEach(b=>b.addEventListener('click',()=>{cTp=b.dataset.tid;renderAll();}));
   renderConNav();
 }
 
-function renderConNav() {
-  const stats = buildConStats();
-  const active = Object.entries(stats).filter(([,v])=>v.totalW>0);
-  const nav = document.getElementById('sbCon');
-  if(!active.length){ nav.innerHTML=`<div style="font-size:11px;color:var(--mut);padding:3px 7px">Ще не призначено</div>`; return; }
-  nav.innerHTML = active.map(([nm,v])=>
-    `<button class="fb2" data-con="${encodeURIComponent(nm)}">
-      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nm}</span>
-      <span style="display:flex;gap:3px;align-items:center;flex-shrink:0">
-        ${v.issW?`<span style="font-size:10px;color:#f87171;font-weight:600">⚠${v.issW}</span>`:''}
-        <span class="fbg">${v.rooms}</span>
-      </span>
-    </button>`).join('');
+function renderConNav(){
+  const stats=buildConStats();const active=Object.entries(stats).filter(([,v])=>v.totalW>0);
+  const nav=document.getElementById('sbCon');
+  if(!active.length){nav.innerHTML=`<div style="font-size:11px;color:var(--mut);padding:3px 7px">Ще не призначено</div>`;return;}
+  nav.innerHTML=active.map(([nm,v])=>`<button class="fb2" data-con="${encodeURIComponent(nm)}"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nm}</span><span style="display:flex;gap:3px;align-items:center;flex-shrink:0">${v.issW?`<span style="font-size:10px;color:#f87171;font-weight:600">⚠${v.issW}</span>`:''}<span class="fbg">${v.rooms}</span></span></button>`).join('');
   nav.querySelectorAll('.fb2').forEach(b=>b.addEventListener('click',()=>openCPanel(decodeURIComponent(b.dataset.con))));
 }
 
-function renderStats() {
-  const all=allRooms(), total=all.length, c={n:0,w:0,d:0,i:0};
-  all.forEach(n=>c[rd(n).s]++);
-  const p=tp(c.d,total);
-  document.getElementById('statsBar').innerHTML=`
-    <div class="stat"><div class="sn" style="color:var(--acc)">${total}</div><div class="sl">Всього</div></div>
-    <div class="stat"><div class="sn" style="color:#22c55e">${c.d}</div><div class="sl">Готово</div></div>
-    <div class="stat"><div class="sn" style="color:#3b82f6">${c.w}</div><div class="sl">В роботі</div></div>
-    <div class="stat"><div class="sn" style="color:#ef4444">${c.i}</div><div class="sl">Проблеми</div></div>
-    <div class="stat pw"><div class="sl">Прогрес — ${p}%</div><div class="pb"><div class="pf" style="width:${p}%"></div></div></div>`;
+function renderStats(){
+  const all=allRooms(),total=all.length,c={n:0,w:0,d:0,i:0};all.forEach(n=>c[rd(n).s]++);const p=tp(c.d,total);
+  document.getElementById('statsBar').innerHTML=`<div class="stat"><div class="sn" style="color:var(--acc)">${total}</div><div class="sl">Всього</div></div><div class="stat"><div class="sn" style="color:#22c55e">${c.d}</div><div class="sl">Готово</div></div><div class="stat"><div class="sn" style="color:#3b82f6">${c.w}</div><div class="sl">В роботі</div></div><div class="stat"><div class="sn" style="color:#ef4444">${c.i}</div><div class="sl">Проблеми</div></div><div class="stat pw"><div class="sl">Прогрес — ${p}%</div><div class="pb"><div class="pf" style="width:${p}%"></div></div></div>`;
 }
 
-function isVis(n) {
-  const q=document.getElementById('srch').value.trim().toLowerCase();
-  if(q&&!String(n).toLowerCase().includes(q)&&!(ROOM_NAMES[n]||'').toLowerCase().includes(q)) return false;
-  if(cSt!=='all'&&rd(n).s!==cSt) return false;
-  if(cTp!=='all'&&(RT[n]||'std')!==cTp) return false;
-  return true;
-}
+function isVis(n){const q=document.getElementById('srch').value.trim().toLowerCase();if(q&&!String(n).toLowerCase().includes(q)&&!(ROOM_NAMES[n]||'').toLowerCase().includes(q))return false;if(cSt!=='all'&&rd(n).s!==cSt)return false;if(cTp!=='all'&&(RT[n]||'std')!==cTp)return false;return true;}
 
-function roomCell(n) {
-  const r=rd(n), tpe=rtp(n), p=pct(r.works), named=!!ROOM_NAMES[n];
-  return `<div class="room ${tpe.cls}${named?' named':''}${isVis(n)?'':' hidden'}" data-s="${r.s}" data-rid="${n}">
-    <div class="rnum" style="${named?'font-size:9px;':''}">${named?ROOM_NAMES[n]:n}</div>
-    ${!named?`<div class="rtyp">${tpe.label}</div>`:''}
-    <div class="rpb"><div class="rpbf" style="width:${p}%"></div></div>
-  </div>`;
-}
+function roomCell(n){const r=rd(n),tpe=rtp(n),p=pct(r.works),named=!!ROOM_NAMES[n];return`<div class="room ${tpe.cls}${named?' named':''}${isVis(n)?'':' hidden'}" data-s="${r.s}" data-rid="${n}"><div class="rnum" style="${named?'font-size:9px;':''}">${named?ROOM_NAMES[n]:n}</div>${!named?`<div class="rtyp">${tpe.label}</div>`:''}<div class="rpb"><div class="rpbf" style="width:${p}%"></div></div></div>`;}
 
-function renderFloors() {
-  const floors = cFloor==='all' ? FLOORS : FLOORS.filter(f=>f.id===cFloor);
-  document.getElementById('floorsWrap').innerHTML = floors.map(f=>{
-    const allF=f.sections.flatMap(s=>s.rooms), vis=allF.filter(n=>isVis(n)).length;
-    return `<div class="floor-block">
-      <div class="fh">${f.name}<span class="fi">${vis} з ${allF.length} прим.</span><button class="btn sm" data-planfid="${f.id}">🗺 План</button></div>
-      ${f.sections.map(s=>`<div class="sec"><div class="secl">${s.name}</div><div class="rg">${s.rooms.map(roomCell).join('')}</div></div>`).join('')}
-    </div>`;
-  }).join('');
+function renderFloors(){
+  const floors=cFloor==='all'?FLOORS:FLOORS.filter(f=>f.id===cFloor);
+  document.getElementById('floorsWrap').innerHTML=floors.map(f=>{const allF=f.sections.flatMap(s=>s.rooms),vis=allF.filter(n=>isVis(n)).length;return`<div class="floor-block"><div class="fh">${f.name}<span class="fi">${vis} з ${allF.length} прим.</span><button class="btn sm" data-planfid="${f.id}">🗺 План</button></div>${f.sections.map(s=>`<div class="sec"><div class="secl">${s.name}</div><div class="rg">${s.rooms.map(roomCell).join('')}</div></div>`).join('')}</div>`;}).join('');
   document.querySelectorAll('.room[data-rid]').forEach(el=>el.addEventListener('click',()=>openRM(toN(el.dataset.rid))));
   document.querySelectorAll('[data-planfid]').forEach(b=>b.addEventListener('click',()=>openPlan(parseInt(b.dataset.planfid))));
 }
 
-// ═══════════════════════════════════════════════════════════
-// ROOM MODAL
-// ═══════════════════════════════════════════════════════════
-function openRM(n) {
-  editing=n;
-  const r=rd(n), tpe=rtp(n);
+function openRM(n){
+  editing=n;const r=rd(n),tpe=rtp(n);
   const fl=FLOORS.find(f=>f.sections.some(s=>s.rooms.includes(n)));
   const sec=fl?fl.sections.find(s=>s.rooms.includes(n)):null;
   document.getElementById('mTit').textContent=rl(n);
-  document.getElementById('mMeta').innerHTML=
-    `<span>${fl?fl.name:''} · ${sec?sec.name:''}</span>
-     <span class="mbadge" style="background:${tpe.col}33;color:${tpe.col};border:1px solid ${tpe.col}55">${tpe.label}</span>
-     <span id="mPct" style="font-family:'IBM Plex Mono',monospace;font-size:11px">${pct(r.works)}%</span>`;
+  document.getElementById('mMeta').innerHTML=`<span>${fl?fl.name:''} · ${sec?sec.name:''}</span><span class="mbadge" style="background:${tpe.col}33;color:${tpe.col};border:1px solid ${tpe.col}55">${tpe.label}</span><span id="mPct" style="font-family:'IBM Plex Mono',monospace;font-size:11px">${pct(r.works)}%</span>`;
   document.getElementById('roomNotes').value=r.notes||'';
   const h=(r.hist||[]).slice().reverse();
   document.getElementById('hist').innerHTML=h.length?h.map(x=>`<div class="hi"><strong>${x.d}</strong> — ${x.t}</div>`).join(''):'<div style="font-size:11px;color:var(--mut)">Немає записів</div>';
-  renderWorks();
-  // Будуємо список всіх унікальних робіт для підказок
-  window._allWorkNames=[...new Set(allRooms().flatMap(n=>rd(n).works.map(w=>w.name)))].sort();
-  document.getElementById('ovRM').classList.add('open');
+  window._awn=[...new Set(allRooms().flatMap(n=>rd(n).works.map(w=>w.name)))].sort();
+  renderWorks();ov('ovRM');
 }
 
-function renderWorks() {
-  if(editing===null) return;
-  const r=rd(editing);
-  const p=pct(r.works);
-  document.getElementById('mPf').style.width=p+'%';
-  const pe=document.getElementById('mPct'); if(pe) pe.textContent=p+'%';
-  const conOpts=CONS.map(c=>`<option value="${cName(c)}">${cName(c)}</option>`).join('');
-
+function renderWorks(){
+  if(editing===null)return;const r=rd(editing);const p=pct(r.works);
+  document.getElementById('mPf').style.width=p+'%';const pe=document.getElementById('mPct');if(pe)pe.textContent=p+'%';
+  const co=CONS.map(c=>`<option value="${cName(c)}">${cName(c)}</option>`).join('');
   document.getElementById('worksList').innerHTML=r.works.map((w,i)=>{
-    const issues=w.issues||[];
-    const openCnt=issues.filter(e=>e.status==='open').length;
-    const showIss=w.ws==='i'||issues.length>0;
-    return `<div class="wr${w.ws==='w'?' sw':w.ws==='d'?' sd':w.ws==='i'?' si':''}">
-      <div class="wrt">
-        <div class="wrn">${w.name}</div>
-        <div class="wrbtns">
-          <button class="stb${w.ws==='w'?' ow':''}" data-idx="${i}" data-ws="w">В роботі</button>
-          <button class="stb${w.ws==='d'?' od':''}" data-idx="${i}" data-ws="d">Виконано ✓</button>
-          <button class="stb${w.ws==='i'?' oi':''}" data-idx="${i}" data-ws="i">⚠ Проблема</button>
-        </div>
-        <button class="wdel" data-di="${i}">✕</button>
-      </div>
-      <div class="wcon">
-        <span class="wconl">Підрядник:</span>
-        <select data-ci="${i}">${conOpts.replace(`value="${w.con}"`,`value="${w.con}" selected`)}</select>
-      </div>
-      ${showIss?`<div class="wiss">
-        <div class="wiss-hd">
-          <span class="wiss-lbl">⚠ Журнал проблем${openCnt?` (${openCnt} відкрито)`:''}</span>
-          <button class="btn sm" data-ai="${i}" style="color:#f87171;border-color:#522">+ Запис</button>
-        </div>
-        <div class="wiss-bd">
-          ${issues.slice().reverse().map(e=>`
-            <div class="ient">
-              <div class="idate"><span>${e.date}</span><span class="${e.status==='open'?'ist-o':'ist-c'}">${e.status==='open'?'Відкрита':'Закрита'}</span></div>
-              <div class="itxt">${e.text}</div>
-              ${e.photo?`<div style="font-size:10px;color:var(--mut);margin-top:2px">📎 фото</div>`:''}
-              ${e.status==='open'?`<button class="btn sm" data-cli="${i}" data-eid="${e.id}" style="margin-top:3px">✓ Закрити</button>`:''}
-            </div>`).join('')}
-          <div class="iadd" id="iadd${i}" style="display:none">
-            <textarea placeholder="Опишіть проблему або дефект..." id="ita${i}"></textarea>
-
-```
-        <div class="iadd-row">
-          <button class="btn sm" style="color:var(--mut)" onclick="alert('Фото після Firebase')">📎 Фото</button>
-          <button class="btn pri" style="font-size:11px;padding:4px 10px" data-si="${i}">Зберегти</button>
-        </div>
-      </div>
-    </div>
-  </div>`:``}
-</div>`;
-```
+    const issues=w.issues||[],oc=issues.filter(e=>e.status==='open').length,si=w.ws==='i'||issues.length>0;
+    return`<div class="wr${w.ws==='w'?' sw':w.ws==='d'?' sd':w.ws==='i'?' si':''}"><div class="wrt"><div class="wrn">${w.name}</div><div class="wrbtns"><button class="stb${w.ws==='w'?' ow':''}" data-idx="${i}" data-ws="w">В роботі</button><button class="stb${w.ws==='d'?' od':''}" data-idx="${i}" data-ws="d">Виконано ✓</button><button class="stb${w.ws==='i'?' oi':''}" data-idx="${i}" data-ws="i">⚠ Проблема</button></div><button class="wdel" data-di="${i}">✕</button></div><div class="wcon"><span class="wconl">Підрядник:</span><select data-ci="${i}">${co.replace(`value="${w.con}"`,`value="${w.con}" selected`)}</select></div>${si?`<div class="wiss"><div class="wiss-hd"><span class="wiss-lbl">⚠ Журнал${oc?` (${oc})`:''}</span><button class="btn sm" data-ai="${i}" style="color:#f87171;border-color:#522">+ Запис</button></div><div class="wiss-bd">${issues.slice().reverse().map(e=>`<div class="ient"><div class="idate"><span>${e.date}</span><span class="${e.status==='open'?'ist-o':'ist-c'}">${e.status==='open'?'Відкрита':'Закрита'}</span></div><div class="itxt">${e.text}</div>${e.status==='open'?`<button class="btn sm" data-cli="${i}" data-eid="${e.id}" style="margin-top:3px">✓ Закрити</button>`:''}</div>`).join('')}<div class="iadd" id="iadd${i}"><textarea placeholder="Опишіть проблему..." id="ita${i}"></textarea><div class="iadd-row"><button class="btn sm" style="color:var(--mut)" onclick="alert('Фото — після Firebase Storage')">📎 Фото</button><button class="btn pri" style="font-size:11px;padding:4px 10px" data-si="${i}">Зберегти</button></div></div></div></div>`:''}`;
 
 }).join(’’);
-
-// Bind all work events
-document.querySelectorAll(’.stb[data-ws]’).forEach(b=>b.addEventListener(‘click’,()=>{
-const r=rd(editing),i=Number(b.dataset.idx),ws=b.dataset.ws;
-r.works[i].ws=r.works[i].ws===ws?‘n’:ws;
-if(!r.works[i].issues) r.works[i].issues=[];
-r.s=autoS(r.works); saveRooms(); renderWorks();
-}));
-document.querySelectorAll(’.wdel[data-di]’).forEach(b=>b.addEventListener(‘click’,()=>{
-const r=rd(editing); r.works.splice(Number(b.dataset.di),1); r.s=autoS(r.works); renderWorks();
-}));
-document.querySelectorAll(‘select[data-ci]’).forEach(s=>s.addEventListener(‘change’,()=>{
-rd(editing).works[Number(s.dataset.ci)].con=s.value; saveRooms();
-}));
-document.querySelectorAll(’[data-ai]’).forEach(b=>b.addEventListener(‘click’,()=>{
-const d=document.getElementById(‘iadd’+b.dataset.ai);
-if(d) d.style.display=d.style.display===‘none’?‘flex’:‘none’;
-}));
-document.querySelectorAll(’[data-si]’).forEach(b=>b.addEventListener(‘click’,()=>{
-const i=Number(b.dataset.si),ta=document.getElementById(‘ita’+i);
-const txt=(ta?ta.value:’’).trim(); if(!txt) return;
-const r=rd(editing); if(!r.works[i].issues) r.works[i].issues=[];
-r.works[i].issues.push(mkIssue(txt));
-r.works[i].ws=‘i’; r.s=autoS(r.works); saveRooms(); renderWorks();
-}));
-document.querySelectorAll(’[data-cli]’).forEach(b=>b.addEventListener(‘click’,()=>{
-const i=Number(b.dataset.cli),id=Number(b.dataset.eid);
-const r=rd(editing),w=r.works[i];
-const e=w.issues.find(x=>Math.round(x.id)===Math.round(id));
-if(e){e.status=‘closed’;e.closedDate=nowStr();}
-if(w.issues.every(x=>x.status===‘closed’)&&w.ws===‘i’) w.ws=‘n’;
-r.s=autoS(r.works); saveRooms(); renderWorks();
-}));
+document.querySelectorAll(’.stb[data-ws]’).forEach(b=>b.addEventListener(‘click’,()=>{const r=rd(editing),i=Number(b.dataset.idx),ws=b.dataset.ws;r.works[i].ws=r.works[i].ws===ws?‘n’:ws;if(!r.works[i].issues)r.works[i].issues=[];r.s=autoS(r.works);saveRooms();renderWorks();}));
+document.querySelectorAll(’.wdel[data-di]’).forEach(b=>b.addEventListener(‘click’,()=>{const r=rd(editing);r.works.splice(Number(b.dataset.di),1);r.s=autoS(r.works);renderWorks();}));
+document.querySelectorAll(‘select[data-ci]’).forEach(s=>s.addEventListener(‘change’,()=>{rd(editing).works[Number(s.dataset.ci)].con=s.value;saveRooms();}));
+document.querySelectorAll(’[data-ai]’).forEach(b=>b.addEventListener(‘click’,()=>{const d=document.getElementById(‘iadd’+b.dataset.ai);if(d)d.style.display=d.style.display===‘flex’?‘none’:‘flex’;}));
+document.querySelectorAll(’[data-si]’).forEach(b=>b.addEventListener(‘click’,()=>{const i=Number(b.dataset.si),ta=document.getElementById(‘ita’+i);const txt=(ta?ta.value:’’).trim();if(!txt)return;const r=rd(editing);if(!r.works[i].issues)r.works[i].issues=[];r.works[i].issues.push(mkIssue(txt));r.works[i].ws=‘i’;r.s=autoS(r.works);saveRooms();renderWorks();}));
+document.querySelectorAll(’[data-cli]’).forEach(b=>b.addEventListener(‘click’,()=>{const i=Number(b.dataset.cli),id=Number(b.dataset.eid);const r=rd(editing),w=r.works[i];const e=w.issues.find(x=>Math.round(x.id)===Math.round(id));if(e){e.status=‘closed’;e.closedDate=now();}if(w.issues.every(x=>x.status===‘closed’)&&w.ws===‘i’)w.ws=‘n’;r.s=autoS(r.works);saveRooms();renderWorks();}));
 }
 
-function addWork() {
-const inp=document.getElementById(‘newWork’),val=inp.value.trim(); if(!val) return;
-rd(editing).works.push(mkWork(val)); inp.value=’’; renderWorks(); inp.focus();
-}
+function addWork(){const inp=document.getElementById(‘newWork’),val=inp.value.trim();if(!val)return;rd(editing).works.push(mkWork(val));inp.value=’’;document.getElementById(‘suggBox’).style.display=‘none’;renderWorks();inp.focus();}
+function saveRM(){const n=editing;if(n===null)return;const old=rd(n),ns=autoS(old.works),hist=old.hist||[];if(old.s!==ns)hist.push({d:now(),t:`${SID[old.s]} → ${SID[ns]}`});rooms[n]={…old,s:ns,notes:document.getElementById(‘roomNotes’).value,hist};saveRooms();renderAll();cl(‘ovRM’);}
 
-function saveRM() {
-const n=editing; if(n===null) return;
-const old=rd(n), ns=autoS(old.works), hist=old.hist||[];
-if(old.s!==ns) hist.push({d:nowStr(),t:`${SID[old.s]} → ${SID[ns]}`});
-rooms[n]={…old,s:ns,notes:document.getElementById(‘roomNotes’).value,hist};
-saveRooms(); renderAll(); close(‘ovRM’);
-}
-
-// ═══════════════════════════════════════════════════════════
-// PLAN
-// ═══════════════════════════════════════════════════════════
-function openPlan(fid) {
-const f=FLOORS.find(f=>f.id===fid); if(!f) return;
-document.getElementById(‘planTit’).textContent=`План — ${f.name}`;
-document.getElementById(‘planGrid’).innerHTML=f.sections.map(s=>`<div class="psec"><div class="psecl">${s.name}</div> <div class="prg">${s.rooms.map(n=>{ const r=rd(n),tpe=rtp(n),p=pct(r.works),named=!!ROOM_NAMES[n]; return`<div class="pr ${tpe.cls}${named?' pn':''}" data-s="${r.s}" data-rid="${n}">
-<div class="prn">${rl(n)}</div>
-${!named?`<div class="prt">${tpe.label}</div>`:’’}
-<div class="prdot" style="background:${SDOT[r.s]}"></div>
-<div class="prbar" style="background:linear-gradient(to right,#22c55e ${p}%,transparent ${p}%)"></div>
-</div>`; }).join('')}</div></div>`).join(’’);
-document.getElementById(‘planLeg’).innerHTML=
-Object.entries(TM).map(([k,v])=>`<div class="pli"><div class="plsw" style="background:${v.col}"></div>${v.label}</div>`).join(’’)+
-`<div style="width:100%;height:1px;background:var(--brd);margin:3px 0"></div>`+
-Object.entries(SDOT).map(([k,c])=>`<div class="pli"><div class="plsw" style="background:${c};border-radius:50%"></div>${SID[k]}</div>`).join(’’);
-document.querySelectorAll(’.pr[data-rid]’).forEach(el=>el.addEventListener(‘click’,()=>{ close(‘ovPlan’); openRM(toN(el.dataset.rid)); }));
-open(‘ovPlan’);
-}
-
-// ═══════════════════════════════════════════════════════════
-// CONTRACTOR HELPERS
-// ═══════════════════════════════════════════════════════════
-function buildConStats() {
-const stats={};
-CONS.filter(c=>cName(c)!==’—’).forEach(c=>{ stats[cName(c)]={rooms:0,totalW:0,doneW:0,issW:0}; });
-allRooms().forEach(n=>{
-rd(n).works.forEach(w=>{
-if(!w.con||w.con===’—’) return;
-if(!stats[w.con]) stats[w.con]={rooms:0,totalW:0,doneW:0,issW:0};
-const s=stats[w.con];
-// count rooms once per contractor
-s._seen=s._seen||new Set(); if(!s._seen.has(n)){s._seen.add(n);s.rooms++;}
-s.totalW++; if(w.ws===‘d’)s.doneW++; if(w.ws===‘i’)s.issW++;
-});
-});
-return stats;
-}
-
-function conDetailHTML(nm) {
-const byFloor={};
-let totalW=0,doneW=0,issW=0,roomCnt=0;
-FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{
-const ws=rd(n).works.filter(w=>w.con===nm); if(!ws.length) return;
-roomCnt++; totalW+=ws.length; doneW+=ws.filter(w=>w.ws===‘d’).length; issW+=ws.filter(w=>w.ws===‘i’).length;
-const key=f.id+’|’+s.name;
-if(!byFloor[key]) byFloor[key]={floorName:f.name,secName:s.name,rooms:[]};
-byFloor[key].rooms.push({n,ws});
-})));
-if(!roomCnt) return `<div style="color:var(--mut);font-size:12px;padding:16px">Немає призначених робіт</div>`;
-const p=tp(doneW,totalW);
-let h=`<div class="det-stats"> <span>${roomCnt} кімнат · ${doneW}/${totalW} виконано · ${p}%</span> ${issW?`<span style="color:#f87171;font-weight:600">⚠ ${issW} проблем</span>`:’’}
-
-  </div>
-  <div class="det-legend">
-    ${Object.entries(WSBG).map(([k,bg])=>`<div class="det-leg-i"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${bg};border:1px solid ${WSBD[k]}"></span>${SID[k]}</span></div>`).join('')}
-  </div>`;
-  Object.values(byFloor).forEach(({floorName,secName,rooms})=>{
-    h+=`<div class="det-floor">
-      <div class="det-fl-title">${floorName} · ${secName}</div>
-      <div class="det-rooms">`;
-    rooms.forEach(({n,ws})=>{
-      const hasI=ws.some(w=>w.ws==='i'),allD=ws.every(w=>w.ws==='d'),hasW=ws.some(w=>w.ws==='w');
-      const st=hasI?'i':allD?'d':hasW?'w':'n';
-      h+=`<div class="det-room" data-rid="${n}" style="border-color:${WSBD[st]};background:${WSBG[st]}">
-        <div class="det-rnum" style="color:${WSTX[st]}">${rl(n)}</div>
-        ${ws.map(w=>`<div class="det-rsub" style="color:${WSTX[w.ws||'n']}">${w.name}</div>`).join('')}
-      </div>`;
-    });
-    h+=`</div></div>`;
-  });
-  return h;
-}
-
-function workDetailHTML(wname) {
-const byFloor={};
-let total=0,done=0,inW=0,iss=0;
-FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{
-const w=rd(n).works.find(x=>x.name===wname); if(!w) return;
-total++; if(w.ws===‘d’)done++; if(w.ws===‘w’)inW++; if(w.ws===‘i’)iss++;
-const key=f.id+’|’+s.name;
-if(!byFloor[key]) byFloor[key]={floorName:f.name,secName:s.name,rooms:[]};
-byFloor[key].rooms.push({n,w});
-})));
-if(!total) return `<div style="color:var(--mut);font-size:12px;padding:16px">Ця робота ще не внесена до жодної кімнати</div>`;
-const p=tp(done,total);
-let h=`<div class="det-stats"> <span>${total} кімнат · ${done} виконано · ${inW} в роботі</span> ${iss?`<span style="color:#f87171;font-weight:600">⚠ ${iss} проблем</span>`:’’}
-<div class="pb" style="flex:1;min-width:60px"><div class="pf" style="width:${p}%"></div></div>
-<span style="font-family:'IBM Plex Mono',monospace;font-size:11px">${p}%</span>
-
-  </div>
-  <div class="det-legend">
-    ${Object.entries(WSBG).map(([k,bg])=>`<div class="det-leg-i"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${bg};border:1px solid ${WSBD[k]}"></span>${SID[k]}</div>`).join('')}
-  </div>`;
-  Object.values(byFloor).forEach(({floorName,secName,rooms})=>{
-    h+=`<div class="det-floor">
-      <div class="det-fl-title">${floorName} · ${secName}</div>
-      <div class="det-rooms">`;
-    rooms.forEach(({n,w})=>{
-      const st=w.ws||'n';
-      h+=`<div class="det-room" data-rid="${n}" style="border-color:${WSBD[st]};background:${WSBG[st]}">
-        <div class="det-rnum" style="color:${WSTX[st]}">${rl(n)}</div>
-        ${w.con?`<div class="det-rsub" style="color:${WSTX[st]}">${w.con}</div>`:''}
-      </div>`;
-    });
-    h+=`</div></div>`;
-  });
-  return h;
-}
-
-function bind2col(listSel, detailId, dataAttr, detailFn) {
-const btns = document.querySelectorAll(listSel);
-function select(btn) {
-btns.forEach(b=>b.classList.remove(‘act’));
-btn.classList.add(‘act’);
-const val = decodeURIComponent(btn.dataset[dataAttr]);
-const det = document.getElementById(detailId);
-det.innerHTML = detailFn(val);
-det.querySelectorAll(’[data-rid]’).forEach(el=>el.addEventListener(‘click’,()=>{ close(‘ovRep’); openRM(toN(el.dataset.rid)); }));
-}
-if(btns.length) select(btns[0]);
-btns.forEach(b=>b.addEventListener(‘click’,()=>select(b)));
-}
-
-// ═══════════════════════════════════════════════════════════
-// CONTRACTOR SELECT & PANEL
-// ═══════════════════════════════════════════════════════════
-function openConSelect() {
-const stats=buildConStats();
-const allC=CONS.filter(c=>cName(c)!==’—’);
-const el=document.getElementById(‘csBody’);
-if(!allC.length){ el.innerHTML=`<div style="color:var(--mut);font-size:12px;padding:12px;text-align:center">Додайте підрядників</div>`; }
-else {
-el.innerHTML=allC.map(c=>{
-const nm=cName(c),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0},p=tp(v.doneW,v.totalW);
-return `<button class="csb" data-con="${encodeURIComponent(nm)}"> <span style="flex:1;overflow:hidden;text-overflow:ellipsis">${nm}</span> <span style="display:flex;align-items:center;gap:4px;flex-shrink:0"> ${v.issW?`<span style="font-size:10px;color:#f87171;font-weight:600">⚠${v.issW}</span>`:''} <span class="cbg">${v.totalW>0?`${v.rooms} кімн. · ${p}%`:'немає робіт'}</span> </span> </button>`;
-}).join(’’);
-el.querySelectorAll(’.csb’).forEach(b=>b.addEventListener(‘click’,()=>{ close(‘ovCS’); openCPanel(decodeURIComponent(b.dataset.con)); }));
-}
-open(‘ovCS’);
-}
-
-function openCPanel(nm) {
-document.getElementById(‘cpTit’).textContent=nm;
-const stats=buildConStats(),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0};
-document.getElementById(‘cpSub’).innerHTML=`${v.rooms} кімнат · ${v.doneW}/${v.totalW} виконано (${tp(v.doneW,v.totalW)}%)${v.issW?` · <span style="color:#f87171">⚠ ${v.issW} проблем</span>`:''}`;
-const bd=document.getElementById(‘cpBd’);
-bd.innerHTML=conDetailHTML(nm);
-bd.querySelectorAll(’[data-rid]’).forEach(el=>el.addEventListener(‘click’,()=>{ close(‘ovCP’); openRM(toN(el.dataset.rid)); }));
-open(‘ovCP’);
-}
-
-// ═══════════════════════════════════════════════════════════
-// CONTRACTOR MANAGE
-// ═══════════════════════════════════════════════════════════
-function renderConList() {
-document.getElementById(‘conList’).innerHTML=CONS.map((c,i)=>
-i===0?`<div class="ci"><div class="cir"><span style="flex:1;font-size:12px;color:var(--mut)">— (не призначено)</span></div></div>`
-:`<div class="ci"><div class="cir"><input value="${cName(c)}" placeholder="Назва..." data-ni="${i}"><button class="cdel" data-di="${i}">✕</button></div><input class="em" value="${cEmail(c)}" placeholder="Gmail для входу..." data-ei="${i}"></div>`
-).join(’’);
-document.querySelectorAll(‘input[data-ni]’).forEach(inp=>inp.addEventListener(‘change’,()=>{ const i=Number(inp.dataset.ni); if(typeof CONS[i]===‘string’) CONS[i]={name:CONS[i],email:’’}; CONS[i].name=inp.value.trim()||cName(CONS[i]); saveCons(); }));
-document.querySelectorAll(‘input[data-ei]’).forEach(inp=>inp.addEventListener(‘change’,()=>{ const i=Number(inp.dataset.ei); if(typeof CONS[i]===‘string’) CONS[i]={name:CONS[i],email:’’}; CONS[i].email=inp.value.trim().toLowerCase(); saveCons(); }));
-document.querySelectorAll(’.cdel[data-di]’).forEach(b=>b.addEventListener(‘click’,()=>{ CONS.splice(Number(b.dataset.di),1); saveCons(); renderConList(); }));
-}
-function addCon() { const inp=document.getElementById(‘newCon’),val=inp.value.trim(); if(!val) return; CONS.push({name:val,email:’’}); saveCons(); renderConList(); inp.value=’’; inp.focus(); }
-
-// ═══════════════════════════════════════════════════════════
-// REPORT
-// ═══════════════════════════════════════════════════════════
-function openRep() { renderTab(curTab); open(‘ovRep’); }
-
-function renderTab(tab) {
-curTab=tab;
-document.querySelectorAll(’.tab’).forEach(t=>t.classList.toggle(‘act’,t.dataset.tab===tab));
-const body=document.getElementById(‘repBody’);
-if(tab===‘sum’)  { body.innerHTML=repSum(); return; }
-if(tab===‘iss’)  { body.innerHTML=repIss(); return; }
-if(tab===‘con’)  { body.innerHTML=rep2col(‘con’); setTimeout(()=>bind2col(’.ri-con’,‘repDetail’,‘conname’,conDetailHTML),10); return; }
-if(tab===‘work’) { body.innerHTML=rep2col(‘work’); setTimeout(()=>bind2col(’.ri-work’,‘repDetail’,‘wname’,workDetailHTML),10); return; }
-}
-
-function rep2col(type) {
-let items=[];
-if(type===‘con’) {
-const stats=buildConStats();
-items=CONS.filter(c=>cName(c)!==’—’).map(c=>{
-const nm=cName(c),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0},p=tp(v.doneW,v.totalW);
-return `<button class="rep-item ri-con" data-conname="${encodeURIComponent(nm)}"> <span style="flex:1;overflow:hidden;text-overflow:ellipsis">${nm}</span> <span class="rep-item-r">${v.issW?`<span class="ri-iss">⚠${v.issW}</span>`:''}<span class="ri-badge">${v.rooms} кімн. · ${p}%</span></span> </button>`;
-});
-} else {
-const wnames=[…new Set(allRooms().flatMap(n=>rd(n).works.map(w=>w.name)))];
-items=wnames.map(wn=>{
-let total=0,done=0,iss=0;
-allRooms().forEach(n=>{ const w=rd(n).works.find(x=>x.name===wn); if(!w) return; total++; if(w.ws===‘d’)done++; if(w.ws===‘i’)iss++; });
-const p=tp(done,total);
-return `<button class="rep-item ri-work" data-wname="${encodeURIComponent(wn)}"> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${wn}</span> <span class="rep-item-r">${iss?`<span class="ri-iss">⚠${iss}</span>`:''}<span class="ri-badge">${done}/${total} · ${p}%</span></span> </button>`;
-});
-}
-return `<div class="rep-2col">
-<div class="rep-list">${items.join(’’)}</div>
-<div class="rep-detail" id="repDetail"><div style="color:var(--mut);font-size:12px">Оберіть зі списку</div></div>
-
-  </div>`;
-}
-
-function repSum() {
-const all=allRooms(),total=all.length,c={n:0,w:0,d:0,i:0};
-all.forEach(n=>c[rd(n).s]++);
-const p=tp(c.d,total);
-let h=`<div class="rep-sum-grid"><div class="rc"><h4>Загальна статистика</h4> ${Object.entries(c).map(([k,v])=>`<div class="rr"><span>${SID[k]}</span><strong>${v}</strong></div>`).join('')} <div class="pb" style="margin-top:7px"><div class="pf" style="width:${p}%"></div></div> <div style="font-size:10px;color:var(--mut);margin-top:3px">Прогрес: ${p}%</div></div>`;
-FLOORS.forEach(f=>{
-const fr=f.sections.flatMap(s=>s.rooms),fc={n:0,w:0,d:0,i:0};
-fr.forEach(n=>fc[rd(n).s]++); const fp=tp(fc.d,fr.length);
-h+=`<div class="rc"><h4>${f.name}</h4>${Object.entries(fc).filter(([,v])=>v>0).map(([k,v])=>`<div class="rr"><span>${SID[k]}</span><strong>${v}</strong></div>`).join('')}<div class="pb" style="margin-top:6px"><div class="pf" style="width:${fp}%"></div></div><div style="font-size:10px;color:var(--mut);margin-top:2px">${fp}% готово</div></div>`;
-});
-return h+’</div>’;
-}
-
-function repIss() {
-const cards=[];
-FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{
-rd(n).works.forEach(w=>{ if(!(w.issues||[]).length) return; cards.push({n,w,floorName:f.name}); });
-})));
-if(!cards.length) return `<div style="color:var(--mut);padding:30px;text-align:center;font-size:14px">✓ Проблем не зафіксовано</div>`;
-const openCards=cards.filter(x=>x.w.issues.some(e=>e.status===‘open’));
-let showOpen=true;
-const render=(list)=>list.map(({n,w,floorName})=>` <div class="iss-card"> <div class="iss-hd"> <div><div class="iss-room">${rl(n)}</div><div style="font-size:10px;color:var(--mut)">${floorName}</div></div> <div class="iss-work">${w.name}</div> <div class="iss-con">${w.con||'—'}</div> </div> <div class="iss-log">${w.issues.slice().reverse().map(e=>`
-<div class="iss-e">
-<div class="iss-ed"><span>${e.date}</span><span class="${e.status==='open'?'ist-o':'ist-c'}">${e.status===‘open’?‘Відкрита’:‘Закрита’}</span>${e.closedDate?`<span style="font-size:9px;color:var(--mut)">закрито ${e.closedDate}</span>`:’’}</div>
-<div class="iss-et">${e.text}</div>
-</div>`).join('')} </div> </div>`).join(’’);
-return `<div style="display:flex;gap:7px;margin-bottom:13px">
-<button class="btn pri" id="issFilterO">⚠ Відкриті (${openCards.length})</button>
-<button class="btn" id="issFilterA">Всі (${cards.length})</button>
-
-  </div>
-  <div id="issCards">${render(openCards)}</div>
-  <script>
-    document.getElementById('issFilterO').addEventListener('click',function(){
-      this.className='btn pri';document.getElementById('issFilterA').className='btn';
-      document.getElementById('issCards').innerHTML=${JSON.stringify(render(openCards))};
-    });
-    document.getElementById('issFilterA').addEventListener('click',function(){
-      this.className='btn pri';document.getElementById('issFilterO').className='btn';
-      document.getElementById('issCards').innerHTML=${JSON.stringify(render(cards))};
-    });
-  <\/script>`;
-}
-
-// ═══════════════════════════════════════════════════════════
-// CSV
-// ═══════════════════════════════════════════════════════════
-function doCSV() {
-let csv=‘Приміщення,Поверх,Секція,Тип,Статус,Вид роботи,Статус роботи,Підрядник,Проблеми\n’;
-FLOORS.forEach(f=>f.sections.forEach(sec=>sec.rooms.forEach(n=>{
-const r=rd(n);
-if(r.works&&r.works.length){
-r.works.forEach(w=>{
-const iss=(w.issues||[]).map(e=>`[${e.date}][${e.status}] ${e.text}`).join(’ | ‘);
-csv+=[rl(n),f.name,sec.name,rtp(n).label,SID[r.s],w.name,WSLBL[w.ws||‘n’],w.con||’’,iss].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(’,’)+’\n’;
-});
-} else {
-csv+=[rl(n),f.name,sec.name,rtp(n).label,SID[r.s],’’,’’,’’,’’].map(v=>`"${v}"`).join(’,’)+’\n’;
-}
-})));
-const a=document.createElement(‘a’);
-a.href=‘data:text/csv;charset=utf-8,\uFEFF’+encodeURIComponent(csv);
-a.download=`hotel_${new Date().toISOString().slice(0,10)}.csv`;
-a.click();
-}
-
-// ═══════════════════════════════════════════════════════════
-// OVERLAY HELPERS
-// ═══════════════════════════════════════════════════════════
-function open(id)  { document.getElementById(id).classList.add(‘open’); }
-function close(id) { document.getElementById(id).classList.remove(‘open’); }
-
-// ═══════════════════════════════════════════════════════════
-// EVENT LISTENERS
-// ═══════════════════════════════════════════════════════════
-document.getElementById(‘btnCV’).addEventListener(‘click’, openConSelect);
-document.getElementById(‘btnCM’).addEventListener(‘click’, ()=>{ renderConList(); open(‘ovCM’); });
-document.getElementById(‘btnRep’).addEventListener(‘click’, openRep);
-document.getElementById(‘xRM’).addEventListener(‘click’,    ()=>close(‘ovRM’));
-document.getElementById(‘btnSave’).addEventListener(‘click’, saveRM);
-document.getElementById(‘btnCancel’).addEventListener(‘click’,()=>close(‘ovRM’));
-document.getElementById(‘btnAW’).addEventListener(‘click’,  addWork);
-document.getElementById(‘xPlan’).addEventListener(‘click’,  ()=>close(‘ovPlan’));
-document.getElementById(‘xCS’).addEventListener(‘click’,    ()=>close(‘ovCS’));
-document.getElementById(‘xCM’).addEventListener(‘click’,    ()=>close(‘ovCM’));
-document.getElementById(‘btnCMok’).addEventListener(‘click’,()=>{ saveCons(); close(‘ovCM’); renderConNav(); if(editing!==null) renderWorks(); });
-document.getElementById(‘xCP’).addEventListener(‘click’,    ()=>close(‘ovCP’));
-document.getElementById(‘xRep’).addEventListener(‘click’,   ()=>close(‘ovRep’));
-document.getElementById(‘btnAC’).addEventListener(‘click’,  addCon);
-document.querySelectorAll(’.tab’).forEach(t=>t.addEventListener(‘click’,()=>renderTab(t.dataset.tab)));
-
-[‘ovRM’,‘ovPlan’,‘ovCS’,‘ovCM’].forEach(id=>
-document.getElementById(id).addEventListener(‘click’,e=>{ if(e.target===e.currentTarget) close(id); })
-);
-document.getElementById(‘ovRep’).addEventListener(‘click’,e=>{ if(e.target===e.currentTarget) close(‘ovRep’); });
-document.getElementById(‘ovCP’).addEventListener(‘click’,e=>{ if(e.target===e.currentTarget) close(‘ovCP’); });
-
-document.addEventListener(‘keydown’,e=>{
-if(e.key!==‘Enter’) return;
-if(document.activeElement.id===‘newWork’) addWork();
-if(document.activeElement.id===‘newCon’)  addCon();
-});
-
-// ═══════════════════════════════════════════════════════════
-// PRINT
-// ═══════════════════════════════════════════════════════════
-function printRep() {
-const old=document.getElementById(‘printArea’); if(old) old.remove();
-const div=document.createElement(‘div’);
-div.id=‘printArea’;
-const date=new Date().toLocaleDateString(‘uk’,{dateStyle:‘long’});
-const tabName={sum:‘Загальний звіт’,con:‘По підряднику’,work:‘По видах робіт’,iss:‘Проблеми’}[curTab]||‘Звіт’;
-let html=`<h1>ГОТЕЛЬ — ${tabName}</h1><div style="font-size:11px;color:#666;margin-bottom:16px">${date}</div>`;
-
-if(curTab===‘sum’){
-const all=allRooms(),total=all.length,c={n:0,w:0,d:0,i:0};
-all.forEach(n=>c[rd(n).s]++);
-html+=`<table><thead><tr><th>Статус</th><th>Кількість</th><th>%</th></tr></thead><tbody> ${Object.entries(c).map(([k,v])=>`<tr><td>${SID[k]}</td><td>${v}</td><td>${tp(v,total)}%</td></tr>`).join('')} <tr><td><strong>Всього</strong></td><td><strong>${total}</strong></td><td><strong>${tp(c.d,total)}% готово</strong></td></tr> </tbody></table>`;
-FLOORS.forEach(f=>{
-const fr=f.sections.flatMap(s=>s.rooms),fc={n:0,w:0,d:0,i:0};
-fr.forEach(n=>fc[rd(n).s]++);
-html+=`<h2>${f.name}</h2><table><thead><tr><th>Статус</th><th>Кількість</th></tr></thead><tbody> ${Object.entries(fc).filter(([,v])=>v>0).map(([k,v])=>`<tr><td>${SID[k]}</td><td>${v}</td></tr>`).join('')} <tr><td><strong>Готовність</strong></td><td><strong>${tp(fc.d,fr.length)}%</strong></td></tr> </tbody></table>`;
-});
-} else if(curTab===‘con’){
-const stats=buildConStats();
-CONS.filter(c=>cName(c)!==’—’).forEach(c=>{
-const nm=cName(c),rows=[];
-FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{
-rd(n).works.filter(w=>w.con===nm).forEach(w=>rows.push({n,w,floorName:f.name}));
-})));
-if(!rows.length) return;
-const v=stats[nm]||{};
-html+=`<h2>${nm} — ${v.rooms||0} кімнат, ${tp(v.doneW,v.totalW)}% виконано</h2> <table><thead><tr><th>Приміщення</th><th>Поверх</th><th>Вид роботи</th><th>Статус</th></tr></thead><tbody> ${rows.map(({n,w,floorName})=>`<tr><td><strong>${rl(n)}</strong></td><td>${floorName}</td><td>${w.name}</td><td><span class="p-badge p-${w.ws||'n'}">${WSLBL[w.ws||‘n’]}</span></td></tr>`).join('')} </tbody></table>`;
-});
-} else if(curTab===‘work’){
-const wnames=[…new Set(allRooms().flatMap(n=>rd(n).works.map(w=>w.name)))].sort();
-wnames.forEach(wname=>{
-const rows=[];
-FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{
-const w=rd(n).works.find(x=>x.name===wname);
-if(w) rows.push({n,w,floorName:f.name});
-})));
-if(!rows.length) return;
-const done=rows.filter(r=>r.w.ws===‘d’).length;
-html+=`<h2>${wname} — ${done}/${rows.length} (${tp(done,rows.length)}%)</h2> <table><thead><tr><th>Приміщення</th><th>Поверх</th><th>Підрядник</th><th>Статус</th></tr></thead><tbody> ${rows.map(({n,w,floorName})=>`<tr><td><strong>${rl(n)}</strong></td><td>${floorName}</td><td>${w.con||’—’}</td><td><span class="p-badge p-${w.ws||'n'}">${WSLBL[w.ws||‘n’]}</span></td></tr>`).join('')} </tbody></table>`;
-});
-} else if(curTab===‘iss’){
-const cards=[];
-FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{
-rd(n).works.forEach(w=>{ if((w.issues||[]).length) cards.push({n,w,floorName:f.name}); });
-})));
-if(!cards.length){ html+=`<p style="color:#666">Проблем не зафіксовано</p>`; }
-else {
-cards.forEach(({n,w,floorName})=>{
-html+=`<div class="p-iss"> <div class="p-iss-hd"><span class="p-iss-room">${rl(n)}</span><span style="color:#666">${floorName}</span><span style="flex:1">${w.name}</span><span style="color:#666">${w.con||'—'}</span></div> ${w.issues.map(e=>`<div class="p-iss-entry"><div class="p-iss-date">${e.date} · ${e.status===‘open’?‘Відкрита’:‘Закрита’}</div><div>${e.text}</div></div>`).join('')} </div>`;
-});
-}
-}
-
-div.innerHTML=html;
-document.body.appendChild(div);
-window.print();
-div.remove();
-}
-
-// ═══════════════════════════════════════════════════════════
-// WORK SUGGESTIONS
-// ═══════════════════════════════════════════════════════════
-function filterWorkSugg(val) {
-const box=document.getElementById(‘workSuggBox’);
-if(!box) return;
-const names=window._allWorkNames||[];
-const q=val.trim().toLowerCase();
+function filterSugg(val){
+const box=document.getElementById(‘suggBox’),names=window._awn||[],q=val.trim().toLowerCase();
 const filtered=q?names.filter(n=>n.toLowerCase().includes(q)):names;
 const added=editing!==null?(rd(editing).works||[]).map(w=>w.name):[];
 const show=filtered.filter(n=>!added.includes(n));
 if(!show.length){box.style.display=‘none’;return;}
 box.innerHTML=show.map(n=>`<div class="sugg-item" data-val="${n}">${n}</div>`).join(’’);
 box.style.display=‘block’;
-box.querySelectorAll(’.sugg-item’).forEach(el=>{
-const pick=()=>{ document.getElementById(‘newWork’).value=el.dataset.val; box.style.display=‘none’; addWork(); };
-el.addEventListener(‘mousedown’,e=>{e.preventDefault();pick();});
-el.addEventListener(‘touchend’,e=>{e.preventDefault();pick();});
-});
+box.querySelectorAll(’.sugg-item’).forEach(el=>{const pick=()=>{document.getElementById(‘newWork’).value=el.dataset.val;box.style.display=‘none’;addWork();};el.addEventListener(‘mousedown’,e=>{e.preventDefault();pick();});el.addEventListener(‘touchend’,e=>{e.preventDefault();pick();});});
 }
-document.addEventListener(‘click’,e=>{
-const box=document.getElementById(‘workSuggBox’),inp=document.getElementById(‘newWork’);
-if(box&&inp&&!box.contains(e.target)&&e.target!==inp) box.style.display=‘none’;
-});
+document.addEventListener(‘click’,e=>{const box=document.getElementById(‘suggBox’),inp=document.getElementById(‘newWork’);if(box&&inp&&!box.contains(e.target)&&e.target!==inp)box.style.display=‘none’;});
 
-// ═══════════════════════════════════════════════════════════
-// INIT — renderAll викликається після входу через Firebase
-// ═══════════════════════════════════════════════════════════
-// renderAll() — НЕ викликаємо тут, Firebase зробить це після авторизації
-</script>
+function openPlan(fid){
+const f=FLOORS.find(f=>f.id===fid);if(!f)return;
+document.getElementById(‘planTit’).textContent=`План — ${f.name}`;
+document.getElementById(‘planGrid’).innerHTML=f.sections.map(s=>`<div class="psec"><div class="psecl">${s.name}</div><div class="prg">${s.rooms.map(n=>{const r=rd(n),tpe=rtp(n),p=pct(r.works),named=!!ROOM_NAMES[n];return`<div class="pr ${tpe.cls}${named?' pn':''}" data-s="${r.s}" data-rid="${n}"><div class="prn">${rl(n)}</div>${!named?`<div class="prt">${tpe.label}</div>`:’’}<div class="prdot" style="background:${SDOT[r.s]}"></div><div class="prbar" style="background:linear-gradient(to right,#22c55e ${p}%,transparent ${p}%)"></div></div>`;}).join('')}</div></div>`).join(’’);
+document.getElementById(‘planLeg’).innerHTML=Object.entries(TM).map(([k,v])=>`<div class="pli"><div class="plsw" style="background:${v.col}"></div>${v.label}</div>`).join(’’)+`<div style="width:100%;height:1px;background:var(--brd);margin:3px 0"></div>`+Object.entries(SDOT).map(([k,c])=>`<div class="pli"><div class="plsw" style="background:${c};border-radius:50%"></div>${SID[k]}</div>`).join(’’);
+document.querySelectorAll(’.pr[data-rid]’).forEach(el=>el.addEventListener(‘click’,()=>{cl(‘ovPlan’);openRM(toN(el.dataset.rid));}));
+ov(‘ovPlan’);
+}
 
-<!-- LOGIN SCREEN -->
+function buildConStats(){
+const stats={};CONS.filter(c=>cName(c)!==’—’).forEach(c=>{stats[cName(c)]={rooms:0,totalW:0,doneW:0,issW:0,_s:new Set()};});
+allRooms().forEach(n=>{rd(n).works.forEach(w=>{if(!w.con||w.con===’—’)return;if(!stats[w.con])stats[w.con]={rooms:0,totalW:0,doneW:0,issW:0,_s:new Set()};const s=stats[w.con];if(!s._s.has(n)){s._s.add(n);s.rooms++;}s.totalW++;if(w.ws===‘d’)s.doneW++;if(w.ws===‘i’)s.issW++;});});
+return stats;
+}
 
-<div id="loginScreen" style="position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px">
-  <div style="font-family:'Oswald',sans-serif;font-size:28px;letter-spacing:3px;color:var(--acc)">ГОТЕЛЬ</div>
-  <div style="font-size:13px;color:var(--mut);margin-bottom:8px">Контроль ремонту</div>
-  <button id="btnGoogleLogin" style="display:flex;align-items:center;gap:10px;padding:12px 24px;border-radius:8px;border:1px solid var(--brd);background:var(--surf);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:.15s">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20">
-    Увійти через Google
-  </button>
-  <div id="loginStatus" style="font-size:12px;color:var(--mut)"></div>
-</div>
+function conDetailHTML(nm){
+const bf={};let tw=0,dw=0,iw=0,rc=0;
+FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{const ws=rd(n).works.filter(w=>w.con===nm);if(!ws.length)return;rc++;tw+=ws.length;dw+=ws.filter(w=>w.ws===‘d’).length;iw+=ws.filter(w=>w.ws===‘i’).length;const k=f.id+’|’+s.name;if(!bf[k])bf[k]={fn:f.name,sn:s.name,rooms:[]};bf[k].rooms.push({n,ws});})));
+if(!rc)return`<div style="color:var(--mut);font-size:12px;padding:16px">Немає призначених робіт</div>`;
+let h=`<div class="det-stats"><span>${rc} кімнат · ${dw}/${tw} виконано · ${tp(dw,tw)}%</span>${iw?`<span style="color:#f87171;font-weight:600">⚠ ${iw} проблем</span>`:''}</div><div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">${Object.entries(WSBG).map(([k,bg])=>`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mut)"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${bg};border:1px solid ${WSBD[k]}"></span>${SID[k]}</div>`).join('')}</div>`;
+Object.values(bf).forEach(({fn,sn,rooms})=>{h+=`<div class="det-floor"><div class="det-fl-title">${fn} · ${sn}</div><div class="det-rooms">`;rooms.forEach(({n,ws})=>{const hi=ws.some(w=>w.ws===‘i’),ad=ws.every(w=>w.ws===‘d’),hw=ws.some(w=>w.ws===‘w’);const st=hi?‘i’:ad?‘d’:hw?‘w’:‘n’;h+=`<div class="det-room" data-rid="${n}" style="border-color:${WSBD[st]};background:${WSBG[st]}"><div class="det-rnum" style="color:${WSTX[st]}">${rl(n)}</div>${ws.map(w=>`<div class="det-rsub" style="color:${WSTX[w.ws||'n']}">${w.name}</div>`).join('')}</div>`;});h+=`</div></div>`;});
+return h;
+}
 
-<!-- FIREBASE SDK -->
+function workDetailHTML(wn){
+const bf={};let tot=0,don=0,inw=0,iss=0;
+FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{const w=rd(n).works.find(x=>x.name===wn);if(!w)return;tot++;if(w.ws===‘d’)don++;if(w.ws===‘w’)inw++;if(w.ws===‘i’)iss++;const k=f.id+’|’+s.name;if(!bf[k])bf[k]={fn:f.name,sn:s.name,rooms:[]};bf[k].rooms.push({n,w});})));
+if(!tot)return`<div style="color:var(--mut);font-size:12px;padding:16px">Не призначена жодній кімнаті</div>`;
+const p=tp(don,tot);
+let h=`<div class="det-stats"><span>${tot} кімнат · ${don} виконано · ${inw} в роботі</span>${iss?`<span style="color:#f87171;font-weight:600">⚠ ${iss} проблем</span>`:''}<div class="pb" style="flex:1;min-width:60px"><div class="pf" style="width:${p}%"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px">${p}%</span></div>`;
+Object.values(bf).forEach(({fn,sn,rooms})=>{h+=`<div class="det-floor"><div class="det-fl-title">${fn} · ${sn}</div><div class="det-rooms">`;rooms.forEach(({n,w})=>{const st=w.ws||‘n’;h+=`<div class="det-room" data-rid="${n}" style="border-color:${WSBD[st]};background:${WSBG[st]}"><div class="det-rnum" style="color:${WSTX[st]}">${rl(n)}</div>${w.con?`<div class="det-rsub" style="color:${WSTX[st]}">${w.con}</div>`:''}</div>`;});h+=`</div></div>`;});
+return h;
+}
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+function bind2col(ls,di,at,fn){
+const btns=document.querySelectorAll(ls);
+function sel(btn){btns.forEach(b=>b.classList.remove(‘act’));btn.classList.add(‘act’);const val=decodeURIComponent(btn.dataset[at]);const det=document.getElementById(di);det.innerHTML=fn(val);det.querySelectorAll(’[data-rid]’).forEach(el=>el.addEventListener(‘click’,()=>{cl(‘ovRep’);openRM(toN(el.dataset.rid));}));}
+if(btns.length)sel(btns[0]);btns.forEach(b=>b.addEventListener(‘click’,()=>sel(b)));
+}
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+function openConSelect(){
+const stats=buildConStats(),allC=CONS.filter(c=>cName(c)!==’—’),el=document.getElementById(‘csBody’);
+if(!allC.length){el.innerHTML=`<div style="color:var(--mut);font-size:12px;padding:12px;text-align:center">Додайте підрядників</div>`;}
+else{el.innerHTML=allC.map(c=>{const nm=cName(c),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0},p=tp(v.doneW,v.totalW);return`<button class="csb" data-con="${encodeURIComponent(nm)}"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">${nm}</span><span style="display:flex;align-items:center;gap:4px;flex-shrink:0">${v.issW?`<span style="font-size:10px;color:#f87171;font-weight:600">⚠${v.issW}</span>`:''}<span class="cbg">${v.totalW>0?`${v.rooms} кімн. · ${p}%`:'немає робіт'}</span></span></button>`;}).join(’’);el.querySelectorAll(’.csb’).forEach(b=>b.addEventListener(‘click’,()=>{cl(‘ovCS’);openCPanel(decodeURIComponent(b.dataset.con));}));}
+ov(‘ovCS’);
+}
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+function openCPanel(nm){
+document.getElementById(‘cpTit’).textContent=nm;
+const stats=buildConStats(),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0};
+document.getElementById(‘cpSub’).innerHTML=`${v.rooms} кімнат · ${v.doneW}/${v.totalW} виконано (${tp(v.doneW,v.totalW)}%)${v.issW?` · <span style="color:#f87171">⚠ ${v.issW} проблем</span>`:''}`;
+const bd=document.getElementById(‘cpBd’);bd.innerHTML=conDetailHTML(nm);
+bd.querySelectorAll(’[data-rid]’).forEach(el=>el.addEventListener(‘click’,()=>{cl(‘ovCP’);openRM(toN(el.dataset.rid));}));
+ov(‘ovCP’);
+}
 
-<script>
-// ═══════════════════════════════════════════════════════════
-// FIREBASE INIT
-// ═══════════════════════════════════════════════════════════
-firebase.initializeApp(firebaseConfig);
-auth = firebase.auth();
-db   = firebase.database();
+function renderConList(){
+document.getElementById(‘conList’).innerHTML=CONS.map((c,i)=>i===0?`<div class="ci"><div class="cir"><span style="flex:1;font-size:12px;color:var(--mut)">— (не призначено)</span></div></div>`:`<div class="ci"><div class="cir"><input value="${cName(c)}" placeholder="Назва..." data-ni="${i}"><button class="cdel" data-di="${i}">✕</button></div><input class="em" value="${cEmail(c)}" placeholder="Gmail для входу..." data-ei="${i}"></div>`).join(’’);
+document.querySelectorAll(‘input[data-ni]’).forEach(inp=>inp.addEventListener(‘change’,()=>{const i=Number(inp.dataset.ni);if(typeof CONS[i]===‘string’)CONS[i]={name:CONS[i],email:’’};CONS[i].name=inp.value.trim()||cName(CONS[i]);saveCons();}));
+document.querySelectorAll(‘input[data-ei]’).forEach(inp=>inp.addEventListener(‘change’,()=>{const i=Number(inp.dataset.ei);if(typeof CONS[i]===‘string’)CONS[i]={name:CONS[i],email:’’};CONS[i].email=inp.value.trim().toLowerCase();saveCons();}));
+document.querySelectorAll(’.cdel[data-di]’).forEach(b=>b.addEventListener(‘click’,()=>{CONS.splice(Number(b.dataset.di),1);saveCons();renderConList();}));
+}
+function addCon(){const inp=document.getElementById(‘newCon’),val=inp.value.trim();if(!val)return;CONS.push({name:val,email:’’});saveCons();renderConList();inp.value=’’;inp.focus();}
 
-// ADMIN email — ваш Google email
-const ADMIN_EMAIL = 'lvivbau2@gmail.com';
+function openRep(){renderTab(curTab);ov(‘ovRep’);}
+function renderTab(tab){
+curTab=tab;document.querySelectorAll(’.tab’).forEach(t=>t.classList.toggle(‘act’,t.dataset.tab===tab));
+const body=document.getElementById(‘repBody’);
+if(tab===‘sum’){body.innerHTML=repSum();return;}
+if(tab===‘iss’){body.innerHTML=repIss();return;}
+if(tab===‘con’){body.innerHTML=rep2col(‘con’);setTimeout(()=>bind2col(’.ri-con’,‘repDetail’,‘conname’,conDetailHTML),10);return;}
+if(tab===‘work’){body.innerHTML=rep2col(‘work’);setTimeout(()=>bind2col(’.ri-work’,‘repDetail’,‘wname’,workDetailHTML),10);return;}
+}
 
-document.getElementById('btnGoogleLogin').addEventListener('click', () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.addScope('email');
-  provider.addScope('profile');
-  auth.signInWithRedirect(provider);
-});
+function rep2col(type){
+let items=[];
+if(type===‘con’){const stats=buildConStats();items=CONS.filter(c=>cName(c)!==’—’).map(c=>{const nm=cName(c),v=stats[nm]||{rooms:0,totalW:0,doneW:0,issW:0},p=tp(v.doneW,v.totalW);return`<button class="rep-item ri-con" data-conname="${encodeURIComponent(nm)}"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">${nm}</span><span style="display:flex;align-items:center;gap:4px;flex-shrink:0">${v.issW?`<span class="ri-iss">⚠${v.issW}</span>`:''}<span class="ri-badge">${v.rooms} кімн. · ${p}%</span></span></button>`;});}
+else{const wn=[…new Set(allRooms().flatMap(n=>rd(n).works.map(w=>w.name)))];items=wn.map(w=>{let tot=0,don=0,iss=0;allRooms().forEach(n=>{const x=rd(n).works.find(y=>y.name===w);if(!x)return;tot++;if(x.ws===‘d’)don++;if(x.ws===‘i’)iss++;});const p=tp(don,tot);return`<button class="rep-item ri-work" data-wname="${encodeURIComponent(w)}"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w}</span><span style="display:flex;align-items:center;gap:4px;flex-shrink:0">${iss?`<span class="ri-iss">⚠${iss}</span>`:''}<span class="ri-badge">${don}/${tot} · ${p}%</span></span></button>`;});}
+return`<div class="rep-2col"><div class="rep-list">${items.join('')}</div><div class="rep-detail" id="repDetail"><div style="color:var(--mut);font-size:12px">Оберіть зі списку</div></div></div>`;
+}
 
-  auth.getRedirectResult().then(result => {
-  if(result && result.user) console.log('ok');
-}).catch(e => console.log(e));
+function repSum(){
+const all=allRooms(),tot=all.length,c={n:0,w:0,d:0,i:0};all.forEach(n=>c[rd(n).s]++);const p=tp(c.d,tot);
+let h=`<div class="rep-sum-grid"><div class="rc"><h4>Загальна статистика</h4>${Object.entries(c).map(([k,v])=>`<div class="rr"><span>${SID[k]}</span><strong>${v}</strong></div>`).join('')}<div class="pb" style="margin-top:7px"><div class="pf" style="width:${p}%"></div></div><div style="font-size:10px;color:var(--mut);margin-top:3px">Прогрес: ${p}%</div></div>`;
+FLOORS.forEach(f=>{const fr=f.sections.flatMap(s=>s.rooms),fc={n:0,w:0,d:0,i:0};fr.forEach(n=>fc[rd(n).s]++);const fp=tp(fc.d,fr.length);h+=`<div class="rc"><h4>${f.name}</h4>${Object.entries(fc).filter(([,v])=>v>0).map(([k,v])=>`<div class="rr"><span>${SID[k]}</span><strong>${v}</strong></div>`).join('')}<div class="pb" style="margin-top:6px"><div class="pf" style="width:${fp}%"></div></div><div style="font-size:10px;color:var(--mut);margin-top:2px">${fp}% готово</div></div>`;});
+return h+’</div>’;
+}
 
-auth.onAuthStateChanged(user => {
-  if(!user) { renderAll(); return; }
-  
-  currentUser = user;
-  isAdmin = (user.email === ADMIN_EMAIL);
-  document.getElementById('loginScreen').style.display='none';
+function repIss(){
+const cards=[];FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{rd(n).works.forEach(w=>{if(!(w.issues||[]).length)return;cards.push({n,w,fn:f.name});});})));
+if(!cards.length)return`<div style="color:var(--mut);padding:30px;text-align:center;font-size:14px">✓ Проблем не зафіксовано</div>`;
+const oc=cards.filter(x=>x.w.issues.some(e=>e.status===‘open’));
+const render=list=>list.map(({n,w,fn})=>`<div class="iss-card"><div class="iss-hd"><div><div class="iss-room">${rl(n)}</div><div style="font-size:10px;color:var(--mut)">${fn}</div></div><div class="iss-work">${w.name}</div><div class="iss-con">${w.con||'—'}</div></div><div class="iss-log">${w.issues.slice().reverse().map(e=>`<div class="iss-e"><div class="iss-ed"><span>${e.date}</span><span class="${e.status==='open'?'ist-o':'ist-c'}">${e.status===‘open’?‘Відкрита’:‘Закрита’}</span></div><div class="iss-et">${e.text}</div></div>`).join('')}</div></div>`).join(’’);
+return`<div style="display:flex;gap:7px;margin-bottom:13px"><button class="btn pri" id="fOpen">⚠ Відкриті (${oc.length})</button><button class="btn" id="fAll">Всі (${cards.length})</button></div><div id="issCards">${render(oc)}</div><script>setTimeout(()=>{const a=document.getElementById('fOpen'),b=document.getElementById('fAll'),c=document.getElementById('issCards');if(a){a.addEventListener('click',()=>{a.className='btn pri';b.className='btn';c.innerHTML=${JSON.stringify(render(oc))};});b.addEventListener('click',()=>{b.className='btn pri';a.className='btn';c.innerHTML=${JSON.stringify(render(cards))};});}},10);<\/script>`;
+}
 
-  // Показуємо хто зайшов
-  const userInfo = document.createElement('div');
-  userInfo.style.cssText='display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut)';
-  userInfo.innerHTML=`<img src="${user.photoURL||''}" width="20" height="20" style="border-radius:50%"> ${user.displayName||user.email} ${isAdmin?'<span style="color:var(--acc);font-size:10px">[адмін]</span>':''}
-    <button onclick="auth.signOut()" style="background:none;border:none;color:var(--mut);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:3px;border:1px solid var(--brd)">Вийти</button>`;
-  document.querySelector('.ml').prepend(userInfo);
+function printRep(){
+const old=document.getElementById(‘printArea’);if(old)old.remove();
+const div=document.createElement(‘div’);div.id=‘printArea’;
+const date=new Date().toLocaleDateString(‘uk’,{dateStyle:‘long’});
+const tn={sum:‘Загальний звіт’,con:‘По підряднику’,work:‘По видах робіт’,iss:‘Проблеми’}[curTab];
+let html=`<h1>ГОТЕЛЬ — ${tn}</h1><div style="font-size:11px;color:#666;margin-bottom:16px">${date}</div>`;
+if(curTab===‘sum’){const all=allRooms(),tot=all.length,c={n:0,w:0,d:0,i:0};all.forEach(n=>c[rd(n).s]++);html+=`<table><thead><tr><th>Статус</th><th>К-сть</th><th>%</th></tr></thead><tbody>${Object.entries(c).map(([k,v])=>`<tr><td>${SID[k]}</td><td>${v}</td><td>${tp(v,tot)}%</td></tr>`).join('')}</tbody></table>`;FLOORS.forEach(f=>{const fr=f.sections.flatMap(s=>s.rooms),fc={n:0,w:0,d:0,i:0};fr.forEach(n=>fc[rd(n).s]++);html+=`<h2>${f.name} — ${tp(fc.d,fr.length)}% готово</h2><table><thead><tr><th>Статус</th><th>К-сть</th></tr></thead><tbody>${Object.entries(fc).filter(([,v])=>v>0).map(([k,v])=>`<tr><td>${SID[k]}</td><td>${v}</td></tr>`).join('')}</tbody></table>`;});}
+else if(curTab===‘con’){const stats=buildConStats();CONS.filter(c=>cName(c)!==’—’).forEach(c=>{const nm=cName(c),rows=[];FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{rd(n).works.filter(w=>w.con===nm).forEach(w=>rows.push({n,w,fn:f.name}));})));if(!rows.length)return;html+=`<h2>${nm}</h2><table><thead><tr><th>Приміщення</th><th>Поверх</th><th>Вид роботи</th><th>Статус</th></tr></thead><tbody>${rows.map(({n,w,fn})=>`<tr><td><strong>${rl(n)}</strong></td><td>${fn}</td><td>${w.name}</td><td>${WSLBL[w.ws||‘n’]}</td></tr>`).join('')}</tbody></table>`;});}
+else if(curTab===‘work’){const wns=[…new Set(allRooms().flatMap(n=>rd(n).works.map(w=>w.name)))].sort();wns.forEach(wn=>{const rows=[];FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{const w=rd(n).works.find(x=>x.name===wn);if(w)rows.push({n,w,fn:f.name});})));if(!rows.length)return;const don=rows.filter(r=>r.w.ws===‘d’).length;html+=`<h2>${wn} — ${don}/${rows.length} (${tp(don,rows.length)}%)</h2><table><thead><tr><th>Приміщення</th><th>Поверх</th><th>Підрядник</th><th>Статус</th></tr></thead><tbody>${rows.map(({n,w,fn})=>`<tr><td><strong>${rl(n)}</strong></td><td>${fn}</td><td>${w.con||’—’}</td><td>${WSLBL[w.ws||‘n’]}</td></tr>`).join('')}</tbody></table>`;});}
+else if(curTab===‘iss’){const cards=[];FLOORS.forEach(f=>f.sections.forEach(s=>s.rooms.forEach(n=>{rd(n).works.forEach(w=>{if((w.issues||[]).length)cards.push({n,w,fn:f.name});});})));if(!cards.length)html+=`<p>Проблем не зафіксовано</p>`;else cards.forEach(({n,w,fn})=>{html+=`<div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:4px;padding:8px;margin-bottom:8px"><div style="display:flex;gap:8px;font-weight:600;margin-bottom:4px"><span>${rl(n)}</span><span style="color:#666">${fn}</span><span style="flex:1">${w.name}</span><span style="color:#666">${w.con||'—'}</span></div>${w.issues.map(e=>`<div style="border-left:2px solid #f87171;padding-left:7px;margin-bottom:3px"><div style="font-size:10px;color:#666">${e.date} · ${e.status===‘open’?‘Відкрита’:‘Закрита’}</div><div>${e.text}</div></div>`).join('')}</div>`;});}
+div.innerHTML=html;document.body.appendChild(div);window.print();div.remove();
+}
 
-  fbReady = true;
+function doCSV(){
+let csv=‘Приміщення,Поверх,Секція,Тип,Статус,Вид роботи,Статус роботи,Підрядник,Проблеми\n’;
+FLOORS.forEach(f=>f.sections.forEach(sec=>sec.rooms.forEach(n=>{const r=rd(n);if(r.works&&r.works.length){r.works.forEach(w=>{const iss=(w.issues||[]).map(e=>`[${e.date}][${e.status}] ${e.text}`).join(’ | ‘);csv+=[rl(n),f.name,sec.name,rtp(n).label,SID[r.s],w.name,WSLBL[w.ws||‘n’],w.con||’’,iss].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(’,’)+’\n’;});}else{csv+=[rl(n),f.name,sec.name,rtp(n).label,SID[r.s],’’,’’,’’,’’].map(v=>`"${v}"`).join(’,’)+’\n’;}})));
+const a=document.createElement(‘a’);a.href=‘data:text/csv;charset=utf-8,\uFEFF’+encodeURIComponent(csv);a.download=`hotel_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
 
-  // Завантажуємо дані з Firebase
-  db.ref('rooms').once('value').then(snap => {
-    const fbRooms = snap.val();
-    if(fbRooms) {
-      rooms = fbRooms;
-      // Додаємо нові кімнати яких може не бути в базі
-      allRooms().forEach(n=>{ if(!rooms[n]) rooms[n]={s:'n',works:DEFAULT_WORKS.map(mkWork),notes:'',hist:[]}; });
-      try{localStorage.setItem('ht_rooms',JSON.stringify(rooms));}catch(e){}
-    }
-    db.ref('cons').once('value').then(snap2 => {
-      const fbCons = snap2.val();
-      if(fbCons && Array.isArray(fbCons)) {
-        CONS = fbCons.map(c=>typeof c==='string'&&c!=='—'?{name:c,email:''}:c);
-        try{localStorage.setItem('ht_cons',JSON.stringify(CONS));}catch(e){}
-      }
-      renderAll();
-
-      // Слухаємо зміни в реальному часі
-      db.ref('rooms').on('value', snap => {
-        const data = snap.val();
-        if(data) {
-          rooms = data;
-          allRooms().forEach(n=>{ if(!rooms[n]) rooms[n]={s:'n',works:DEFAULT_WORKS.map(mkWork),notes:'',hist:[]}; });
-          renderAll();
-          if(editing!==null) renderWorks();
-        }
-      });
-      db.ref('cons').on('value', snap => {
-        const data = snap.val();
-        if(data && Array.isArray(data)) {
-          CONS = data.map(c=>typeof c==='string'&&c!=='—'?{name:c,email:''}:c);
-          renderConNav();
-        }
-      });
-    });
-  }).catch(() => {
-    // Якщо Firebase недоступний — працюємо локально
-    renderAll();
-  });
-});
+document.getElementById(‘btnCV’).addEventListener(‘click’,openConSelect);
+document.getElementById(‘btnCM’).addEventListener(‘click’,()=>{renderConList();ov(‘ovCM’);});
+document.getElementById(‘btnRep’).addEventListener(‘click’,openRep);
+document.getElementById(‘xRM’).addEventListener(‘click’,()=>cl(‘ovRM’));
+document.getElementById(‘btnSave’).addEventListener(‘click’,saveRM);
+document.getElementById(‘btnCancel’).addEventListener(‘click’,()=>cl(‘ovRM’));
+document.getElementById(‘btnAW’).addEventListener(‘click’,addWork);
+document.getElementById(‘xPlan’).addEventListener(‘click’,()=>cl(‘ovPlan’));
+document.getElementById(‘xCS’).addEventListener(‘click’,()=>cl(‘ovCS’));
+document.getElementById(‘xCM’).addEventListener(‘click’,()=>cl(‘ovCM’));
+document.getElementById(‘btnCMok’).addEventListener(‘click’,()=>{saveCons();cl(‘ovCM’);renderConNav();if(editing!==null)renderWorks();});
+document.getElementById(‘xCP’).addEventListener(‘click’,()=>cl(‘ovCP’));
+document.getElementById(‘xRep’).addEventListener(‘click’,()=>cl(‘ovRep’));
+document.getElementById(‘btnAC’).addEventListener(‘click’,addCon);
+document.querySelectorAll(’.tab’).forEach(t=>t.addEventListener(‘click’,()=>renderTab(t.dataset.tab)));
+[‘ovRM’,‘ovPlan’,‘ovCS’,‘ovCM’].forEach(id=>document.getElementById(id).addEventListener(‘click’,e=>{if(e.target===e.currentTarget)cl(id);}));
+document.getElementById(‘ovRep’).addEventListener(‘click’,e=>{if(e.target===e.currentTarget)cl(‘ovRep’);});
+document.getElementById(‘ovCP’).addEventListener(‘click’,e=>{if(e.target===e.currentTarget)cl(‘ovCP’);});
+document.addEventListener(‘keydown’,e=>{if(e.key!==‘Enter’)return;if(document.activeElement.id===‘newWork’)addWork();if(document.activeElement.id===‘newCon’)addCon();});
 </script>
 
 </body>
