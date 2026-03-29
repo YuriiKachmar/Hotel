@@ -230,14 +230,15 @@ textarea.rnotes:focus{border-color:var(--acc)}
 </head>
 <body>
 
+<!-- LOGIN -->
+
 <div class="login-ov" id="loginOv">
   <div class="login-box">
     <div class="login-logo">ГОТЕЛЬ</div>
     <div class="login-sub">Контроль ремонтних робіт<br>Замарстинівська 25</div>
-    <button class="login-btn" id="btnLogin">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20">
-      Увійти через Google
-    </button>
+    <input id="loginEmail" type="email" placeholder="Email" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;outline:none">
+    <input id="loginPass" type="password" placeholder="Пароль" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--brd);background:var(--surf2);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;outline:none">
+    <button class="login-btn" id="btnLogin">Увійти</button>
     <div class="login-status" id="loginStatus"></div>
   </div>
 </div>
@@ -412,13 +413,23 @@ auth=firebase.auth();
 db=firebase.database();
 
 document.getElementById('btnLogin').addEventListener('click',()=>{
-  const provider=new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({prompt:'select_account'});
-  document.getElementById('loginStatus').textContent='Перенаправлення на Google...';
-  auth.signInWithRedirect(provider);
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  const st=document.getElementById('loginStatus');
+  if(!email||!pass){st.textContent='Введіть email і пароль';return;}
+  st.textContent='Підключення...';
+  auth.signInWithEmailAndPassword(email,pass).catch(err=>{
+    if(err.code==='auth/user-not-found'||err.code==='auth/wrong-password'||err.code==='auth/invalid-credential'){
+      st.textContent='Невірний email або пароль';
+    } else {
+      st.textContent='Помилка: '+err.message;
+    }
+  });
 });
 
-auth.getRedirectResult().catch(()=>{});
+document.getElementById('loginPass').addEventListener('keydown',e=>{
+  if(e.key==='Enter') document.getElementById('btnLogin').click();
+});
 
 auth.onAuthStateChanged(user=>{
   if(!user){document.getElementById('loginOv').style.display='flex';return;}
