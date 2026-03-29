@@ -1556,6 +1556,7 @@ function openFloorPdf(floorNum){
   if(!path){ showToast("PDF план не знайдено","err"); return; }
   window.open(path, "_blank");
 }
+function openFloorPlan(fi){
   var flr=HOTEL[fi];
   document.getElementById("floorPlanTitle").textContent=flr.label;
   var h="";
