@@ -257,7 +257,7 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
   .btn-sm{padding:4px 6px;font-size:10px}
 }
 @media print{
-  #topbar,#sidebar,#appWrap,#byConView,#byWorkView,#floorPlanPanel,#authScreen,.report-header{display:none!important}
+  #topbar,#sidebar,#appWrap,#byConView,#byWorkView,#floorPlanPanel,#authScreen,.report-header,.no-print{display:none!important}
   #reportPanel{position:static!important;display:block!important;background:#fff!important;color:#000!important}
   .report-body{display:block!important;padding:0!important;background:#fff!important;color:#000!important}
   .report-table th,.report-table td{color:#000!important;border-color:#ccc!important}
@@ -1781,7 +1781,7 @@ function renderRepByWork(body){
 function selRepWork(n){ reportWorkName=n; renderReport(); }
 function renderRepProblems(body){
   var h="<div style='flex:1'>";
-  h+="<div style='display:flex;gap:7px;margin-bottom:10px'>";
+  h+="<div style='display:flex;gap:7px;margin-bottom:10px' class='no-print'>";
   h+="<button class='btn btn-sm"+(probFilter==="open"?" btn-acc":"")+"' onclick='setProbF(\"open\")'>Відкриті</button>";
   h+="<button class='btn btn-sm"+(probFilter==="all"?" btn-acc":"")+"' onclick='setProbF(\"all\")'>Всі</button>";
   h+="</div>";
