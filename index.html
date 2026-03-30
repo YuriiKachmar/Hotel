@@ -1743,7 +1743,11 @@ function renderRepByWork(body){
         if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
           var wn=rd.works[w].name;
           if(!wmap[wn]) wmap[wn]=[];
-          wmap[wn].push({room:HOTEL[fi].sections[si].rooms[ri].name,st:rd.works[w].status||"notstarted"});
+          var conName="—";
+          if(rd.works[w].contractor&&consData[rd.works[w].contractor]){
+            conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"—";
+          }
+          wmap[wn].push({room:HOTEL[fi].sections[si].rooms[ri].name,st:rd.works[w].status||"notstarted",con:conName});
         }}
       }
     }
@@ -1756,9 +1760,9 @@ function renderRepByWork(body){
   }
   var rh="";
   if(reportWorkName&&wmap[reportWorkName]){
-    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th></tr></thead><tbody>";
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Підрядник</th><th>Статус</th></tr></thead><tbody>";
     var items=wmap[reportWorkName];var j;
-    for(j=0;j<items.length;j++) rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td></tr>";
+    for(j=0;j<items.length;j++) rh+="<tr><td>"+items[j].room+"</td><td>"+items[j].con+"</td><td class='mono'>"+stLabel(items[j].st)+"</td></tr>";
     rh+="</tbody></table>";
   } else rh="<div style='color:var(--mut)'>Оберіть вид роботи</div>";
   body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
