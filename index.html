@@ -1773,44 +1773,52 @@ function renderRepProblems(body){
       for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
         var roomDef=HOTEL[fi].sections[si].rooms[ri];
         var rd=getRoom(roomDef.id);
-        // проблеми з hasProblem по роботах
+        var works=[]; var cons=[]; var probTexts=[]; var dates=[]; var statuses=[];
+        // збираємо проблеми з робіт (hasProblem)
         if(rd&&rd.works){
           var w;
           for(w=0;w<rd.works.length;w++){
             if(!rd.works[w].hasProblem) continue;
-            if(probFilter==="open") {
-              // показуємо тільки якщо немає закритої проблеми в журналі
-            }
-            var conName="";
+            var conName="—";
             if(rd.works[w].contractor&&consData[rd.works[w].contractor]){
-              conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"";
+              conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"—";
             }
-            h+="<tr>";
-            h+="<td>"+roomDef.name+"</td>";
-            h+="<td>"+rd.works[w].name+"</td>";
-            h+="<td>"+(conName||"—")+"</td>";
-            h+="<td style='color:#dc2626'>⚠ Проблема</td>";
-            h+="<td class='mono'>—</td>";
-            h+="<td class='mono' style='color:#dc2626'>Відкрита</td>";
-            h+="</tr>";
+            works.push(rd.works[w].name);
+            cons.push(conName);
+            probTexts.push("⚠ Проблема");
+            dates.push("—");
+            statuses.push("open");
           }
         }
-        // проблеми з журналу проблем кімнати
+        // збираємо проблеми з журналу
         if(rd&&rd.problems){
           var pi;
           for(pi=0;pi<rd.problems.length;pi++){
             var prob=rd.problems[pi]; var pst=prob.status||"open";
             if(probFilter==="open"&&pst!=="open") continue;
-            h+="<tr>";
-            h+="<td>"+roomDef.name+"</td>";
-            h+="<td>—</td>";
-            h+="<td>—</td>";
-            h+="<td>"+esc(prob.text)+"</td>";
-            h+="<td class='mono'>"+(prob.date||"")+"</td>";
-            h+="<td class='mono' style='color:"+(pst==="open"?"#dc2626":"#16a34a")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</td>";
-            h+="</tr>";
+            works.push("—");
+            cons.push("—");
+            probTexts.push(esc(prob.text));
+            dates.push(prob.date||"—");
+            statuses.push(pst);
           }
         }
+        if(!works.length) continue;
+        // фільтр — якщо всі закриті і режим "відкриті" — пропустити
+        var hasOpen = false;
+        var si2;
+        for(si2=0;si2<statuses.length;si2++) if(statuses[si2]==="open") hasOpen=true;
+        if(probFilter==="open"&&!hasOpen) continue;
+        // об'єднуємо в один рядок через <br>
+        var sep = works.length > 1 ? "<br>" : "";
+        h+="<tr>";
+        h+="<td>"+roomDef.name+"</td>";
+        h+="<td>"+works.join("<br>")+"</td>";
+        h+="<td>"+cons.join("<br>")+"</td>";
+        h+="<td>"+probTexts.join("<br>")+"</td>";
+        h+="<td class='mono'>"+dates.join("<br>")+"</td>";
+        h+="<td class='mono'>"+statuses.map(function(s){ return "<span style='color:"+(s==="open"?"#dc2626":"#16a34a")+"'>"+(s==="open"?"Відкрита":"Закрита")+"</span>"; }).join("<br>")+"</td>";
+        h+="</tr>";
       }
     }
   }
