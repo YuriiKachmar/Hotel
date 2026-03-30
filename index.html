@@ -220,10 +220,14 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
   #sidebar{display:flex !important}
   #appWrap{height:calc(100vh - 57px)}
 }
-/* Телефони */
+/* Телефони — sidebar прихований */
 @media(max-width:767px){
   #sidebar{display:none !important}
   #appWrap{height:calc(100vh - 48px)}
+}
+/* Телефон горизонтально — також без sidebar */
+@media(max-width:900px) and (max-height:500px){
+  #sidebar{display:none !important}
 }
 @media(max-width:700px){
   .room-cell{width:58px;height:54px}
@@ -1760,9 +1764,9 @@ function renderRepByWork(body){
   }
   var rh="";
   if(reportWorkName&&wmap[reportWorkName]){
-    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Підрядник</th><th>Статус</th></tr></thead><tbody>";
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th><th>Підрядник</th></tr></thead><tbody>";
     var items=wmap[reportWorkName];var j;
-    for(j=0;j<items.length;j++) rh+="<tr><td>"+items[j].room+"</td><td>"+items[j].con+"</td><td class='mono'>"+stLabel(items[j].st)+"</td></tr>";
+    for(j=0;j<items.length;j++) rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td><td>"+items[j].con+"</td></tr>";
     rh+="</tbody></table>";
   } else rh="<div style='color:var(--mut)'>Оберіть вид роботи</div>";
   body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
