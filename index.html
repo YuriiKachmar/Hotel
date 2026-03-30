@@ -1090,6 +1090,7 @@ function renderModal(){
       var pst = prob.status||"open";
       h += "<div class='problem-row"+(pst==="open"?" open-p":"")+"'>";
       h += "<div class='problem-meta'><span class='problem-date'>"+(prob.date||"")+"</span>";
+      if(prob.workName) h += "<span style='font-size:10px;color:var(--acc);margin-left:4px'>"+esc(prob.workName)+"</span>";
       h += "<span class='problem-status "+(pst==="open"?"ps-open":"ps-closed")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</span>";
       if(pst==="open" && (isAdmin || myConId)){
         h += "<button class='btn btn-sm' onclick='closeProb("+pi+")'>Закрити</button>";
@@ -1098,8 +1099,18 @@ function renderModal(){
     }
   }
   // додати проблему — всі можуть
-  h += "<div class='add-problem-row'>";
-  h += "<textarea class='add-problem-input' id='probText' placeholder='Опис проблеми...' rows='2'></textarea>";
+  h += "<div class='add-problem-row' style='flex-wrap:wrap;gap:6px'>";
+  // вибір роботи для прив'язки
+  h += "<select class='work-contractor-sel' id='probWorkSel' style='max-width:100%;width:100%;margin-bottom:4px'>";
+  h += "<option value=''>— Прив'язати до роботи (необов'язково) —</option>";
+  if(rd.works){
+    var pwi;
+    for(pwi=0;pwi<rd.works.length;pwi++){
+      h += "<option value='"+esc(rd.works[pwi].name)+"'>"+esc(rd.works[pwi].name)+"</option>";
+    }
+  }
+  h += "</select>";
+  h += "<textarea class='add-problem-input' id='probText' placeholder='Опис проблеми...' rows='2' style='flex:1;min-width:200px'></textarea>";
   h += "<button class='btn btn-sm btn-danger' onclick='addProb()'>+ Проблема</button>";
   h += "</div>";
 
@@ -1169,12 +1180,15 @@ function closeProb(pi){
 }
 function addProb(){
   var ta = document.getElementById("probText");
+  var ws = document.getElementById("probWorkSel");
   if(!ta) return;
   var txt = ta.value.trim();
   if(!txt) return;
   if(!modalDraft.problems) modalDraft.problems=[];
-  modalDraft.problems.push({text:txt,date:nowStr(),status:"open"});
-  addCL("Додано проблему");
+  var probObj = {text:txt,date:nowStr(),status:"open"};
+  if(ws && ws.value) probObj.workName = ws.value;
+  modalDraft.problems.push(probObj);
+  addCL("Додано проблему"+(ws&&ws.value?" до роботи \""+ws.value+"\"":""));
   ta.value=""; renderModal();
 }
 function addCL(txt){
@@ -1813,15 +1827,17 @@ function renderRepProblems(body){
         var rj;
         for(rj=0;rj<rowCount;rj++){
           var row=rows[rj];
+          var isLast=(rj===rowCount-1);
+          var borderStyle=isLast?"":"border-bottom:none";
           h+="<tr>";
           if(rj===0){
             h+="<td rowspan='"+rowCount+"' style='vertical-align:middle;font-weight:600;border-right:1px solid var(--brd)'>"+roomDef.name+"</td>";
           }
-          h+="<td>"+row.work+"</td>";
-          h+="<td>"+row.con+"</td>";
-          h+="<td>"+row.text+"</td>";
-          h+="<td class='mono' style='white-space:nowrap'>"+row.date+"</td>";
-          h+="<td class='mono' style='color:"+(row.st==="open"?"#dc2626":"#16a34a")+"'>"+(row.st==="open"?"Відкрита":"Закрита")+"</td>";
+          h+="<td style='"+borderStyle+"'>"+row.work+"</td>";
+          h+="<td style='"+borderStyle+"'>"+row.con+"</td>";
+          h+="<td style='"+borderStyle+"'>"+row.text+"</td>";
+          h+="<td class='mono' style='white-space:nowrap;"+borderStyle+"'>"+row.date+"</td>";
+          h+="<td class='mono' style='color:"+(row.st==="open"?"#dc2626":"#16a34a")+";"+borderStyle+"'>"+(row.st==="open"?"Відкрита":"Закрита")+"</td>";
           h+="</tr>";
         }
       }
