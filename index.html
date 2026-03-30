@@ -215,9 +215,14 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 .toast.success{border-color:var(--green);color:var(--green)}
 .toast.err{border-color:var(--red);color:var(--red)}
 
-@media(max-width:700px){
+@media(max-width:1200px){
   #sidebar{display:none}
   #appWrap{height:calc(100vh - 48px)}
+}
+@media(min-width:1024px) and (min-height:700px){
+  #sidebar{display:flex}
+}
+@media(max-width:700px){
   .room-cell{width:58px;height:54px}
   .room-num{font-size:12px}
   .cons-add-panel{width:100%}
