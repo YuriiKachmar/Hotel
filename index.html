@@ -716,7 +716,7 @@ function calcStatus(rd){
   var i;
   for(i = 0; i < rd.works.length; i++){
     var s = rd.works[i].status || "notstarted";
-    if(s === "problem") hasProb = true;
+    if(rd.works[i].hasProblem) hasProb = true;
     if(s === "inprogress") hasProg = true;
     if(s !== "done") allDone = false;
   }
@@ -740,7 +740,6 @@ function stLabel(st){
   if(st==="notstarted") return "Не розпочато";
   if(st==="inprogress") return "В роботі";
   if(st==="done") return "Виконано";
-  if(st==="problem") return "Проблема";
   return st;
 }
 
@@ -1020,9 +1019,10 @@ function renderModal(){
     for(wi=0;wi<rd.works.length;wi++){
       var wk = rd.works[wi];
       var wst = wk.status||"notstarted";
+      var wprob = wk.hasProblem ? true : false;
       var rowCls = "work-row";
       if(wst==="done") rowCls+=" work-done";
-      if(wst==="problem") rowCls+=" work-problem";
+      if(wprob) rowCls+=" work-problem";
       var canEdit = isAdmin || (myConId && wk.contractor === myConId);
       h += "<div class='"+rowCls+"'>";
       h += "<div class='work-name'>"+wk.name+"</div>";
@@ -1030,11 +1030,14 @@ function renderModal(){
         h += "<div class='work-status-btns'>";
         h += "<button class='wsb"+(wst==="inprogress"?" active-inprogress":"")+"' onclick='setWkSt("+wi+",\"inprogress\")'>В роботі</button>";
         h += "<button class='wsb"+(wst==="done"?" active-done":"")+"' onclick='setWkSt("+wi+",\"done\")'>Виконано</button>";
-        h += "<button class='wsb"+(wst==="problem"?" active-problem":"")+"' onclick='setWkSt("+wi+",\"problem\")'>Проблема</button>";
+        h += "<button class='wsb"+(wprob?" active-problem":"")+"' onclick='toggleWkProb("+wi+")'>⚠ Проблема</button>";
         h += "</div>";
       } else {
-        var stBadgeCls = wst==="done"?"active-done":(wst==="inprogress"?"active-inprogress":(wst==="problem"?"active-problem":""));
-        h += "<div class='work-status-btns'><span class='wsb "+stBadgeCls+"' style='cursor:default'>"+stLabel(wst)+"</span></div>";
+        var stBadgeCls = wst==="done"?"active-done":(wst==="inprogress"?"active-inprogress":"");
+        h += "<div class='work-status-btns'>";
+        if(stBadgeCls) h += "<span class='wsb "+stBadgeCls+"' style='cursor:default'>"+stLabel(wst)+"</span>";
+        if(wprob) h += "<span class='wsb active-problem' style='cursor:default'>⚠ Проблема</span>";
+        h += "</div>";
       }
       if(isAdmin){
         h += "<select class='work-contractor-sel' onchange='setWkCon("+wi+",this.value)'>";
@@ -1116,6 +1119,15 @@ function setWkSt(wi, newSt){
   var old = modalDraft.works[wi].status||"notstarted";
   modalDraft.works[wi].status = (old===newSt) ? "notstarted" : newSt;
   addCL("Робота \""+modalDraft.works[wi].name+"\": "+stLabel(old)+" > "+stLabel(modalDraft.works[wi].status));
+  renderModal();
+}
+function toggleWkProb(wi){
+  if(!modalDraft||!modalDraft.works) return;
+  var myConId = getMyConId();
+  var canEdit = isAdmin || (myConId && modalDraft.works[wi].contractor === myConId);
+  if(!canEdit){ showToast("Немає прав для цієї роботи","err"); return; }
+  modalDraft.works[wi].hasProblem = !modalDraft.works[wi].hasProblem;
+  addCL("Робота \""+modalDraft.works[wi].name+"\": Проблема " + (modalDraft.works[wi].hasProblem?"відмічена":"знята"));
   renderModal();
 }
 function setWkCon(wi, cid){ if(!isAdmin) return; if(modalDraft&&modalDraft.works) modalDraft.works[wi].contractor=cid; }
@@ -1436,7 +1448,10 @@ function getWorkStatusForRoom(roomId, workName){
   if(!rd||!rd.works) return null;
   var w;
   for(w=0;w<rd.works.length;w++){
-    if(rd.works[w].name===workName) return rd.works[w].status||"notstarted";
+    if(rd.works[w].name===workName){
+      if(rd.works[w].hasProblem) return "problem";
+      return rd.works[w].status||"notstarted";
+    }
   }
   return null;
 }
