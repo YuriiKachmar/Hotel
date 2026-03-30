@@ -1710,15 +1710,17 @@ function renderRepByCon(body){
   }
   var rh="";
   if(reportConId&&consData[reportConId]){
-    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th></tr></thead><tbody>";
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th><th>Проблема</th></tr></thead><tbody>";
     var fi,si,ri;
     for(fi=0;fi<HOTEL.length;fi++){
       for(si=0;si<HOTEL[fi].sections.length;si++){
         for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
           var rd=getRoom(HOTEL[fi].sections[si].rooms[ri].id);
           if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
-            if(rd.works[w].contractor===reportConId)
-              rh+="<tr><td>"+HOTEL[fi].sections[si].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(rd.works[w].status||"notstarted")+"</td></tr>";
+            if(rd.works[w].contractor===reportConId){
+              var probCell = rd.works[w].hasProblem ? "<span style='color:#dc2626;font-weight:600'>⚠ Так</span>" : "—";
+              rh+="<tr><td>"+HOTEL[fi].sections[si].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(rd.works[w].status||"notstarted")+"</td><td>"+probCell+"</td></tr>";
+            }
           }}
         }
       }
@@ -1764,17 +1766,51 @@ function renderRepProblems(body){
   h+="<button class='btn btn-sm"+(probFilter==="open"?" btn-acc":"")+"' onclick='setProbF(\"open\")'>Відкриті</button>";
   h+="<button class='btn btn-sm"+(probFilter==="all"?" btn-acc":"")+"' onclick='setProbF(\"all\")'>Всі</button>";
   h+="</div>";
-  h+="<table class='report-table'><thead><tr><th>Кімната</th><th>Проблема</th><th>Дата</th><th>Статус</th></tr></thead><tbody>";
+  h+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Підрядник</th><th>Проблема</th><th>Дата</th><th>Статус</th></tr></thead><tbody>";
   var fi,si,ri;
   for(fi=0;fi<HOTEL.length;fi++){
     for(si=0;si<HOTEL[fi].sections.length;si++){
       for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
-        var rd=getRoom(HOTEL[fi].sections[si].rooms[ri].id);
-        if(rd&&rd.problems){var pi;for(pi=0;pi<rd.problems.length;pi++){
-          var prob=rd.problems[pi]; var pst=prob.status||"open";
-          if(probFilter==="open"&&pst!=="open") continue;
-          h+="<tr><td>"+HOTEL[fi].sections[si].rooms[ri].name+"</td><td>"+esc(prob.text)+"</td><td class='mono'>"+(prob.date||"")+"</td><td class='mono' style='color:"+(pst==="open"?"#dc2626":"#16a34a")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</td></tr>";
-        }}
+        var roomDef=HOTEL[fi].sections[si].rooms[ri];
+        var rd=getRoom(roomDef.id);
+        // проблеми з hasProblem по роботах
+        if(rd&&rd.works){
+          var w;
+          for(w=0;w<rd.works.length;w++){
+            if(!rd.works[w].hasProblem) continue;
+            if(probFilter==="open") {
+              // показуємо тільки якщо немає закритої проблеми в журналі
+            }
+            var conName="";
+            if(rd.works[w].contractor&&consData[rd.works[w].contractor]){
+              conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"";
+            }
+            h+="<tr>";
+            h+="<td>"+roomDef.name+"</td>";
+            h+="<td>"+rd.works[w].name+"</td>";
+            h+="<td>"+(conName||"—")+"</td>";
+            h+="<td style='color:#dc2626'>⚠ Проблема</td>";
+            h+="<td class='mono'>—</td>";
+            h+="<td class='mono' style='color:#dc2626'>Відкрита</td>";
+            h+="</tr>";
+          }
+        }
+        // проблеми з журналу проблем кімнати
+        if(rd&&rd.problems){
+          var pi;
+          for(pi=0;pi<rd.problems.length;pi++){
+            var prob=rd.problems[pi]; var pst=prob.status||"open";
+            if(probFilter==="open"&&pst!=="open") continue;
+            h+="<tr>";
+            h+="<td>"+roomDef.name+"</td>";
+            h+="<td>—</td>";
+            h+="<td>—</td>";
+            h+="<td>"+esc(prob.text)+"</td>";
+            h+="<td class='mono'>"+(prob.date||"")+"</td>";
+            h+="<td class='mono' style='color:"+(pst==="open"?"#dc2626":"#16a34a")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</td>";
+            h+="</tr>";
+          }
+        }
       }
     }
   }
