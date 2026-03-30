@@ -264,8 +264,11 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
   #reportPanel{position:static!important;display:block!important;background:#fff!important;color:#000!important}
   .report-body{display:block!important;padding:0!important;background:#fff!important;color:#000!important}
   .report-table th,.report-table td{color:#000!important;border-color:#ccc!important}
-  .report-left{width:auto!important;float:left;margin-right:20px}
+  .report-left{display:none!important}
+  .report-right{width:100%!important}
+  #printHeader{display:block!important}
 }
+#printHeader{display:none;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #000}
 </style>
 </head>
 <body>
@@ -403,7 +406,9 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
     </div>
     <button class="btn btn-sm" style="margin-left:auto" onclick="printReport()">🖨 Друк</button>
   </div>
-  <div class="report-body" id="reportBody"></div>
+  <div class="report-body" id="reportBody">
+    <div id="printHeader"></div>
+  </div>
 </div>
 
 <!-- ROOM MODAL -->
@@ -1826,7 +1831,35 @@ function renderRepProblems(body){
   body.innerHTML=h;
 }
 function setProbF(m){ probFilter=m; renderReport(); }
-function printReport(){ window.print(); }
+function printReport(){
+  // формуємо шапку
+  var title = "Звіт";
+  var subtitle = "";
+  if(reportTab==="general"){
+    title = "Загальний звіт";
+  } else if(reportTab==="bycon"){
+    title = "Звіт по підряднику";
+    if(reportConId && consData[reportConId]){
+      subtitle = consData[reportConId].name || consData[reportConId].email || "";
+    }
+  } else if(reportTab==="bywork"){
+    title = "Звіт по виду роботи";
+    if(reportWorkName) subtitle = reportWorkName;
+  } else if(reportTab==="problems"){
+    title = "Звіт — Проблеми";
+    subtitle = probFilter==="open" ? "Відкриті проблеми" : "Всі проблеми";
+  }
+  var now = new Date();
+  var dateStr = now.toLocaleDateString("uk-UA", {day:"2-digit",month:"2-digit",year:"numeric"});
+  var ph = document.getElementById("printHeader");
+  ph.innerHTML = "<div style='font-family:Arial,sans-serif'>"
+    + "<div style='font-size:11px;color:#666;margin-bottom:4px'>Готель — Контроль ремонтних робіт · Замарстинівська 25, Львів</div>"
+    + "<div style='font-size:20px;font-weight:700;margin-bottom:4px'>"+title+"</div>"
+    + (subtitle ? "<div style='font-size:15px;margin-bottom:4px'>"+subtitle+"</div>" : "")
+    + "<div style='font-size:11px;color:#666'>Дата формування: "+dateStr+"</div>"
+    + "</div>";
+  window.print();
+}
 
 // =============================================
 // CSV EXPORT
