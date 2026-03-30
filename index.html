@@ -406,9 +406,8 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
     </div>
     <button class="btn btn-sm" style="margin-left:auto" onclick="printReport()">🖨 Друк</button>
   </div>
-  <div class="report-body" id="reportBody">
-    <div id="printHeader"></div>
-  </div>
+  <div id="printHeader"></div>
+  <div class="report-body" id="reportBody"></div>
 </div>
 
 <!-- ROOM MODAL -->
@@ -1936,6 +1935,7 @@ if("serviceWorker" in navigator){
 
 // close autocomplete on outside click
 document.addEventListener("click",function(e){
+  var l=document.getElementById("acList");
   if(l&&!l.contains(e.target)&&e.target.id!=="awInput") hideAC();
 });
 </script>
