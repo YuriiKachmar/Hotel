@@ -1549,12 +1549,53 @@ function renderByConList(){
   if(!h) h="<div style='color:var(--mut);font-size:13px'>Немає підрядників</div>";
   document.getElementById("byConList").innerHTML=h;
 }
+function makeRoomCellForCon(roomDef, cid){
+  var rd = getRoom(roomDef.id);
+  var bg = TYPE_COLORS[roomDef.type]||"#1e293b";
+  // рахуємо статус тільки по роботах цього підрядника
+  var hasProb = false, hasProg = false, allDone = true, hasAny = false;
+  if(rd && rd.works){
+    var w;
+    for(w=0;w<rd.works.length;w++){
+      if(rd.works[w].contractor !== cid) continue;
+      hasAny = true;
+      var wst = rd.works[w].status || "notstarted";
+      if(rd.works[w].hasProblem) hasProb = true;
+      if(wst === "inprogress") hasProg = true;
+      if(wst !== "done") allDone = false;
+    }
+  }
+  if(!hasAny) return "";
+  var borderColor = "#2c2d33";
+  var shadow = "";
+  if(hasProb){ borderColor="#dc2626"; shadow="box-shadow:0 0 10px rgba(220,38,38,.5);"; }
+  else if(allDone){ borderColor="#16a34a"; }
+  else if(hasProg){ borderColor="#2563eb"; }
+  // прогрес тільки по роботах цього підрядника
+  var done=0, total=0;
+  if(rd && rd.works){
+    var w2;
+    for(w2=0;w2<rd.works.length;w2++){
+      if(rd.works[w2].contractor !== cid) continue;
+      total++;
+      if((rd.works[w2].status||"notstarted")==="done") done++;
+    }
+  }
+  var prog = total ? Math.round(done/total*100) : 0;
+  var progCol = hasProb?"#dc2626":(allDone?"#16a34a":"#e8b84b");
+  var h = "<div class='room-cell' style='background:"+bg+";border:2px solid "+borderColor+";"+shadow+"' onclick='openRoom(\""+roomDef.id+"\")'>";
+  h += "<div><div class='room-num'>"+roomDef.name+"</div>";
+  h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
+  h += "<div class='room-bottom'><div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div></div>";
+  h += "</div>";
+  return h;
+}
 function selByCon(cid){
   activeByConId=cid;
   renderByConList();
   var con=consData[cid];
   var h="<h3 style='margin-bottom:16px;font-size:16px;color:var(--acc)'>"+(con?con.name||con.email:"")+"</h3>";
-  var hasAny = false;
+  var hasAny=false;
   var fi,si,ri;
   for(fi=0;fi<HOTEL.length;fi++){
     var flr=HOTEL[fi];
@@ -1564,16 +1605,7 @@ function selByCon(cid){
       if(sec.rooms.length===0) continue;
       var secCells="";
       for(ri=0;ri<sec.rooms.length;ri++){
-        var rd=getRoom(sec.rooms[ri].id);
-        if(rd&&rd.works){
-          var w;
-          for(w=0;w<rd.works.length;w++){
-            if(rd.works[w].contractor===cid){
-              secCells+=makeRoomCell(sec.rooms[ri],"");
-              break;
-            }
-          }
-        }
+        secCells+=makeRoomCellForCon(sec.rooms[ri],cid);
       }
       if(!secCells) continue;
       if(sec.name) floorHtml+="<div class='section-group-label'>"+sec.name+"</div>";
