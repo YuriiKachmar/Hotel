@@ -55,7 +55,7 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 
 /* LAYOUT */
 #appWrap{display:flex;height:calc(100vh - 57px)}
-#sidebar{width:210px;min-width:210px;background:var(--surf);border-right:1px solid var(--brd);overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:12px}
+#sidebar{width:210px;min-width:210px;background:var(--surf);border-right:1px solid var(--brd);overflow-y:auto;padding:14px 10px;display:none;flex-direction:column;gap:12px}
 #mainArea{flex:1;overflow-y:auto;padding:16px}
 
 /* SIDEBAR */
@@ -215,15 +215,15 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 .toast.success{border-color:var(--green);color:var(--green)}
 .toast.err{border-color:var(--red);color:var(--red)}
 
-/* Телефони — sidebar прихований */
-@media(max-width:767px){
-  #sidebar{display:none}
-  #appWrap{height:calc(100vh - 48px)}
-}
 /* Планшети і десктоп — sidebar видимий */
 @media(min-width:768px){
-  #sidebar{display:flex}
+  #sidebar{display:flex !important}
   #appWrap{height:calc(100vh - 57px)}
+}
+/* Телефони */
+@media(max-width:767px){
+  #sidebar{display:none !important}
+  #appWrap{height:calc(100vh - 48px)}
 }
 @media(max-width:700px){
   .room-cell{width:58px;height:54px}
