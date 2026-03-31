@@ -63,7 +63,7 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 .sb-item{display:flex;align-items:center;gap:7px;padding:6px 7px;border-radius:6px;cursor:pointer;font-size:12px;transition:background .12s;user-select:none}
 .sb-item:hover{background:var(--surf2)}
 .sb-item input[type=checkbox]{accent-color:var(--acc);cursor:pointer;flex-shrink:0}
-.sb-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sb-dot{width:13px;height:13px;border-radius:3px;flex-shrink:0}
 .sb-box{width:13px;height:13px;border-radius:3px;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
 
 /* STATS BAR */
@@ -303,11 +303,11 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
     <div class="logo-sub">Контроль ремонту · Замарстинівська 25</div>
   </div>
   <input type="text" id="searchBox" placeholder="Пошук кімнати..." oninput="onSearch()">
+  <button class="btn btn-sm" onclick="openChat()" id="chatBtn" style="position:relative;background:#e2e4ea;color:#111214;border-color:#e2e4ea;font-weight:600;flex-shrink:0">
+    💬 Чат
+    <span id="chatBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;align-items:center;justify-content:center;line-height:1">0</span>
+  </button>
   <div class="topbar-right">
-    <button class="btn btn-sm" onclick="openChat()" id="chatBtn" style="position:relative;background:#e2e4ea;color:#111214;border-color:#e2e4ea;font-weight:600;flex-shrink:0">
-      💬 Чат
-      <span id="chatBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;align-items:center;justify-content:center;line-height:1">0</span>
-    </button>
     <button class="btn btn-sm" onclick="openByContractor()">По підряднику</button>
     <button class="btn btn-sm" onclick="openByWork()">По роботах</button>
     <button class="btn btn-sm" onclick="openContractors()">Налаштування</button>
@@ -325,10 +325,10 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
   </div>
   <div class="sb-section">
     <h3>Статус</h3>
-    <div class="sb-item" onclick="toggleFilter('status','notstarted',this)"><input type="checkbox" id="fs_ns"> <div class="sb-dot" style="background:#3a3b42;border:1px solid #666"></div> Не розпочато</div>
-    <div class="sb-item" onclick="toggleFilter('status','inprogress',this)"><input type="checkbox" id="fs_ip"> <div class="sb-dot" style="background:#2563eb"></div> В роботі</div>
-    <div class="sb-item" onclick="toggleFilter('status','done',this)"><input type="checkbox" id="fs_d"> <div class="sb-dot" style="background:#16a34a"></div> Готово</div>
-    <div class="sb-item" onclick="toggleFilter('status','problem',this)"><input type="checkbox" id="fs_pr"> <div class="sb-dot" style="background:#dc2626"></div> Проблема</div>
+    <div class="sb-item" onclick="toggleFilter('status','notstarted',this)"><input type="checkbox" id="fs_ns"> <div class="sb-dot" style="background:transparent;border:2px solid #555;border-radius:3px"></div> Не розпочато</div>
+    <div class="sb-item" onclick="toggleFilter('status','inprogress',this)"><input type="checkbox" id="fs_ip"> <div class="sb-dot" style="background:transparent;border:2px solid #2563eb;border-radius:3px"></div> В роботі</div>
+    <div class="sb-item" onclick="toggleFilter('status','done',this)"><input type="checkbox" id="fs_d"> <div class="sb-dot" style="background:transparent;border:2px solid #16a34a;border-radius:3px"></div> Готово</div>
+    <div class="sb-item" onclick="toggleFilter('status','problem',this)"><input type="checkbox" id="fs_pr"> <div class="sb-dot" style="background:transparent;border:2px solid #dc2626;border-radius:3px;box-shadow:0 0 5px rgba(220,38,38,.5)"></div> Проблема</div>
   </div>
   <div class="sb-section">
     <h3>Тип</h3>
