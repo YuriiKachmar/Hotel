@@ -209,7 +209,23 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 .bycon-item:hover{background:var(--surf2)}
 .bycon-item.active{border-color:var(--acc);background:var(--surf2);color:var(--acc)}
 
-/* TOAST */
+/* CHAT */
+#chatPanel{position:fixed;bottom:0;right:24px;width:320px;height:440px;background:var(--surf);border:1px solid var(--brd);border-bottom:none;border-radius:12px 12px 0 0;z-index:160;display:none;flex-direction:column;box-shadow:0 -4px 24px rgba(0,0,0,.4)}
+#chatPanel.open{display:flex}
+.chat-header{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--brd);background:var(--surf2);border-radius:12px 12px 0 0}
+.chat-header h3{font-family:'Oswald',sans-serif;font-size:15px;color:var(--acc);flex:1}
+.chat-messages{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:85%;padding:7px 10px;border-radius:10px;font-size:12px;line-height:1.4}
+.chat-msg.mine{background:var(--acc);color:#111;align-self:flex-end;border-radius:10px 10px 2px 10px}
+.chat-msg.theirs{background:var(--surf2);color:var(--txt);align-self:flex-start;border-radius:10px 10px 10px 2px}
+.chat-msg .msg-name{font-size:10px;font-weight:700;margin-bottom:2px;opacity:.7}
+.chat-msg .msg-time{font-size:9px;opacity:.6;margin-top:2px;text-align:right;font-family:'IBM Plex Mono',monospace}
+.chat-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--brd)}
+.chat-input{flex:1;padding:7px 10px;background:var(--surf2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;resize:none}
+.chat-input:focus{border-color:var(--acc)}
+@media(max-width:400px){
+  #chatPanel{width:100%;right:0;border-radius:12px 12px 0 0}
+}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:10px 18px;font-size:13px;z-index:999;transition:transform .25s;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.success{border-color:var(--green);color:var(--green)}
@@ -295,7 +311,10 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
     <button class="btn btn-sm" onclick="openByWork()">По роботах</button>
     <button class="btn btn-sm" onclick="openContractors()">Налаштування</button>
     <button class="btn btn-sm" onclick="openReport()">Звіт</button>
-    <button class="btn btn-sm" onclick="exportCSV()">CSV</button>
+    <button class="btn btn-sm" onclick="openChat()" id="chatBtn" style="position:relative">
+      💬 Чат
+      <span id="chatBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1">0</span>
+    </button>
     <span class="user-email" id="userEmailEl"></span>
     <button class="btn btn-sm btn-danger" onclick="doLogout()">Вийти</button>
   </div>
@@ -402,6 +421,7 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
       <button class="rtab" onclick="switchReportTab('problems',this)">Проблеми</button>
     </div>
     <button class="btn btn-sm" style="margin-left:auto" onclick="printReport()">🖨 Друк</button>
+    <button class="btn btn-sm" onclick="exportCSV()">CSV</button>
   </div>
   <div id="printHeader"></div>
   <div class="report-body" id="reportBody"></div>
@@ -422,6 +442,19 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
       <button class="btn" onclick="closeRoomModal()">Скасувати</button>
       <button class="btn btn-acc" onclick="saveRoom()">Зберегти</button>
     </div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div id="chatPanel">
+  <div class="chat-header">
+    <h3>💬 Чат</h3>
+    <button class="btn btn-sm" onclick="closeChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-row">
+    <textarea class="chat-input" id="chatInput" placeholder="Повідомлення..." rows="1" onkeydown="chatKey(event)"></textarea>
+    <button class="btn btn-sm btn-acc" onclick="sendMsg()">▶</button>
   </div>
 </div>
 
@@ -660,6 +693,7 @@ fbAuth.onAuthStateChanged(function(user){
     document.getElementById("appScreen").style.display = "block";
     document.getElementById("userEmailEl").textContent = user.email;
     initListeners();
+    initChat();
   } else {
     currentUser = null; isAdmin = false;
     document.getElementById("authScreen").style.display = "flex";
@@ -1092,7 +1126,7 @@ function renderModal(){
       h += "<div class='problem-meta'><span class='problem-date'>"+(prob.date||"")+"</span>";
       if(prob.workName) h += "<span style='font-size:10px;color:var(--acc);margin-left:4px'>"+esc(prob.workName)+"</span>";
       h += "<span class='problem-status "+(pst==="open"?"ps-open":"ps-closed")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</span>";
-      if(pst==="open" && (isAdmin || myConId)){
+      if(pst==="open" && isAdmin){
         h += "<button class='btn btn-sm' onclick='closeProb("+pi+")'>Закрити</button>";
       }
       h += "</div><div class='problem-text'>"+prob.text+"</div></div>";
@@ -1941,7 +1975,110 @@ function showToast(msg,type){
   t.classList.add("show");
   setTimeout(function(){t.classList.remove("show");},2400);
 }
-// SERVICE WORKER
+// =============================================
+// CHAT
+// =============================================
+var chatOpen = false;
+var unreadCount = 0;
+var lastMsgKey = null;
+
+function openChat(){
+  chatOpen = true;
+  unreadCount = 0;
+  updateChatBadge();
+  document.getElementById("chatPanel").classList.add("open");
+  scrollChatToBottom();
+  document.getElementById("chatInput").focus();
+}
+function closeChat(){
+  chatOpen = false;
+  document.getElementById("chatPanel").classList.remove("open");
+}
+
+function updateChatBadge(){
+  var badge = document.getElementById("chatBadge");
+  if(!badge) return;
+  if(unreadCount > 0){
+    badge.style.display = "flex";
+    badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+function scrollChatToBottom(){
+  var msgs = document.getElementById("chatMessages");
+  if(msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendMsg(){
+  var inp = document.getElementById("chatInput");
+  if(!inp) return;
+  var txt = inp.value.trim();
+  if(!txt || !currentUser) return;
+  var name = currentUser.email;
+  // спробуємо знайти ім'я підрядника
+  var keys = Object.keys(consData);
+  var i;
+  for(i=0;i<keys.length;i++){
+    if(consData[keys[i]].email === currentUser.email){
+      name = consData[keys[i]].name || currentUser.email;
+      break;
+    }
+  }
+  if(currentUser.email === ADMIN_EMAIL) name = "Адмін";
+  fbDb.ref("/chat").push({
+    text: txt,
+    name: name,
+    email: currentUser.email,
+    time: nowStr()
+  });
+  inp.value = "";
+}
+
+function chatKey(e){
+  if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); sendMsg(); }
+}
+
+function initChat(){
+  fbDb.ref("/chat").limitToLast(100).on("child_added", function(snap){
+    var msg = snap.val();
+    if(!msg) return;
+    var isFirst = (lastMsgKey === null);
+    lastMsgKey = snap.key;
+    var isMine = (currentUser && msg.email === currentUser.email);
+    // показати повідомлення в чаті
+    var msgs = document.getElementById("chatMessages");
+    if(msgs){
+      var div = document.createElement("div");
+      div.className = "chat-msg " + (isMine ? "mine" : "theirs");
+      div.innerHTML = (!isMine ? "<div class='msg-name'>" + msg.name + "</div>" : "")
+        + "<div>" + esc(msg.text) + "</div>"
+        + "<div class='msg-time'>" + (msg.time||"") + "</div>";
+      msgs.appendChild(div);
+      if(chatOpen) scrollChatToBottom();
+    }
+    // сповіщення про нове повідомлення
+    if(!isFirst && !isMine){
+      if(!chatOpen){
+        unreadCount++;
+        updateChatBadge();
+      }
+      // спливаюче сповіщення
+      showChatToast(msg.name, msg.text);
+    }
+  });
+}
+
+function showChatToast(name, text){
+  var t = document.getElementById("toast");
+  t.textContent = name + ": " + (text.length > 40 ? text.substring(0,40)+"..." : text);
+  t.className = "toast";
+  t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 3500);
+}
+
+
 if("serviceWorker" in navigator){
   window.addEventListener("load", function(){
     navigator.serviceWorker.register("sw.js").catch(function(e){
