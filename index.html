@@ -307,14 +307,14 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
   </div>
   <input type="text" id="searchBox" placeholder="Пошук кімнати..." oninput="onSearch()">
   <div class="topbar-right">
+    <button class="btn btn-sm" onclick="openChat()" id="chatBtn" style="position:relative;background:#e2e4ea;color:#111214;border-color:#e2e4ea;font-weight:600">
+      💬 Чат
+      <span id="chatBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;align-items:center;justify-content:center;line-height:1">0</span>
+    </button>
     <button class="btn btn-sm" onclick="openByContractor()">По підряднику</button>
     <button class="btn btn-sm" onclick="openByWork()">По роботах</button>
     <button class="btn btn-sm" onclick="openContractors()">Налаштування</button>
     <button class="btn btn-sm" onclick="openReport()">Звіт</button>
-    <button class="btn btn-sm" onclick="openChat()" id="chatBtn" style="position:relative">
-      💬 Чат
-      <span id="chatBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1">0</span>
-    </button>
     <span class="user-email" id="userEmailEl"></span>
     <button class="btn btn-sm btn-danger" onclick="doLogout()">Вийти</button>
   </div>
@@ -850,11 +850,14 @@ function passesFilter(roomDef){
   var fkeys = Object.keys(filters.floor);
   if(fkeys.length > 0){
     var ok = false;
-    var fi, ri;
+    var fi, si, ri;
     for(fi=0;fi<HOTEL.length;fi++){
       if(!filters.floor[HOTEL[fi].floor]) continue;
-      for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
-        if(HOTEL[fi].rooms[ri].id===roomDef.id){ok=true;break;}
+      for(si=0;si<HOTEL[fi].sections.length;si++){
+        for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
+          if(HOTEL[fi].sections[si].rooms[ri].id===roomDef.id){ok=true;break;}
+        }
+        if(ok) break;
       }
       if(ok) break;
     }
