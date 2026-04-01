@@ -676,7 +676,9 @@ var reportTab = "general";
 var activeByConId = null;
 var activeByWorkName = null;
 var reportConId = null;
+var reportConWorkFilter = "";
 var reportWorkName = null;
+var reportWorkConFilter = "";
 var probFilter = "open";
 
 // =============================================
@@ -1770,25 +1772,50 @@ function renderRepByCon(body){
   }
   var rh="";
   if(reportConId&&consData[reportConId]){
-    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th><th>Проблема</th></tr></thead><tbody>";
+    // зібрати унікальні роботи підрядника
+    var workNames={};
     var fi,si,ri;
     for(fi=0;fi<HOTEL.length;fi++){
-      var floorHasRows = false;
-      var floorRows = "";
+      for(si=0;si<HOTEL[fi].sections.length;si++){
+        for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
+          var rd0=getRoom(HOTEL[fi].sections[si].rooms[ri].id);
+          if(rd0&&rd0.works){var w0;for(w0=0;w0<rd0.works.length;w0++){
+            if(rd0.works[w0].contractor===reportConId) workNames[rd0.works[w0].name]=true;
+          }}
+        }
+      }
+    }
+    var wkeys=Object.keys(workNames).sort();
+    if(wkeys.length > 1){
+      rh+="<div style='display:flex;align-items:center;gap:10px;margin-bottom:10px' class='no-print'>";
+      rh+="<span style='font-size:12px;color:var(--mut)'>Робота:</span>";
+      rh+="<select class='filter-input' style='padding:5px 10px;font-size:12px' onchange='setRepConWorkFilter(this.value)'>";
+      rh+="<option value=''>Всі</option>";
+      var wi;
+      for(wi=0;wi<wkeys.length;wi++){
+        var sel2=(reportConWorkFilter===wkeys[wi])?" selected":"";
+        rh+="<option value='"+wkeys[wi].replace(/"/g,"&quot;")+"'"+sel2+">"+wkeys[wi]+"</option>";
+      }
+      rh+="</select></div>";
+    }
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th><th>Проблема</th></tr></thead><tbody>";
+    for(fi=0;fi<HOTEL.length;fi++){
+      var floorHasRows=false;
+      var floorRows="";
       for(si=0;si<HOTEL[fi].sections.length;si++){
         for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
           var rd=getRoom(HOTEL[fi].sections[si].rooms[ri].id);
           if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
-            if(rd.works[w].contractor===reportConId){
-              var probCell = rd.works[w].hasProblem ? "<span style='color:#dc2626;font-weight:600'>⚠ Так</span>" : "—";
-              floorRows+="<tr><td>"+HOTEL[fi].sections[si].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(rd.works[w].status||"notstarted")+"</td><td>"+probCell+"</td></tr>";
-              floorHasRows=true;
-            }
+            if(rd.works[w].contractor!==reportConId) continue;
+            if(reportConWorkFilter && rd.works[w].name!==reportConWorkFilter) continue;
+            var probCell=rd.works[w].hasProblem?"<span style='color:#dc2626;font-weight:600'>⚠ Так</span>":"—";
+            floorRows+="<tr><td>"+HOTEL[fi].sections[si].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(rd.works[w].status||"notstarted")+"</td><td>"+probCell+"</td></tr>";
+            floorHasRows=true;
           }}
         }
       }
       if(floorHasRows){
-        rh+="<tr><td colspan='4' style='background:radial-gradient(circle, #3a3b42 1px, transparent 1px) 0 0 / 8px 8px;color:#888;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 9px;border-top:1px solid var(--brd)'>"+HOTEL[fi].label+"</td></tr>";
+        rh+="<tr><td colspan='4' style='background:radial-gradient(circle, #3a3b42 1px, transparent 1px) 0 0 / 8px 8px;color:#888;font-family:IBM Plex Sans,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 9px;border-top:1px solid var(--brd)'>"+HOTEL[fi].label+"</td></tr>";
         rh+=floorRows;
       }
     }
@@ -1796,7 +1823,8 @@ function renderRepByCon(body){
   } else rh="<div style='color:var(--mut)'>Оберіть підрядника</div>";
   body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
 }
-function selRepCon(cid){ reportConId=cid; renderReport(); }
+function selRepCon(cid){ reportConId=cid; reportConWorkFilter=""; renderReport(); }
+function setRepConWorkFilter(val){ reportConWorkFilter=val; renderReport(); }
 function renderRepByWork(body){
   var wmap={}; var fi,si,ri;
   for(fi=0;fi<HOTEL.length;fi++){
@@ -1807,10 +1835,11 @@ function renderRepByWork(body){
           var wn=rd.works[w].name;
           if(!wmap[wn]) wmap[wn]=[];
           var conName="—";
-          if(rd.works[w].contractor&&consData[rd.works[w].contractor]){
-            conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"—";
+          var conId=rd.works[w].contractor||"";
+          if(conId&&consData[conId]){
+            conName=consData[conId].name||consData[conId].email||"—";
           }
-          wmap[wn].push({room:HOTEL[fi].sections[si].rooms[ri].name,st:rd.works[w].status||"notstarted",con:conName,floor:HOTEL[fi].label});
+          wmap[wn].push({room:HOTEL[fi].sections[si].rooms[ri].name,st:rd.works[w].status||"notstarted",con:conName,conId:conId,floor:HOTEL[fi].label});
         }}
       }
     }
@@ -1823,13 +1852,34 @@ function renderRepByWork(body){
   }
   var rh="";
   if(reportWorkName&&wmap[reportWorkName]){
-    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th><th>Підрядник</th></tr></thead><tbody>";
     var items=wmap[reportWorkName];
-    var curFloor=""; var j;
+    // зібрати унікальних підрядників для цієї роботи
+    var conMap={};
+    var j;
     for(j=0;j<items.length;j++){
+      if(items[j].conId) conMap[items[j].conId]=items[j].con;
+    }
+    var conIds=Object.keys(conMap);
+    // фільтр — тільки якщо є більше одного підрядника
+    if(conIds.length > 1){
+      rh+="<div style='display:flex;align-items:center;gap:10px;margin-bottom:10px' class='no-print'>";
+      rh+="<span style='font-size:12px;color:var(--mut)'>Підрядник:</span>";
+      rh+="<select class='filter-input' style='padding:5px 10px;font-size:12px' onchange='setRepWorkConFilter(this.value)'>";
+      rh+="<option value=''>Всі</option>";
+      for(j=0;j<conIds.length;j++){
+        var sel=(reportWorkConFilter===conIds[j])?" selected":"";
+        rh+="<option value='"+conIds[j]+"'"+sel+">"+conMap[conIds[j]]+"</option>";
+      }
+      rh+="</select></div>";
+    }
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th><th>Підрядник</th></tr></thead><tbody>";
+    var curFloor="";
+    for(j=0;j<items.length;j++){
+      // застосувати фільтр
+      if(reportWorkConFilter && items[j].conId !== reportWorkConFilter) continue;
       if(items[j].floor !== curFloor){
         curFloor=items[j].floor;
-        rh+="<tr><td colspan='3' style='background:radial-gradient(circle, #3a3b42 1px, transparent 1px) 0 0 / 8px 8px;color:#888;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 9px;border-top:1px solid var(--brd)'>"+curFloor+"</td></tr>";
+        rh+="<tr><td colspan='3' style='background:radial-gradient(circle, #3a3b42 1px, transparent 1px) 0 0 / 8px 8px;color:#888;font-family:IBM Plex Sans,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 9px;border-top:1px solid var(--brd)'>"+curFloor+"</td></tr>";
       }
       rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td><td>"+items[j].con+"</td></tr>";
     }
@@ -1837,7 +1887,8 @@ function renderRepByWork(body){
   } else rh="<div style='color:var(--mut)'>Оберіть вид роботи</div>";
   body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
 }
-function selRepWork(n){ reportWorkName=n; renderReport(); }
+function selRepWork(n){ reportWorkName=n; reportWorkConFilter=""; renderReport(); }
+function setRepWorkConFilter(val){ reportWorkConFilter=val; renderReport(); }
 function renderRepProblems(body){
   var h="<div style='flex:1'>";
   h+="<div style='display:flex;gap:7px;margin-bottom:10px' class='no-print'>";
