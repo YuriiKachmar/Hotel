@@ -1438,7 +1438,7 @@ function openByWork(){
       var sec=flr.sections[si];
       if(sec.rooms.length===0) continue;
       var secCells="";
-      for(ri=0;ri<sec.rooms.length;ri++) secCells+=makeRoomCell(sec.rooms[ri],"");
+      for(ri=0;ri<sec.rooms.length;ri++) secCells+=makeRoomCellClean(sec.rooms[ri]);
       if(sec.name) floorHtml+="<div class='section-group-label'>"+sec.name+"</div>";
       floorHtml+="<div class='floor-grid' style='margin-bottom:10px'>"+secCells+"</div>";
     }
@@ -1512,6 +1512,21 @@ function getWorkStatusForRoom(roomId, workName){
     }
   }
   return null;
+}
+
+function makeRoomCellClean(roomDef){
+  var rd = getRoom(roomDef.id);
+  var st = calcStatus(rd);
+  var bg = TYPE_COLORS[roomDef.type]||"#1e293b";
+  var stCls = "status-"+st;
+  var prog = calcProgress(rd);
+  var progCol = st==="problem"?"#dc2626":(st==="done"?"#16a34a":"#e8b84b");
+  var h = "<div class='room-cell "+stCls+"' style='background:"+bg+"' onclick='openRoom(\""+roomDef.id+"\")'>";
+  h += "<div style='display:flex;align-items:center;justify-content:center;flex:1'>";
+  h += "<div class='room-num' style='font-size:18px'>"+roomDef.name+"</div></div>";
+  h += "<div class='room-bottom'><div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div></div>";
+  h += "</div>";
+  return h;
 }
 
 function makeRoomCellByWork(roomDef, workName){
