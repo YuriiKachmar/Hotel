@@ -1517,19 +1517,6 @@ function getWorkStatusForRoom(roomId, workName){
 function makeRoomCellByWork(roomDef, workName){
   var wst = getWorkStatusForRoom(roomDef.id, workName);
   var bg = TYPE_COLORS[roomDef.type]||"#1e293b";
-  var rd = getRoom(roomDef.id);
-  var conNames = "";
-  if(rd&&rd.works){
-    var seen={};var w;
-    for(w=0;w<rd.works.length;w++){
-      var cid=rd.works[w].contractor;
-      if(cid&&!seen[cid]&&consData[cid]){
-        seen[cid]=true;
-        if(conNames) conNames+=",";
-        conNames+=(consData[cid].name||consData[cid].email||"").split(" ")[0];
-      }
-    }
-  }
   var borderColor = "#2c2d33";
   var opacity = "0.2";
   var progCol = "transparent";
@@ -1544,10 +1531,9 @@ function makeRoomCellByWork(roomDef, workName){
     shadow="box-shadow:0 0 10px rgba(220,38,38,.5);";
   }
   var h = "<div class='room-cell' style='background:"+bg+";border:2px solid "+borderColor+";opacity:"+opacity+";"+shadow+"' onclick='openRoom(\""+roomDef.id+"\")'>";
-  h += "<div><div class='room-num'>"+roomDef.name+"</div>";
-  h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
+  h += "<div style='display:flex;align-items:center;justify-content:center;flex:1'>";
+  h += "<div class='room-num' style='font-size:18px'>"+roomDef.name+"</div></div>";
   h += "<div class='room-bottom'>";
-  if(conNames&&opacity==="1") h += "<div class='room-contractor'>"+conNames+"</div>";
   h += "<div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div>";
   h += "</div></div>";
   return h;
@@ -1777,7 +1763,7 @@ function renderRepByCon(body){
         }
       }
       if(floorHasRows){
-        rh+="<tr><td colspan='4' style='background:var(--surf2);color:var(--acc);font-family:Oswald,sans-serif;font-size:12px;letter-spacing:1px;padding:6px 9px;border-top:2px solid var(--brd)'>"+HOTEL[fi].label+"</td></tr>";
+        rh+="<tr><td colspan='4' style='background:radial-gradient(circle, #3a3b42 1px, transparent 1px) 0 0 / 8px 8px;color:#888;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 9px;border-top:1px solid var(--brd)'>"+HOTEL[fi].label+"</td></tr>";
         rh+=floorRows;
       }
     }
@@ -1818,7 +1804,7 @@ function renderRepByWork(body){
     for(j=0;j<items.length;j++){
       if(items[j].floor !== curFloor){
         curFloor=items[j].floor;
-        rh+="<tr><td colspan='3' style='background:var(--surf2);color:var(--acc);font-family:Oswald,sans-serif;font-size:12px;letter-spacing:1px;padding:6px 9px;border-top:2px solid var(--brd)'>"+curFloor+"</td></tr>";
+        rh+="<tr><td colspan='3' style='background:radial-gradient(circle, #3a3b42 1px, transparent 1px) 0 0 / 8px 8px;color:#888;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 9px;border-top:1px solid var(--brd)'>"+curFloor+"</td></tr>";
       }
       rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td><td>"+items[j].con+"</td></tr>";
     }
