@@ -884,6 +884,12 @@ function passesFilter(roomDef){
   return true;
 }
 
+function getRoomNumSize(roomDef){
+  // -1 і 1 поверх (id починається з m_ або f1_) — 15px, решта — 18px
+  if(roomDef.id.indexOf("m_")===0 || roomDef.id.indexOf("f1_")===0) return "15px";
+  return "18px";
+}
+
 function makeRoomCell(roomDef, clickExtra){
   var rd = getRoom(roomDef.id);
   var st = calcStatus(rd);
@@ -904,9 +910,10 @@ function makeRoomCell(roomDef, clickExtra){
       }
     }
   }
+  var numSize = getRoomNumSize(roomDef);
   var extra = clickExtra || "";
   var h = "<div class='room-cell "+stCls+"' style='background:"+bg+"' onclick='openRoom(\""+roomDef.id+"\")" + (extra?";"+extra:"") + "'>";
-  h += "<div><div class='room-num'>"+roomDef.name+"</div>";
+  h += "<div><div class='room-num' style='font-size:"+numSize+"'>"+roomDef.name+"</div>";
   h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'>";
   if(conNames) h += "<div class='room-contractor'>"+conNames+"</div>";
@@ -1521,9 +1528,10 @@ function makeRoomCellClean(roomDef){
   var stCls = "status-"+st;
   var prog = calcProgress(rd);
   var progCol = st==="problem"?"#dc2626":(st==="done"?"#16a34a":"#e8b84b");
+  var numSize = getRoomNumSize(roomDef);
   var h = "<div class='room-cell "+stCls+"' style='background:"+bg+"' onclick='openRoom(\""+roomDef.id+"\")'>";
-  h += "<div style='display:flex;align-items:center;justify-content:center;flex:1'>";
-  h += "<div class='room-num' style='font-size:18px'>"+roomDef.name+"</div></div>";
+  h += "<div><div class='room-num' style='font-size:"+numSize+"'>"+roomDef.name+"</div>";
+  h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'><div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div></div>";
   h += "</div>";
   return h;
@@ -1545,9 +1553,10 @@ function makeRoomCellByWork(roomDef, workName){
     borderColor="#dc2626"; opacity="1"; progCol="#dc2626"; prog=0;
     shadow="box-shadow:0 0 10px rgba(220,38,38,.5);";
   }
+  var numSize = getRoomNumSize(roomDef);
   var h = "<div class='room-cell' style='background:"+bg+";border:2px solid "+borderColor+";opacity:"+opacity+";"+shadow+"' onclick='openRoom(\""+roomDef.id+"\")'>";
-  h += "<div style='display:flex;align-items:center;justify-content:center;flex:1'>";
-  h += "<div class='room-num' style='font-size:18px'>"+roomDef.name+"</div></div>";
+  h += "<div><div class='room-num' style='font-size:"+numSize+"'>"+roomDef.name+"</div>";
+  h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'>";
   h += "<div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div>";
   h += "</div></div>";
@@ -1636,8 +1645,9 @@ function makeRoomCellForCon(roomDef, cid){
   }
   var prog = total ? Math.round(done/total*100) : 0;
   var progCol = hasProb?"#dc2626":(allDone?"#16a34a":"#e8b84b");
+  var numSize = getRoomNumSize(roomDef);
   var h = "<div class='room-cell' style='background:"+bg+";border:2px solid "+borderColor+";"+shadow+"' onclick='openRoom(\""+roomDef.id+"\")'>";
-  h += "<div><div class='room-num'>"+roomDef.name+"</div>";
+  h += "<div><div class='room-num' style='font-size:"+numSize+"'>"+roomDef.name+"</div>";
   h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'><div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div></div>";
   h += "</div>";
