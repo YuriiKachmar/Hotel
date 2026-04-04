@@ -1,5 +1,3 @@
-tent is user-generated and unverified.
-1
 var CACHE_NAME = "hotel-repair-v1";
 var URLS_TO_CACHE = [
   "/Hotel/",
