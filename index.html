@@ -63,7 +63,7 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 .sb-item{display:flex;align-items:center;gap:7px;padding:6px 7px;border-radius:6px;cursor:pointer;font-size:12px;transition:background .12s;user-select:none}
 .sb-item:hover{background:var(--surf2)}
 .sb-item input[type=checkbox]{accent-color:var(--acc);cursor:pointer;flex-shrink:0}
-.sb-dot{width:13px;height:13px;border-radius:3px;flex-shrink:0}
+.sb-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .sb-box{width:13px;height:13px;border-radius:3px;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
 
 /* STATS BAR */
@@ -209,30 +209,14 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
 .bycon-item:hover{background:var(--surf2)}
 .bycon-item.active{border-color:var(--acc);background:var(--surf2);color:var(--acc)}
 
-/* CHAT */
-#chatPanel{position:fixed;inset:0;background:var(--bg);z-index:160;display:none;flex-direction:column}
-#chatPanel.open{display:flex}
-.chat-header{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--brd);background:var(--surf);flex-shrink:0}
-.chat-header h3{font-family:'Oswald',sans-serif;font-size:17px;color:var(--acc);flex:1}
-.chat-messages{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;max-width:800px;width:100%;margin:0 auto}
-.chat-msg{max-width:70%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.5}
-.chat-msg.mine{background:var(--acc);color:#111;align-self:flex-end;border-radius:12px 12px 2px 12px}
-.chat-msg.theirs{background:var(--surf2);color:var(--txt);align-self:flex-start;border-radius:12px 12px 12px 2px}
-.chat-msg .msg-name{font-size:11px;font-weight:700;margin-bottom:3px;opacity:.7}
-.chat-msg .msg-time{font-size:10px;opacity:.6;margin-top:3px;text-align:right;font-family:'IBM Plex Mono',monospace}
-.chat-input-row{display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--brd);background:var(--surf);flex-shrink:0;max-width:800px;width:100%;margin:0 auto;box-sizing:border-box}
-.chat-input{flex:1;padding:9px 12px;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;color:var(--txt);font-family:inherit;font-size:14px;outline:none;resize:none}
-.chat-input:focus{border-color:var(--acc)}
+/* TOAST */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:10px 18px;font-size:13px;z-index:999;transition:transform .25s;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.success{border-color:var(--green);color:var(--green)}
 .toast.err{border-color:var(--red);color:var(--red)}
 
-/* Sidebar видимий на всіх пристроях */
-#appWrap{height:calc(100vh - 57px)}
-/* Телефон вертикально — sidebar прихований */
-@media(max-width:500px) and (orientation:portrait){
-  #sidebar{display:none !important}
+@media(max-width:1279px){
+  #sidebar{display:none}
   #appWrap{height:calc(100vh - 48px)}
 }
 @media(max-width:700px){
@@ -270,15 +254,12 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
   .btn-sm{padding:4px 6px;font-size:10px}
 }
 @media print{
-  #topbar,#sidebar,#appWrap,#byConView,#byWorkView,#floorPlanPanel,#authScreen,.report-header,.no-print{display:none!important}
+  #topbar,#sidebar,#appWrap,#byConView,#byWorkView,#floorPlanPanel,#authScreen,.report-header{display:none!important}
   #reportPanel{position:static!important;display:block!important;background:#fff!important;color:#000!important}
   .report-body{display:block!important;padding:0!important;background:#fff!important;color:#000!important}
   .report-table th,.report-table td{color:#000!important;border-color:#ccc!important}
-  .report-left{display:none!important}
-  .report-right{width:100%!important}
-  #printHeader{display:block!important}
+  .report-left{width:auto!important;float:left;margin-right:20px}
 }
-#printHeader{display:none;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #000}
 </style>
 </head>
 <body>
@@ -303,15 +284,12 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
     <div class="logo-sub">Контроль ремонту · Замарстинівська 25</div>
   </div>
   <input type="text" id="searchBox" placeholder="Пошук кімнати..." oninput="onSearch()">
-  <button class="btn btn-sm" onclick="openChat()" id="chatBtn" style="position:relative;background:#e2e4ea;color:#111214;border-color:#e2e4ea;font-weight:600;flex-shrink:0">
-    💬 Чат
-    <span id="chatBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;align-items:center;justify-content:center;line-height:1">0</span>
-  </button>
   <div class="topbar-right">
     <button class="btn btn-sm" onclick="openByContractor()">По підряднику</button>
     <button class="btn btn-sm" onclick="openByWork()">По роботах</button>
     <button class="btn btn-sm" onclick="openContractors()">Налаштування</button>
     <button class="btn btn-sm" onclick="openReport()">Звіт</button>
+    <button class="btn btn-sm" onclick="exportCSV()">CSV</button>
     <span class="user-email" id="userEmailEl"></span>
     <button class="btn btn-sm btn-danger" onclick="doLogout()">Вийти</button>
   </div>
@@ -325,10 +303,10 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
   </div>
   <div class="sb-section">
     <h3>Статус</h3>
-    <div class="sb-item" onclick="toggleFilter('status','notstarted',this)"><input type="checkbox" id="fs_ns"> <div class="sb-dot" style="background:transparent;border:2px solid #555;border-radius:3px"></div> Не розпочато</div>
-    <div class="sb-item" onclick="toggleFilter('status','inprogress',this)"><input type="checkbox" id="fs_ip"> <div class="sb-dot" style="background:transparent;border:2px solid #2563eb;border-radius:3px"></div> В роботі</div>
-    <div class="sb-item" onclick="toggleFilter('status','done',this)"><input type="checkbox" id="fs_d"> <div class="sb-dot" style="background:transparent;border:2px solid #16a34a;border-radius:3px"></div> Готово</div>
-    <div class="sb-item" onclick="toggleFilter('status','problem',this)"><input type="checkbox" id="fs_pr"> <div class="sb-dot" style="background:transparent;border:2px solid #dc2626;border-radius:3px;box-shadow:0 0 5px rgba(220,38,38,.5)"></div> Проблема</div>
+    <div class="sb-item" onclick="toggleFilter('status','notstarted',this)"><input type="checkbox" id="fs_ns"> <div class="sb-dot" style="background:#3a3b42;border:1px solid #666"></div> Не розпочато</div>
+    <div class="sb-item" onclick="toggleFilter('status','inprogress',this)"><input type="checkbox" id="fs_ip"> <div class="sb-dot" style="background:#2563eb"></div> В роботі</div>
+    <div class="sb-item" onclick="toggleFilter('status','done',this)"><input type="checkbox" id="fs_d"> <div class="sb-dot" style="background:#16a34a"></div> Готово</div>
+    <div class="sb-item" onclick="toggleFilter('status','problem',this)"><input type="checkbox" id="fs_pr"> <div class="sb-dot" style="background:#dc2626"></div> Проблема</div>
   </div>
   <div class="sb-section">
     <h3>Тип</h3>
@@ -418,9 +396,7 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
       <button class="rtab" onclick="switchReportTab('problems',this)">Проблеми</button>
     </div>
     <button class="btn btn-sm" style="margin-left:auto" onclick="printReport()">🖨 Друк</button>
-    <button class="btn btn-sm" onclick="exportCSV()">CSV</button>
   </div>
-  <div id="printHeader"></div>
   <div class="report-body" id="reportBody"></div>
 </div>
 
@@ -439,19 +415,6 @@ h1,h2,h3,.logo-text{font-family:'Oswald',sans-serif;font-weight:500;letter-spaci
       <button class="btn" onclick="closeRoomModal()">Скасувати</button>
       <button class="btn btn-acc" onclick="saveRoom()">Зберегти</button>
     </div>
-  </div>
-</div>
-
-<!-- CHAT -->
-<div id="chatPanel">
-  <div class="chat-header">
-    <h3>💬 Чат</h3>
-    <button class="btn btn-sm" onclick="closeChat()">✕</button>
-  </div>
-  <div class="chat-messages" id="chatMessages"></div>
-  <div class="chat-input-row">
-    <textarea class="chat-input" id="chatInput" placeholder="Повідомлення..." rows="1" onkeydown="chatKey(event)"></textarea>
-    <button class="btn btn-sm btn-acc" onclick="sendMsg()">▶</button>
   </div>
 </div>
 
@@ -676,10 +639,7 @@ var reportTab = "general";
 var activeByConId = null;
 var activeByWorkName = null;
 var reportConId = null;
-var reportConWorkFilter = "";
-var reportConStatusFilter = "";
 var reportWorkName = null;
-var reportWorkConFilter = "";
 var probFilter = "open";
 
 // =============================================
@@ -693,7 +653,6 @@ fbAuth.onAuthStateChanged(function(user){
     document.getElementById("appScreen").style.display = "block";
     document.getElementById("userEmailEl").textContent = user.email;
     initListeners();
-    initChat();
   } else {
     currentUser = null; isAdmin = false;
     document.getElementById("authScreen").style.display = "flex";
@@ -850,14 +809,11 @@ function passesFilter(roomDef){
   var fkeys = Object.keys(filters.floor);
   if(fkeys.length > 0){
     var ok = false;
-    var fi, si, ri;
+    var fi, ri;
     for(fi=0;fi<HOTEL.length;fi++){
       if(!filters.floor[HOTEL[fi].floor]) continue;
-      for(si=0;si<HOTEL[fi].sections.length;si++){
-        for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
-          if(HOTEL[fi].sections[si].rooms[ri].id===roomDef.id){ok=true;break;}
-        }
-        if(ok) break;
+      for(ri=0;ri<HOTEL[fi].rooms.length;ri++){
+        if(HOTEL[fi].rooms[ri].id===roomDef.id){ok=true;break;}
       }
       if(ok) break;
     }
@@ -887,12 +843,6 @@ function passesFilter(roomDef){
   return true;
 }
 
-function getRoomNumSize(roomDef){
-  // -1 і 1 поверх (id починається з m_ або f1_) — 15px, решта — 18px
-  if(roomDef.id.indexOf("m_")===0 || roomDef.id.indexOf("f1_")===0) return "15px";
-  return "18px";
-}
-
 function makeRoomCell(roomDef, clickExtra){
   var rd = getRoom(roomDef.id);
   var st = calcStatus(rd);
@@ -913,10 +863,9 @@ function makeRoomCell(roomDef, clickExtra){
       }
     }
   }
-  var numSize = getRoomNumSize(roomDef);
   var extra = clickExtra || "";
   var h = "<div class='room-cell "+stCls+"' style='background:"+bg+"' onclick='openRoom(\""+roomDef.id+"\")" + (extra?";"+extra:"") + "'>";
-  h += "<div><div class='room-num' style='font-size:"+numSize+"'>"+roomDef.name+"</div>";
+  h += "<div><div class='room-num'>"+roomDef.name+"</div>";
   h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'>";
   if(conNames) h += "<div class='room-contractor'>"+conNames+"</div>";
@@ -1134,27 +1083,16 @@ function renderModal(){
       var pst = prob.status||"open";
       h += "<div class='problem-row"+(pst==="open"?" open-p":"")+"'>";
       h += "<div class='problem-meta'><span class='problem-date'>"+(prob.date||"")+"</span>";
-      if(prob.workName) h += "<span style='font-size:10px;color:var(--acc);margin-left:4px'>"+esc(prob.workName)+"</span>";
       h += "<span class='problem-status "+(pst==="open"?"ps-open":"ps-closed")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</span>";
-      if(pst==="open" && isAdmin){
-        h += "<button class='btn btn-sm' onclick='closeProb("+pi+")'>✓ Виправлено</button>";
+      if(pst==="open" && (isAdmin || myConId)){
+        h += "<button class='btn btn-sm' onclick='closeProb("+pi+")'>Закрити</button>";
       }
       h += "</div><div class='problem-text'>"+prob.text+"</div></div>";
     }
   }
   // додати проблему — всі можуть
-  h += "<div class='add-problem-row' style='flex-wrap:wrap;gap:6px;border:1px solid var(--brd);border-radius:10px;padding:10px'>";
-  // вибір роботи для прив'язки
-  h += "<select class='work-contractor-sel' id='probWorkSel' style='max-width:100%;width:100%;margin-bottom:4px'>";
-  h += "<option value=''>— Прив'язати до роботи (необов'язково) —</option>";
-  if(rd.works){
-    var pwi;
-    for(pwi=0;pwi<rd.works.length;pwi++){
-      h += "<option value='"+esc(rd.works[pwi].name)+"'>"+esc(rd.works[pwi].name)+"</option>";
-    }
-  }
-  h += "</select>";
-  h += "<textarea class='add-problem-input' id='probText' placeholder='Опис проблеми...' rows='2' style='flex:1;min-width:200px'></textarea>";
+  h += "<div class='add-problem-row'>";
+  h += "<textarea class='add-problem-input' id='probText' placeholder='Опис проблеми...' rows='2'></textarea>";
   h += "<button class='btn btn-sm btn-danger' onclick='addProb()'>+ Проблема</button>";
   h += "</div>";
 
@@ -1224,15 +1162,12 @@ function closeProb(pi){
 }
 function addProb(){
   var ta = document.getElementById("probText");
-  var ws = document.getElementById("probWorkSel");
   if(!ta) return;
   var txt = ta.value.trim();
   if(!txt) return;
   if(!modalDraft.problems) modalDraft.problems=[];
-  var probObj = {text:txt,date:nowStr(),status:"open"};
-  if(ws && ws.value) probObj.workName = ws.value;
-  modalDraft.problems.push(probObj);
-  addCL("Додано проблему"+(ws&&ws.value?" до роботи \""+ws.value+"\"":""));
+  modalDraft.problems.push({text:txt,date:nowStr(),status:"open"});
+  addCL("Додано проблему");
   ta.value=""; renderModal();
 }
 function addCL(txt){
@@ -1448,7 +1383,7 @@ function openByWork(){
       var sec=flr.sections[si];
       if(sec.rooms.length===0) continue;
       var secCells="";
-      for(ri=0;ri<sec.rooms.length;ri++) secCells+=makeRoomCellClean(sec.rooms[ri]);
+      for(ri=0;ri<sec.rooms.length;ri++) secCells+=makeRoomCell(sec.rooms[ri],"");
       if(sec.name) floorHtml+="<div class='section-group-label'>"+sec.name+"</div>";
       floorHtml+="<div class='floor-grid' style='margin-bottom:10px'>"+secCells+"</div>";
     }
@@ -1524,25 +1459,22 @@ function getWorkStatusForRoom(roomId, workName){
   return null;
 }
 
-function makeRoomCellClean(roomDef){
-  var rd = getRoom(roomDef.id);
-  var st = calcStatus(rd);
-  var bg = TYPE_COLORS[roomDef.type]||"#1e293b";
-  var stCls = "status-"+st;
-  var prog = calcProgress(rd);
-  var progCol = st==="problem"?"#dc2626":(st==="done"?"#16a34a":"#e8b84b");
-  var numSize = getRoomNumSize(roomDef);
-  var h = "<div class='room-cell "+stCls+"' style='background:"+bg+"' onclick='openRoom(\""+roomDef.id+"\")'>";
-  h += "<div><div class='room-num' style='font-size:"+numSize+"'>"+roomDef.name+"</div>";
-  h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
-  h += "<div class='room-bottom'><div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div></div>";
-  h += "</div>";
-  return h;
-}
-
 function makeRoomCellByWork(roomDef, workName){
   var wst = getWorkStatusForRoom(roomDef.id, workName);
   var bg = TYPE_COLORS[roomDef.type]||"#1e293b";
+  var rd = getRoom(roomDef.id);
+  var conNames = "";
+  if(rd&&rd.works){
+    var seen={};var w;
+    for(w=0;w<rd.works.length;w++){
+      var cid=rd.works[w].contractor;
+      if(cid&&!seen[cid]&&consData[cid]){
+        seen[cid]=true;
+        if(conNames) conNames+=",";
+        conNames+=(consData[cid].name||consData[cid].email||"").split(" ")[0];
+      }
+    }
+  }
   var borderColor = "#2c2d33";
   var opacity = "0.2";
   var progCol = "transparent";
@@ -1556,11 +1488,11 @@ function makeRoomCellByWork(roomDef, workName){
     borderColor="#dc2626"; opacity="1"; progCol="#dc2626"; prog=0;
     shadow="box-shadow:0 0 10px rgba(220,38,38,.5);";
   }
-  var numSize = getRoomNumSize(roomDef);
   var h = "<div class='room-cell' style='background:"+bg+";border:2px solid "+borderColor+";opacity:"+opacity+";"+shadow+"' onclick='openRoom(\""+roomDef.id+"\")'>";
-  h += "<div><div class='room-num' style='font-size:"+numSize+"'>"+roomDef.name+"</div>";
+  h += "<div><div class='room-num'>"+roomDef.name+"</div>";
   h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'>";
+  if(conNames&&opacity==="1") h += "<div class='room-contractor'>"+conNames+"</div>";
   h += "<div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div>";
   h += "</div></div>";
   return h;
@@ -1648,9 +1580,8 @@ function makeRoomCellForCon(roomDef, cid){
   }
   var prog = total ? Math.round(done/total*100) : 0;
   var progCol = hasProb?"#dc2626":(allDone?"#16a34a":"#e8b84b");
-  var numSize = getRoomNumSize(roomDef);
   var h = "<div class='room-cell' style='background:"+bg+";border:2px solid "+borderColor+";"+shadow+"' onclick='openRoom(\""+roomDef.id+"\")'>";
-  h += "<div><div class='room-num' style='font-size:"+numSize+"'>"+roomDef.name+"</div>";
+  h += "<div><div class='room-num'>"+roomDef.name+"</div>";
   h += "<div class='room-type-label'>"+(TYPE_LABELS[roomDef.type]||"")+"</div></div>";
   h += "<div class='room-bottom'><div class='room-prog-bar'><div class='room-prog-fill' style='width:"+prog+"%;background:"+progCol+"'></div></div></div>";
   h += "</div>";
@@ -1773,136 +1704,24 @@ function renderRepByCon(body){
   }
   var rh="";
   if(reportConId&&consData[reportConId]){
-    // зібрати унікальні роботи підрядника
-    var workNames={};
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th></tr></thead><tbody>";
     var fi,si,ri;
     for(fi=0;fi<HOTEL.length;fi++){
       for(si=0;si<HOTEL[fi].sections.length;si++){
         for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
-          var rd0=getRoom(HOTEL[fi].sections[si].rooms[ri].id);
-          if(rd0&&rd0.works){var w0;for(w0=0;w0<rd0.works.length;w0++){
-            if(rd0.works[w0].contractor===reportConId) workNames[rd0.works[w0].name]=true;
-          }}
-        }
-      }
-    }
-    var wkeys=Object.keys(workNames).sort();
-    if(wkeys.length > 1){
-      rh+="<div style='display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap' class='no-print'>";
-      rh+="<span style='font-size:12px;color:var(--mut)'>Робота:</span>";
-      rh+="<select class='filter-input' style='padding:5px 10px;font-size:12px' onchange='setRepConWorkFilter(this.value)'>";
-      rh+="<option value=''>Всі</option>";
-      var wi;
-      for(wi=0;wi<wkeys.length;wi++){
-        var sel2=(reportConWorkFilter===wkeys[wi])?" selected":"";
-        rh+="<option value='"+wkeys[wi].replace(/"/g,"&quot;")+"'"+sel2+">"+wkeys[wi]+"</option>";
-      }
-      rh+="</select>";
-      rh+="<span style='font-size:12px;color:var(--mut)'>Статус:</span>";
-      rh+="<select class='filter-input' style='padding:5px 10px;font-size:12px' onchange='setRepConStatusFilter(this.value)'>";
-      rh+="<option value=''"+(reportConStatusFilter===""?" selected":"")+">Всі</option>";
-      rh+="<option value='notstarted'"+(reportConStatusFilter==="notstarted"?" selected":"")+">Не розпочато</option>";
-      rh+="<option value='inprogress'"+(reportConStatusFilter==="inprogress"?" selected":"")+">В роботі</option>";
-      rh+="<option value='done'"+(reportConStatusFilter==="done"?" selected":"")+">Виконано</option>";
-      rh+="</select>";
-      rh+="</div>";
-    } else {
-      rh+="<div style='display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap' class='no-print'>";
-      rh+="<span style='font-size:12px;color:var(--mut)'>Статус:</span>";
-      rh+="<select class='filter-input' style='padding:5px 10px;font-size:12px' onchange='setRepConStatusFilter(this.value)'>";
-      rh+="<option value=''"+(reportConStatusFilter===""?" selected":"")+">Всі</option>";
-      rh+="<option value='notstarted'"+(reportConStatusFilter==="notstarted"?" selected":"")+">Не розпочато</option>";
-      rh+="<option value='inprogress'"+(reportConStatusFilter==="inprogress"?" selected":"")+">В роботі</option>";
-      rh+="<option value='done'"+(reportConStatusFilter==="done"?" selected":"")+">Виконано</option>";
-      rh+="</select>";
-      rh+="</div>";
-    }
-    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Статус</th><th>Проблема</th></tr></thead><tbody>";
-    var summary={total:0,done:0,inprog:0,notstarted:0,byWork:{}};
-    for(fi=0;fi<HOTEL.length;fi++){
-      var floorHasRows=false;
-      var floorRows="";
-      for(si=0;si<HOTEL[fi].sections.length;si++){
-        for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
           var rd=getRoom(HOTEL[fi].sections[si].rooms[ri].id);
           if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
-            if(rd.works[w].contractor!==reportConId) continue;
-            if(reportConWorkFilter && rd.works[w].name!==reportConWorkFilter) continue;
-            var wst2=rd.works[w].status||"notstarted";
-            if(reportConStatusFilter && wst2!==reportConStatusFilter) continue;
-            var probCell=rd.works[w].hasProblem?"<span style='color:#dc2626;font-weight:600'>⚠ Так</span>":"—";
-            floorRows+="<tr><td>"+HOTEL[fi].sections[si].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(wst2)+"</td><td>"+probCell+"</td></tr>";
-            floorHasRows=true;
-            // підсумок
-            var wname=rd.works[w].name;
-            if(!summary.byWork[wname]) summary.byWork[wname]={total:0,done:0};
-            summary.byWork[wname].total++;
-            summary.total++;
-            if((rd.works[w].status||"notstarted")==="done"){ summary.byWork[wname].done++; summary.done++; }
-            else if((rd.works[w].status||"notstarted")==="inprogress") summary.inprog++;
-            else summary.notstarted++;
+            if(rd.works[w].contractor===reportConId)
+              rh+="<tr><td>"+HOTEL[fi].sections[si].rooms[ri].name+"</td><td>"+rd.works[w].name+"</td><td class='mono'>"+stLabel(rd.works[w].status||"notstarted")+"</td></tr>";
           }}
         }
-      }
-      if(floorHasRows){
-        rh+="<tr><td colspan='4' style='background:radial-gradient(circle, #3a3b42 1px, transparent 1px) 0 0 / 8px 8px;color:#888;font-family:IBM Plex Sans,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 9px;border-top:1px solid var(--brd)'>"+HOTEL[fi].label+"</td></tr>";
-        rh+=floorRows;
       }
     }
     rh+="</tbody></table>";
-
-    // ПІДСУМОК
-    var sumTotal=0,sumDone=0,sumProg=0,sumNot=0;
-    var workStats={};
-    var fi2,si2,ri2;
-    for(fi2=0;fi2<HOTEL.length;fi2++){
-      for(si2=0;si2<HOTEL[fi2].sections.length;si2++){
-        for(ri2=0;ri2<HOTEL[fi2].sections[si2].rooms.length;ri2++){
-          var rd3=getRoom(HOTEL[fi2].sections[si2].rooms[ri2].id);
-          if(rd3&&rd3.works){var w3;for(w3=0;w3<rd3.works.length;w3++){
-            if(rd3.works[w3].contractor!==reportConId) continue;
-            if(reportConWorkFilter && rd3.works[w3].name!==reportConWorkFilter) continue;
-            var wname=rd3.works[w3].name;
-            var wst3=rd3.works[w3].status||"notstarted";
-            if(!workStats[wname]) workStats[wname]={total:0,done:0,prog:0,not:0};
-            workStats[wname].total++; sumTotal++;
-            if(wst3==="done"){workStats[wname].done++;sumDone++;}
-            else if(wst3==="inprogress"){workStats[wname].prog++;sumProg++;}
-            else{workStats[wname].not++;sumNot++;}
-          }}
-        }
-      }
-    }
-    var sumPct=sumTotal?Math.round(sumDone/sumTotal*100):0;
-    rh+="<div style='margin-top:16px;border:1px solid var(--brd);border-radius:10px;overflow:hidden'>";
-    rh+="<div style='background:var(--surf2);padding:8px 14px;font-family:Oswald,sans-serif;font-size:13px;color:var(--acc);letter-spacing:1px'>ПІДСУМОК</div>";
-    rh+="<div style='display:flex;gap:16px;padding:10px 14px;border-bottom:1px solid var(--brd);flex-wrap:wrap'>";
-    rh+="<span style='font-size:12px'>Всього: <b>"+sumTotal+"</b></span>";
-    rh+="<span style='font-size:12px;color:#16a34a'>Виконано: <b>"+sumDone+"</b></span>";
-    rh+="<span style='font-size:12px;color:#2563eb'>В роботі: <b>"+sumProg+"</b></span>";
-    rh+="<span style='font-size:12px;color:var(--mut)'>Не розпочато: <b>"+sumNot+"</b></span>";
-    rh+="<span style='font-size:12px;color:var(--acc);font-weight:700;margin-left:auto'>Загальний прогрес: "+sumPct+"%</span>";
-    rh+="</div>";
-    var wknames=Object.keys(workStats).sort(); var wi2;
-    for(wi2=0;wi2<wknames.length;wi2++){
-      var ws=workStats[wknames[wi2]];
-      var wpct=ws.total?Math.round(ws.done/ws.total*100):0;
-      var barCol=wpct===100?"#16a34a":(wpct>0?"#2563eb":"#2c2d33");
-      rh+="<div style='padding:8px 14px;"+(wi2<wknames.length-1?"border-bottom:1px solid var(--brd)":"")+"'>";
-      rh+="<div style='display:flex;justify-content:space-between;margin-bottom:4px'>";
-      rh+="<span style='font-size:12px'>"+wknames[wi2]+"</span>";
-      rh+="<span style='font-size:11px;color:var(--mut)'>"+ws.done+"/"+ws.total+" ("+wpct+"%)</span>";
-      rh+="</div>";
-      rh+="<div style='height:4px;background:var(--brd);border-radius:2px'><div style='height:4px;width:"+wpct+"%;background:"+barCol+";border-radius:2px'></div></div>";
-      rh+="</div>";
-    }
-    rh+="</div>";
   } else rh="<div style='color:var(--mut)'>Оберіть підрядника</div>";
   body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
 }
-function selRepCon(cid){ reportConId=cid; reportConWorkFilter=""; reportConStatusFilter=""; renderReport(); }
-function setRepConWorkFilter(val){ reportConWorkFilter=val; renderReport(); }
-function setRepConStatusFilter(val){ reportConStatusFilter=val; renderReport(); }
+function selRepCon(cid){ reportConId=cid; renderReport(); }
 function renderRepByWork(body){
   var wmap={}; var fi,si,ri;
   for(fi=0;fi<HOTEL.length;fi++){
@@ -1912,12 +1731,7 @@ function renderRepByWork(body){
         if(rd&&rd.works){var w;for(w=0;w<rd.works.length;w++){
           var wn=rd.works[w].name;
           if(!wmap[wn]) wmap[wn]=[];
-          var conName="—";
-          var conId=rd.works[w].contractor||"";
-          if(conId&&consData[conId]){
-            conName=consData[conId].name||consData[conId].email||"—";
-          }
-          wmap[wn].push({room:HOTEL[fi].sections[si].rooms[ri].name,st:rd.works[w].status||"notstarted",con:conName,conId:conId,floor:HOTEL[fi].label});
+          wmap[wn].push({room:HOTEL[fi].sections[si].rooms[ri].name,st:rd.works[w].status||"notstarted"});
         }}
       }
     }
@@ -1930,104 +1744,31 @@ function renderRepByWork(body){
   }
   var rh="";
   if(reportWorkName&&wmap[reportWorkName]){
-    var items=wmap[reportWorkName];
-    // зібрати унікальних підрядників для цієї роботи
-    var conMap={};
-    var j;
-    for(j=0;j<items.length;j++){
-      if(items[j].conId) conMap[items[j].conId]=items[j].con;
-    }
-    var conIds=Object.keys(conMap);
-    // фільтр — тільки якщо є більше одного підрядника
-    if(conIds.length > 1){
-      rh+="<div style='display:flex;align-items:center;gap:10px;margin-bottom:10px' class='no-print'>";
-      rh+="<span style='font-size:12px;color:var(--mut)'>Підрядник:</span>";
-      rh+="<select class='filter-input' style='padding:5px 10px;font-size:12px' onchange='setRepWorkConFilter(this.value)'>";
-      rh+="<option value=''>Всі</option>";
-      for(j=0;j<conIds.length;j++){
-        var sel=(reportWorkConFilter===conIds[j])?" selected":"";
-        rh+="<option value='"+conIds[j]+"'"+sel+">"+conMap[conIds[j]]+"</option>";
-      }
-      rh+="</select></div>";
-    }
-    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th><th>Підрядник</th></tr></thead><tbody>";
-    var curFloor="";
-    for(j=0;j<items.length;j++){
-      // застосувати фільтр
-      if(reportWorkConFilter && items[j].conId !== reportWorkConFilter) continue;
-      if(items[j].floor !== curFloor){
-        curFloor=items[j].floor;
-        rh+="<tr><td colspan='3' style='background:radial-gradient(circle, #3a3b42 1px, transparent 1px) 0 0 / 8px 8px;color:#888;font-family:IBM Plex Sans,sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 9px;border-top:1px solid var(--brd)'>"+curFloor+"</td></tr>";
-      }
-      rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td><td>"+items[j].con+"</td></tr>";
-    }
+    rh+="<table class='report-table'><thead><tr><th>Кімната</th><th>Статус</th></tr></thead><tbody>";
+    var items=wmap[reportWorkName];var j;
+    for(j=0;j<items.length;j++) rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td></tr>";
     rh+="</tbody></table>";
   } else rh="<div style='color:var(--mut)'>Оберіть вид роботи</div>";
   body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
 }
-function selRepWork(n){ reportWorkName=n; reportWorkConFilter=""; renderReport(); }
-function setRepWorkConFilter(val){ reportWorkConFilter=val; renderReport(); }
+function selRepWork(n){ reportWorkName=n; renderReport(); }
 function renderRepProblems(body){
   var h="<div style='flex:1'>";
-  h+="<div style='display:flex;gap:7px;margin-bottom:10px' class='no-print'>";
+  h+="<div style='display:flex;gap:7px;margin-bottom:10px'>";
   h+="<button class='btn btn-sm"+(probFilter==="open"?" btn-acc":"")+"' onclick='setProbF(\"open\")'>Відкриті</button>";
   h+="<button class='btn btn-sm"+(probFilter==="all"?" btn-acc":"")+"' onclick='setProbF(\"all\")'>Всі</button>";
   h+="</div>";
-  h+="<table class='report-table'><thead><tr><th>Кімната</th><th>Робота</th><th>Підрядник</th><th>Проблема</th><th>Дата</th><th>Статус</th></tr></thead><tbody>";
+  h+="<table class='report-table'><thead><tr><th>Кімната</th><th>Проблема</th><th>Дата</th><th>Статус</th></tr></thead><tbody>";
   var fi,si,ri;
   for(fi=0;fi<HOTEL.length;fi++){
     for(si=0;si<HOTEL[fi].sections.length;si++){
       for(ri=0;ri<HOTEL[fi].sections[si].rooms.length;ri++){
-        var roomDef=HOTEL[fi].sections[si].rooms[ri];
-        var rd=getRoom(roomDef.id);
-        var rows=[];
-        // проблеми з робіт (hasProblem)
-        if(rd&&rd.works){
-          var w;
-          for(w=0;w<rd.works.length;w++){
-            if(!rd.works[w].hasProblem) continue;
-            var conName="—";
-            if(rd.works[w].contractor&&consData[rd.works[w].contractor]){
-              conName=consData[rd.works[w].contractor].name||consData[rd.works[w].contractor].email||"—";
-            }
-            rows.push({work:rd.works[w].name,con:conName,text:"<span style='color:#dc2626'>&#9888; Проблема</span>",date:"—",st:"open"});
-          }
-        }
-        // проблеми з журналу
-        if(rd&&rd.problems){
-          var pi;
-          for(pi=0;pi<rd.problems.length;pi++){
-            var prob=rd.problems[pi]; var pst=prob.status||"open";
-            if(probFilter==="open"&&pst!=="open") continue;
-            rows.push({work:"—",con:"—",text:esc(prob.text),date:prob.date||"—",st:pst});
-          }
-        }
-        if(!rows.length) continue;
-        // перевірка чи є відкриті
-        if(probFilter==="open"){
-          var hasOpen=false;
-          var ri2;
-          for(ri2=0;ri2<rows.length;ri2++) if(rows[ri2].st==="open") hasOpen=true;
-          if(!hasOpen) continue;
-        }
-        // виводимо рядки — номер кімнати тільки в першому з rowspan
-        var rowCount = rows.length;
-        var rj;
-        for(rj=0;rj<rowCount;rj++){
-          var row=rows[rj];
-          var isLast=(rj===rowCount-1);
-          var borderStyle=isLast?"":"border-bottom:none";
-          h+="<tr>";
-          if(rj===0){
-            h+="<td rowspan='"+rowCount+"' style='vertical-align:middle;font-weight:600;border-right:1px solid var(--brd)'>"+roomDef.name+"</td>";
-          }
-          h+="<td style='"+borderStyle+"'>"+row.work+"</td>";
-          h+="<td style='"+borderStyle+"'>"+row.con+"</td>";
-          h+="<td style='"+borderStyle+"'>"+row.text+"</td>";
-          h+="<td class='mono' style='white-space:nowrap;"+borderStyle+"'>"+row.date+"</td>";
-          h+="<td class='mono' style='color:"+(row.st==="open"?"#dc2626":"#16a34a")+";"+borderStyle+"'>"+(row.st==="open"?"Відкрита":"Закрита")+"</td>";
-          h+="</tr>";
-        }
+        var rd=getRoom(HOTEL[fi].sections[si].rooms[ri].id);
+        if(rd&&rd.problems){var pi;for(pi=0;pi<rd.problems.length;pi++){
+          var prob=rd.problems[pi]; var pst=prob.status||"open";
+          if(probFilter==="open"&&pst!=="open") continue;
+          h+="<tr><td>"+HOTEL[fi].sections[si].rooms[ri].name+"</td><td>"+esc(prob.text)+"</td><td class='mono'>"+(prob.date||"")+"</td><td class='mono' style='color:"+(pst==="open"?"#dc2626":"#16a34a")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</td></tr>";
+        }}
       }
     }
   }
@@ -2035,35 +1776,7 @@ function renderRepProblems(body){
   body.innerHTML=h;
 }
 function setProbF(m){ probFilter=m; renderReport(); }
-function printReport(){
-  // формуємо шапку
-  var title = "Звіт";
-  var subtitle = "";
-  if(reportTab==="general"){
-    title = "Загальний звіт";
-  } else if(reportTab==="bycon"){
-    title = "Звіт по підряднику";
-    if(reportConId && consData[reportConId]){
-      subtitle = consData[reportConId].name || consData[reportConId].email || "";
-    }
-  } else if(reportTab==="bywork"){
-    title = "Звіт по виду роботи";
-    if(reportWorkName) subtitle = reportWorkName;
-  } else if(reportTab==="problems"){
-    title = "Звіт — Проблеми";
-    subtitle = probFilter==="open" ? "Відкриті проблеми" : "Всі проблеми";
-  }
-  var now = new Date();
-  var dateStr = now.toLocaleDateString("uk-UA", {day:"2-digit",month:"2-digit",year:"numeric"});
-  var ph = document.getElementById("printHeader");
-  ph.innerHTML = "<div style='font-family:Arial,sans-serif'>"
-    + "<div style='font-size:11px;color:#666;margin-bottom:4px'>Готель — Контроль ремонтних робіт · Замарстинівська 25, Львів</div>"
-    + "<div style='font-size:20px;font-weight:700;margin-bottom:4px'>"+title+"</div>"
-    + (subtitle ? "<div style='font-size:15px;margin-bottom:4px'>"+subtitle+"</div>" : "")
-    + "<div style='font-size:11px;color:#666'>Дата формування: "+dateStr+"</div>"
-    + "</div>";
-  window.print();
-}
+function printReport(){ window.print(); }
 
 // =============================================
 // CSV EXPORT
@@ -2129,111 +1842,7 @@ function showToast(msg,type){
   t.classList.add("show");
   setTimeout(function(){t.classList.remove("show");},2400);
 }
-// =============================================
-// CHAT
-// =============================================
-var chatOpen = false;
-var unreadCount = 0;
-var lastMsgKey = null;
-
-function openChat(){
-  chatOpen = true;
-  unreadCount = 0;
-  updateChatBadge();
-  document.getElementById("chatPanel").classList.add("open");
-  scrollChatToBottom();
-  setTimeout(function(){ document.getElementById("chatInput").focus(); }, 100);
-}
-function closeChat(){
-  chatOpen = false;
-  document.getElementById("chatPanel").classList.remove("open");
-  document.getElementById("chatInput").blur();
-}
-
-function updateChatBadge(){
-  var badge = document.getElementById("chatBadge");
-  if(!badge) return;
-  if(unreadCount > 0){
-    badge.style.display = "flex";
-    badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
-  } else {
-    badge.style.display = "none";
-  }
-}
-
-function scrollChatToBottom(){
-  var msgs = document.getElementById("chatMessages");
-  if(msgs) msgs.scrollTop = msgs.scrollHeight;
-}
-
-function sendMsg(){
-  var inp = document.getElementById("chatInput");
-  if(!inp) return;
-  var txt = inp.value.trim();
-  if(!txt || !currentUser) return;
-  var name = currentUser.email;
-  // спробуємо знайти ім'я підрядника
-  var keys = Object.keys(consData);
-  var i;
-  for(i=0;i<keys.length;i++){
-    if(consData[keys[i]].email === currentUser.email){
-      name = consData[keys[i]].name || currentUser.email;
-      break;
-    }
-  }
-  if(currentUser.email === ADMIN_EMAIL) name = "Адмін";
-  fbDb.ref("/chat").push({
-    text: txt,
-    name: name,
-    email: currentUser.email,
-    time: nowStr()
-  });
-  inp.value = "";
-}
-
-function chatKey(e){
-  if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); sendMsg(); }
-}
-
-function initChat(){
-  fbDb.ref("/chat").limitToLast(100).on("child_added", function(snap){
-    var msg = snap.val();
-    if(!msg) return;
-    var isFirst = (lastMsgKey === null);
-    lastMsgKey = snap.key;
-    var isMine = (currentUser && msg.email === currentUser.email);
-    // показати повідомлення в чаті
-    var msgs = document.getElementById("chatMessages");
-    if(msgs){
-      var div = document.createElement("div");
-      div.className = "chat-msg " + (isMine ? "mine" : "theirs");
-      div.innerHTML = (!isMine ? "<div class='msg-name'>" + msg.name + "</div>" : "")
-        + "<div>" + esc(msg.text) + "</div>"
-        + "<div class='msg-time'>" + (msg.time||"") + "</div>";
-      msgs.appendChild(div);
-      if(chatOpen) scrollChatToBottom();
-    }
-    // сповіщення про нове повідомлення
-    if(!isFirst && !isMine){
-      if(!chatOpen){
-        unreadCount++;
-        updateChatBadge();
-      }
-      // спливаюче сповіщення
-      showChatToast(msg.name, msg.text);
-    }
-  });
-}
-
-function showChatToast(name, text){
-  var t = document.getElementById("toast");
-  t.textContent = name + ": " + (text.length > 40 ? text.substring(0,40)+"..." : text);
-  t.className = "toast";
-  t.classList.add("show");
-  setTimeout(function(){ t.classList.remove("show"); }, 3500);
-}
-
-
+// SERVICE WORKER
 if("serviceWorker" in navigator){
   window.addEventListener("load", function(){
     navigator.serviceWorker.register("sw.js").catch(function(e){
@@ -2244,7 +1853,6 @@ if("serviceWorker" in navigator){
 
 // close autocomplete on outside click
 document.addEventListener("click",function(e){
-  var l=document.getElementById("acList");
   if(l&&!l.contains(e.target)&&e.target.id!=="awInput") hideAC();
 });
 </script>
