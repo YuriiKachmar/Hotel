@@ -1982,6 +1982,46 @@ function renderRepByWork(body){
       rh+="<tr><td>"+items[j].room+"</td><td class='mono'>"+stLabel(items[j].st)+"</td><td>"+items[j].con+"</td></tr>";
     }
     rh+="</tbody></table>";
+
+    // ПІДСУМОК
+    var sumTotal=0,sumDone=0,sumProg=0,sumNot=0;
+    var conStats={};
+    var j2;
+    for(j2=0;j2<items.length;j2++){
+      if(reportWorkConFilter && items[j2].conId !== reportWorkConFilter) continue;
+      if(reportWorkStatusFilter && items[j2].st !== reportWorkStatusFilter) continue;
+      sumTotal++;
+      var conLabel=items[j2].con||"—";
+      if(!conStats[conLabel]) conStats[conLabel]={total:0,done:0,prog:0,not:0};
+      conStats[conLabel].total++;
+      if(items[j2].st==="done"){sumDone++;conStats[conLabel].done++;}
+      else if(items[j2].st==="inprogress"){sumProg++;conStats[conLabel].prog++;}
+      else{sumNot++;conStats[conLabel].not++;}
+    }
+    var sumPct=sumTotal?Math.round(sumDone/sumTotal*100):0;
+    rh+="<div style='margin-top:16px;border:1px solid var(--brd);border-radius:10px;overflow:hidden'>";
+    rh+="<div style='background:var(--surf2);padding:8px 14px;font-family:Oswald,sans-serif;font-size:13px;color:var(--acc);letter-spacing:1px'>ПІДСУМОК</div>";
+    rh+="<div style='display:flex;gap:16px;padding:10px 14px;border-bottom:1px solid var(--brd);flex-wrap:wrap'>";
+    rh+="<span style='font-size:12px'>Всього: <b>"+sumTotal+"</b></span>";
+    rh+="<span style='font-size:12px;color:#16a34a'>Виконано: <b>"+sumDone+"</b></span>";
+    rh+="<span style='font-size:12px;color:#2563eb'>В роботі: <b>"+sumProg+"</b></span>";
+    rh+="<span style='font-size:12px;color:var(--mut)'>Не розпочато: <b>"+sumNot+"</b></span>";
+    rh+="<span style='font-size:12px;color:var(--acc);font-weight:700;margin-left:auto'>Загальний прогрес: "+sumPct+"%</span>";
+    rh+="</div>";
+    var cnames=Object.keys(conStats).sort(); var ci;
+    for(ci=0;ci<cnames.length;ci++){
+      var cs=conStats[cnames[ci]];
+      var cpct=cs.total?Math.round(cs.done/cs.total*100):0;
+      var barCol=cpct===100?"#16a34a":(cpct>0?"#2563eb":"#2c2d33");
+      rh+="<div style='padding:8px 14px;"+(ci<cnames.length-1?"border-bottom:1px solid var(--brd)":"")+"'>";
+      rh+="<div style='display:flex;justify-content:space-between;margin-bottom:4px'>";
+      rh+="<span style='font-size:12px'>"+cnames[ci]+"</span>";
+      rh+="<span style='font-size:11px;color:var(--mut)'>"+cs.done+"/"+cs.total+" ("+cpct+"%)</span>";
+      rh+="</div>";
+      rh+="<div style='height:4px;background:var(--brd);border-radius:2px'><div style='height:4px;width:"+cpct+"%;background:"+barCol+";border-radius:2px'></div></div>";
+      rh+="</div>";
+    }
+    rh+="</div>";
   } else rh="<div style='color:var(--mut)'>Оберіть вид роботи</div>";
   body.innerHTML="<div class='report-left'>"+lh+"</div><div class='report-right'>"+rh+"</div>";
 }
