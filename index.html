@@ -1455,7 +1455,7 @@ function openByWork(){
     }
     if(!floorHtml) continue;
     h+="<div style='margin-bottom:16px'>";
-    h+="<div style='font-size:13px;color:var(--acc);font-family:Oswald,sans-serif;margin-bottom:6px'>"+flr.label+"</div>";
+    h+="<div style='display:flex;align-items:center;margin-bottom:6px'><div style='font-size:13px;color:var(--acc);font-family:Oswald,sans-serif;flex:1'>"+flr.label+"</div><button class='btn btn-sm' onclick='openFloorPdf("+flr.floor+")'>План</button></div>";
     h+=floorHtml;
     h+="</div>";
   }
@@ -1587,7 +1587,7 @@ function selByWork(name){
     }
     if(!floorHtml) continue;
     h+="<div style='margin-bottom:16px'>";
-    h+="<div style='font-size:13px;color:var(--acc);font-family:Oswald,sans-serif;margin-bottom:6px'>"+flr.label+"</div>";
+    h+="<div style='display:flex;align-items:center;margin-bottom:6px'><div style='font-size:13px;color:var(--acc);font-family:Oswald,sans-serif;flex:1'>"+flr.label+"</div><button class='btn btn-sm' onclick='openFloorPdf("+flr.floor+")'>План</button></div>";
     h+=floorHtml;
     h+="</div>";
   }
@@ -1681,7 +1681,7 @@ function selByCon(cid){
     if(!floorHtml) continue;
     hasAny=true;
     h+="<div style='margin-bottom:16px'>";
-    h+="<div style='font-size:13px;color:var(--acc);font-family:Oswald,sans-serif;margin-bottom:6px'>"+flr.label+"</div>";
+    h+="<div style='display:flex;align-items:center;margin-bottom:6px'><div style='font-size:13px;color:var(--acc);font-family:Oswald,sans-serif;flex:1'>"+flr.label+"</div><button class='btn btn-sm' onclick='openFloorPdf("+flr.floor+")'>План</button></div>";
     h+=floorHtml;
     h+="</div>";
   }
