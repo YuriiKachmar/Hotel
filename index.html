@@ -1,3 +1,4 @@
+Content is user-generated and unverified.
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -1549,7 +1550,13 @@ function makeRoomCellByWork(roomDef, workName){
   var progCol = "transparent";
   var prog = 0;
   var shadow = "";
-  if(wst==="done"){
+  if(wst===null){
+    // роботи немає взагалі — затемнена
+    borderColor="#2c2d33"; opacity="0.2";
+  } else if(wst==="notstarted"){
+    // робота є але не розпочата — яскрава без рамки
+    borderColor="transparent"; opacity="1";
+  } else if(wst==="done"){
     borderColor="#16a34a"; opacity="1"; progCol="#16a34a"; prog=100;
   } else if(wst==="inprogress"){
     borderColor="#2563eb"; opacity="1"; progCol="#2563eb"; prog=50;
