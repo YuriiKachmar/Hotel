@@ -7,6 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#111214">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Готель">
@@ -478,8 +479,10 @@ var fbApp = firebase.initializeApp(FB_CONFIG);
 var fbAuth = firebase.auth();
 var fbDb = firebase.database();
 var ADMIN_EMAIL = "lvivbau2@gmail.com";
+var MANAGER_EMAIL = "hotel.zam.m@gmail.com";
 var currentUser = null;
 var isAdmin = false;
+var isManager = false;
 
 // =============================================
 // TYPE & STATUS MAPS
@@ -690,13 +693,14 @@ fbAuth.onAuthStateChanged(function(user){
   if(user){
     currentUser = user;
     isAdmin = (user.email === ADMIN_EMAIL);
+    isManager = (user.email === MANAGER_EMAIL);
     document.getElementById("authScreen").style.display = "none";
     document.getElementById("appScreen").style.display = "block";
     document.getElementById("userEmailEl").textContent = user.email;
     initListeners();
     initChat();
   } else {
-    currentUser = null; isAdmin = false;
+    currentUser = null; isAdmin = false; isManager = false;
     document.getElementById("authScreen").style.display = "flex";
     document.getElementById("appScreen").style.display = "none";
   }
@@ -1094,7 +1098,7 @@ function renderModal(){
         if(wprob) h += "<span class='wsb active-problem' style='cursor:default'>⚠ Проблема</span>";
         h += "</div>";
       }
-      if(isAdmin){
+      if(isAdmin||isManager){
         h += "<select class='work-contractor-sel' onchange='setWkCon("+wi+",this.value)'>";
         h += "<option value=''>— Підрядник —</option>";
         var ckeys = Object.keys(consData);
@@ -1116,8 +1120,8 @@ function renderModal(){
     h += "</div>";
   }
 
-  // ADD WORK — тільки адмін
-  if(isAdmin){
+  // ADD WORK — адмін і менеджер
+  if(isAdmin||isManager){
     h += "<div class='add-work-row'>";
     h += "<input class='add-work-input' id='awInput' placeholder='Нова робота...' oninput='showAC(this)' onkeydown='awKey(event)'>";
     h += "<button class='btn btn-sm btn-acc' onclick='doAddWork()'>+ Додати</button>";
@@ -1137,7 +1141,7 @@ function renderModal(){
       h += "<div class='problem-meta'><span class='problem-date'>"+(prob.date||"")+"</span>";
       if(prob.workName) h += "<span style='font-size:10px;color:var(--acc);margin-left:4px'>"+esc(prob.workName)+"</span>";
       h += "<span class='problem-status "+(pst==="open"?"ps-open":"ps-closed")+"'>"+(pst==="open"?"Відкрита":"Закрита")+"</span>";
-      if(pst==="open" && isAdmin){
+      if(pst==="open" && (isAdmin||isManager)){
         h += "<button class='btn btn-sm' style='color:var(--mut);border-color:var(--mut)' onclick='closeProb("+pi+")'>Виправлено проблему</button>";
       }
       h += "</div><div class='problem-text'>"+prob.text+"</div></div>";
@@ -1196,9 +1200,9 @@ function toggleWkProb(wi){
   addCL("Робота \""+modalDraft.works[wi].name+"\": Проблема " + (modalDraft.works[wi].hasProblem?"відмічена":"знята"));
   renderModal();
 }
-function setWkCon(wi, cid){ if(!isAdmin) return; if(modalDraft&&modalDraft.works) modalDraft.works[wi].contractor=cid; }
+function setWkCon(wi, cid){ if(!isAdmin&&!isManager) return; if(modalDraft&&modalDraft.works) modalDraft.works[wi].contractor=cid; }
 function delWork(wi){
-  if(!isAdmin){ showToast("Тільки адмін може видаляти роботи","err"); return; }
+  if(!isAdmin&&!isManager){ showToast("Тільки адмін або менеджер може видаляти роботи","err"); return; }
   if(!modalDraft||!modalDraft.works) return;
   var name = modalDraft.works[wi].name;
   modalDraft.works.splice(wi,1);
@@ -1206,7 +1210,7 @@ function delWork(wi){
   renderModal();
 }
 function doAddWork(){
-  if(!isAdmin){ showToast("Тільки адмін може додавати роботи","err"); return; }
+  if(!isAdmin&&!isManager){ showToast("Тільки адмін або менеджер може додавати роботи","err"); return; }
   var inp = document.getElementById("awInput");
   if(!inp) return;
   var name = inp.value.trim();
@@ -1286,7 +1290,8 @@ function openContractors(){
   document.getElementById("statsBar").style.display="none";
   document.getElementById("consView").style.display="block";
   renderConsList();
-  if(!isAdmin) document.getElementById("consAddPanel").style.display="none";
+  if(!isAdmin&&!isManager) document.getElementById("consAddPanel").style.display="none";
+  if(isManager) document.getElementById("consAddPanel").style.display="none";
   else document.getElementById("consAddPanel").style.display="block";
 }
 function closeContractors(){
@@ -1316,13 +1321,15 @@ function renderConsList(){
     h+="<div class='con-email'>"+(con.email||"<span style=\"color:#dc2626;font-size:11px\">email не вказано</span>")+"</div>";
     h+="</div>";
     h+="<div class='mono' style='font-size:12px;color:var(--mut)'>"+cnt+" кімн.</div>";
-    if(isAdmin){
+    if(isAdmin||isManager){
       h+="<button class='btn btn-sm' onclick='toggleEditCon(\""+cid+"\")'>✏️ Редагувати</button>";
+    }
+    if(isAdmin){
       h+="<button class='btn btn-sm btn-danger' onclick='delCon(\""+cid+"\")'>Видалити</button>";
     }
     h+="</div>";
     // inline edit form (прихований по дефолту)
-    if(isAdmin){
+    if(isAdmin||isManager){
       h+="<div id='editCon_"+cid+"' style='display:none;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:14px;margin-bottom:6px'>";
       h+="<div style='display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end'>";
       h+="<div style='flex:1;min-width:140px'><label class='form-label'>Назва</label>";
@@ -1331,17 +1338,20 @@ function renderConsList(){
       h+="<input class='form-input' id='editEmail_"+cid+"' value='"+esc(con.email||"")+"' type='email' style='margin-bottom:0'></div>";
       h+="<button class='btn btn-acc btn-sm' onclick='saveCon(\""+cid+"\")'>Зберегти</button>";
       h+="</div>";
-      h+="<div style='border-top:1px solid var(--brd);margin-top:12px;padding-top:12px'>";
-      h+="<div style='font-size:11px;color:var(--acc);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px'>Створити Firebase-акаунт для цього підрядника</div>";
-      h+="<div style='display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end'>";
-      h+="<div style='flex:1;min-width:140px'><label class='form-label'>Email</label>";
-      h+="<input class='form-input' id='fbEmail_"+cid+"' value='"+esc(con.email||"")+"' type='email' style='margin-bottom:0'></div>";
-      h+="<div style='flex:1;min-width:140px'><label class='form-label'>Пароль</label>";
-      h+="<input class='form-input' id='fbPass_"+cid+"' type='password' placeholder='Мінімум 6 символів' style='margin-bottom:0'></div>";
-      h+="<button class='btn btn-acc btn-sm' onclick='createFbUserForCon(\""+cid+"\")'>Створити акаунт</button>";
+      if(isAdmin){
+        h+="<div style='border-top:1px solid var(--brd);margin-top:12px;padding-top:12px'>";
+        h+="<div style='font-size:11px;color:var(--acc);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px'>Створити Firebase-акаунт для цього підрядника</div>";
+        h+="<div style='display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end'>";
+        h+="<div style='flex:1;min-width:140px'><label class='form-label'>Email</label>";
+        h+="<input class='form-input' id='fbEmail_"+cid+"' value='"+esc(con.email||"")+"' type='email' style='margin-bottom:0'></div>";
+        h+="<div style='flex:1;min-width:140px'><label class='form-label'>Пароль</label>";
+        h+="<input class='form-input' id='fbPass_"+cid+"' type='password' placeholder='Мінімум 6 символів' style='margin-bottom:0'></div>";
+        h+="<button class='btn btn-acc btn-sm' onclick='createFbUserForCon(\""+cid+"\")'>Створити акаунт</button>";
+        h+="</div>";
+        h+="<div style='color:var(--red);font-size:12px;margin-top:6px;min-height:16px' id='fbConErr_"+cid+"'></div>";
+        h+="</div>";
+      }
       h+="</div>";
-      h+="<div style='color:var(--red);font-size:12px;margin-top:6px;min-height:16px' id='fbConErr_"+cid+"'></div>";
-      h+="</div></div>";
     }
   }
   if(!h) h="<div style='color:var(--mut);font-size:13px'>Немає підрядників</div>";
@@ -1355,7 +1365,7 @@ function toggleEditCon(cid){
 }
 
 function saveCon(cid){
-  if(!isAdmin) return;
+  if(!isAdmin&&!isManager) return;
   var name=document.getElementById("editName_"+cid).value.trim();
   var email=document.getElementById("editEmail_"+cid).value.trim();
   if(!name){showToast("Введіть назву","err");return;}
@@ -1365,7 +1375,7 @@ function saveCon(cid){
 }
 
 function createFbUserForCon(cid){
-  if(!isAdmin) return;
+  if(!isAdmin&&!isManager) return;
   var email=document.getElementById("fbEmail_"+cid).value.trim();
   var pass=document.getElementById("fbPass_"+cid).value;
   var errEl=document.getElementById("fbConErr_"+cid);
@@ -1388,7 +1398,7 @@ function createFbUserForCon(cid){
   });
 }
 function addContractor(){
-  if(!isAdmin) return;
+  if(!isAdmin&&!isManager) return;
   var name=document.getElementById("conNameInput").value.trim();
   var email=document.getElementById("conEmailInput").value.trim();
   if(!name){showToast("Введіть назву","err");return;}
@@ -1404,7 +1414,7 @@ function delCon(cid){
   showToast("Видалено","success");
 }
 function createFirebaseUser(){
-  if(!isAdmin) return;
+  if(!isAdmin&&!isManager) return;
   var email=document.getElementById("fbUserEmail").value.trim();
   var pass=document.getElementById("fbUserPass").value;
   var errEl=document.getElementById("fbUserErr");
